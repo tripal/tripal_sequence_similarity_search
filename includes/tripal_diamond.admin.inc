@@ -82,7 +82,7 @@ function tripal_diamond_config_page_build($page)
     );
     
     $contents['EI_links'] = array(
-        '#markup'   => t('<a href=\"midspin.net\">Export this list (CSV)</a>&nbsp;|&nbsp;<a href=\"midspin.net/Home/\">Import a list (CSV, Excel)</a>'),
+        '#markup'   => t('<a href="export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="import">Import a list (CSV, Excel)</a>'),
         '#weight'    => '1',
     );
     
