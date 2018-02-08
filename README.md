@@ -1,4 +1,4 @@
-# Tripal Diamond Search
+ig #Tripal Diamond Search
 A module to allow Tripal to run Diamond Searches.
 
 ## Requirements
@@ -15,8 +15,8 @@ A module to allow Tripal to run Diamond Searches.
 - /admin/config/diamond     Diamond Module Administration
 
 ## Status
-- [ ] Form
+- [x] Form
 - [ ] Admin
-      - [ ] Add/Delete/Modify Target Database List
-      - [x] Hardcode Target Database list for now
+      > [ ] Add/Delete/Modify Target Database List
+      > [ ] Hardcode Target Database list for now
 - [ ] Permissions
