@@ -52,7 +52,7 @@ function tripal_diamond_config_page_build($page)
                     $db[$i]['db_id']);
             
             $readable = (string)is_readable($db[$i]['location']);
-            
+            $readable = $readable ? "Yes":"No";
             //$readable = tripal_remote_check_files($db);   //Not implemented
             $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['location'],$readable,$edit.' | '.$delete);
         }
