@@ -5,10 +5,9 @@ A module to allow Tripal to run Diamond Searches.
 - [Tripal Remote Job](https://gitlab.com/TreeGenes/tripal-remote-job) 
 - [Tripal 3](http://tripal.info/)
 
-## Installation / Useful Pages
+## Installation / Useful Pages & Info
 1. Visit /admin/config/diamond to set up databases and other options
-2. Set up permissions for users at 
-2. Provide link to /Diamond/Submit
+2. Permission role 'administer diamond' created for site admins
 
 - /Diamond                  Main Page
 - /Diamond/Submit           Main Submission Page
@@ -16,7 +15,7 @@ A module to allow Tripal to run Diamond Searches.
 
 ## Status
 - [x] Form
-- [ ] Admin
-      > [ ] Add/Delete/Modify Target Database List
-      > [ ] Hardcode Target Database list for now
-- [ ] Permissions
+- [x] Admin
+- [-] Add/Delete/Modify Target Database List
+- [x] Permissions
+- [ ] Check if existing database files are readable (for purposes of running against)
