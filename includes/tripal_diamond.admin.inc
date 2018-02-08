@@ -88,8 +88,16 @@ function tripal_diamond_config_page_build($page)
     
     // Generate the pagination links
     $pageLinks = 'Nagivate to a page: ';
-    $pageLinks = $pageLinks.'<a href="diamond/">First</a>|';
-    $pageLinks = $pageLinks.'<a href="diamond/'.$page.'">Next</a>';
+    $pageLinks = $pageLinks.'<a href="1">1</a>';
+    if (count($db) > 10)
+    {
+        $numPages = ceil(count($db) / 10);
+        for ($i = 2; $i <= $numPages; $i++)
+        {
+            $pageLinks = $pageLinks.' | <a href="'.$i.'">'.$i.'</a>';
+        }
+    }
+    
     
     $contents['pagination'] = array(
         '#markup'   => $pageLinks,
