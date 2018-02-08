@@ -380,3 +380,35 @@ function tripal_diamond_database_delete_form_submit($form, &$form_state)
     db_query('DELETE FROM diamond_db_existing_locations where db_id = '.$form_state['values']['db_id']);
     drupal_goto('/admin/tripal/extension/diamond');
 }
+
+function tripal_diamond_database_export_form($form, &$form_state)
+{
+    $form['Type'] = array(
+        '#type'         => 'select',
+        '#title'        => 'Type',
+        '#description'  => 'The type of target database being added',
+        '#options'      => array(
+            'Protein'       => t('Protein'),
+            'Genome'        => t('Genome'),
+            'Gene'          => t('Gene'),
+        ),
+    );
+    
+    return $form;
+}
+
+function tripal_diamond_database_import_form($form, &$form_state)
+{
+    $form['File select'] = array(
+        '#type'         => 'managed_file',
+        '#title'        => 'Import a file of databases',
+        '#size'         => '50',
+        '#description'  => 'The file must be of type <code>.csv</code>, <code>.xls</code>, or <code>.xlsx</code>. Show row information',
+        '#required'     => true,
+        '#upload_validators' => array(
+            'file_validate_extensions' => array('csv xls xlsx'),
+        ),
+    );
+    
+    return $form;
+}

@@ -127,7 +127,27 @@ function tripal_diamond_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
-    //Admin: 
+    //Admin: Export the database list
+    $items['admin/tripal/extension/diamond/export'] = array(
+        'title' => 'Tripal Diamond Database Export',
+        'description' => 'Export the database list to a CSV file for backup/transfer',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tripal_diamond_database_export_form'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_NORMAL_ITEM
+        );
+    
+    //Admin: Import a saved database list
+    $items['admin/tripal/extension/diamond/import'] = array(
+        'title' => 'Tripal Diamond Database Import',
+        'description' => 'Import to the database list from a CSV file',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tripal_diamond_database_import_form'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_NORMAL_ITEM
+        );
     
     return $items;
 }
