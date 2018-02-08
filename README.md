@@ -1,4 +1,4 @@
-#Tripal Diamond Search
+##Tripal Diamond Search
 A module to allow Tripal to run Diamond Searches.
 
 ## Requirements
