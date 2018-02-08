@@ -1,0 +1,4 @@
+name = Tripal Diamond
+description = Diamond Module for Tripal
+core = 7.x
+configure = admin/config/diamond

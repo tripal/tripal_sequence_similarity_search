@@ -1,0 +1,147 @@
+<?php
+error_reporting(E_ALL);
+/**
+ *    Let's include some files
+ */
+// Admin 
+require_once 'includes/tripal_diamond.admin.inc';
+
+// Classes
+require_once 'includes/tripal_diamond_databases.inc';
+
+// API
+require_once 'api/tripal_diamond.api.inc';
+
+// Forms (allow for more than just basic form)
+require_once 'includes/tripal_diamond_submit.form.inc';
+
+// Theme
+require_once 'theme/tripal_diamond.theme.inc';
+
+// Output
+require_once 'includes/tripal_diamond.review.inc';
+require_once 'includes/tripal_diamond.download.inc';
+
+// Permissions
+function tripal_diamond_permission() {
+  return array (
+    'administer diamond' => array (
+      'title' => t ( 'Administer Diamond Module' ),
+      'description' => t ( 'Allows a user to modify the list of databases available for the user to Diamond/BLAST against' )
+    ),
+  );
+}
+
+function tripal_diamond_init()
+{
+}
+
+function tripal_diamond_menu()
+{
+    $items = array();
+    
+    // Diamond Job submission form (for URL)
+    $items['Diamond/submit'] = array(
+        'title' => 'Sequence Similarity Search: Diamond/BLAST',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tripal_diamond_submit_form'),
+        'access callback' => TRUE,
+        'access arguments' => array('access content'),
+        'type' => MENU_NORMAL_ITEM,
+        );
+        
+    // Diamond Results page
+    $items['Diamond/results/%'] = array(
+        'title' => 'Diamond Job Results',
+        'page callback' => 'tripal_diamond_review',
+        'page arguments' => array(2),
+        'access callback' => TRUE,
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK
+        );
+    
+    // Diamond Download page
+    $items['Diamond/results/download/%'] = array(
+        'title' => 'Diamond Job Results Download',
+        'page callback' => 'tripal_diamond_download',
+        'page arguments' => array(3),
+        'access callback' => TRUE,
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK
+        );
+        
+    // Configuration page
+    $items['admin/tripal/extension/diamond'] = array(
+        'title' => 'Tripal Diamond Configuration',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'tripal_diamond_config_page_build',
+        'page arguments' => array('1','tripal_diamond_config_page'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'includes/tripal_diamond.admin.inc',
+        'file path' => drupal_get_path ('module', 'tripal_diamond')
+        );
+    
+    // Configuration page (w/ Specified page #)
+    $items['admin/tripal/extension/diamond/%'] = array(
+        'title' => 'Tripal Diamond Configuration',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'tripal_diamond_config_page_build',
+        'page arguments' => array(4,'tripal-diamond_config_page'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'includes/tripal_diamond.admin.inc',
+        'file path' => drupal_get_path ('module', 'tripal_diamond')
+        );
+    
+    // Admin: add a new target database
+    $items['admin/tripal/extension/diamond/add_db'] = array(
+        'title' => 'Add Target Database',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tripal_diamond_database_add_form'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_LOCAL_ACTION,
+        );
+    
+    // Admin: edit an existing database
+    $items['admin/tripal/extension/diamond/edit_db/%'] = array(
+        'title' => 'Tripal Diamond Database Edit',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tripal_diamond_database_edit_form',5),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_CALLBACK
+        );
+    // Admin: delete an existing database
+    $items['admin/tripal/extension/diamond/delete_db/%'] = array(
+        'title' => 'Tripal Diamond Database Delete',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tripal_diamond_database_delete_form', 5),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_CALLBACK
+        );
+    //Admin: 
+    
+    return $items;
+}
+
+
+function tripal_diamond_theme()
+{
+  $items = array();
+  $path = drupal_get_path('module', 'tripal_diamond');
+
+  // Displays the BLAST results for each job
+  $items['tripal_diamond_results'] = array(
+    'template' => 'tripal_diamond_review',
+    'path' => "$path/theme",
+  );
+ return $items;
+}
