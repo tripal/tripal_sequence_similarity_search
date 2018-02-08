@@ -40,6 +40,13 @@ function tripal_diamond_config_page_build($page)
     }
      * 
      */
+    // Generate link to add another database
+    $contents['addLink'] = array(
+        '#markup'   => l('Add an existing database |','./admin/tripal/extension/diamond/add_db'),
+        '#markup'   => t('<p><a href="add_db">Add an existing database to this list</a></p>'),
+        '#weight'   => '1',
+    );
+    
     $j = $page * 10;
     $i = $j - 10;
     for($i; $i < $j; $i++)
@@ -78,12 +85,12 @@ function tripal_diamond_config_page_build($page)
     
     $contents['resource_list'] = array(
         '#markup'   => theme('table', $table_vars),
-        '#weight'   => '2',
+        '#weight'   => '4',
     );
     
     $contents['EI_links'] = array(
         '#markup'   => t('<a href="export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="import">Import a list (CSV, Excel)</a>'),
-        '#weight'    => '1',
+        '#weight'    => '3',
     );
     
     // Generate the pagination links
@@ -101,7 +108,7 @@ function tripal_diamond_config_page_build($page)
     
     $contents['pagination'] = array(
         '#markup'   => $pageLinks,
-        '#weight'   => '3',
+        '#weight'   => '10',
     );
     
     /*$contents['exportLink'] = array(

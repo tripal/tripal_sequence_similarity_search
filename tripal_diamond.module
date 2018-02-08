@@ -104,7 +104,7 @@ function tripal_diamond_menu()
         'page arguments' => array('tripal_diamond_database_add_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_LOCAL_ACTION,
+        'type' => MENU_NORMAL_ITEM,
         );
     
     // Admin: edit an existing database
