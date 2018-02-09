@@ -26,7 +26,7 @@ function tripal_diamond_config_page_build($page)
     $breadcrumb = array();
     $breadcrumb[] = l('Diamond', '<front>');
     $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
-    $breadcrumb[] = l('Page '.$page, 'admin/tripal/extension/diamond/'.$page);
+    $breadcrumb[] = l('Database list, page '.$page, 'admin/tripal/extension/diamond/'.$page);
     drupal_set_breadcrumb($breadcrumb);
     
     /*
@@ -89,7 +89,7 @@ function tripal_diamond_config_page_build($page)
     );
     
     $contents['EI_links'] = array(
-        '#markup'   => t('<a href="export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="import">Import a list (CSV, Excel)</a>'),
+        '#markup'   => t('<a href="'.base_path().'admin/tripal/extension/diamond/export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="'.base_path().'admin/tripal/extension/diamond/import">Import a list (CSV, Excel)</a>'),
         '#weight'    => '3',
     );
     
