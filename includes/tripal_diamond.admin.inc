@@ -388,18 +388,49 @@ function tripal_diamond_database_export_form($form, &$form_state)
         '#title'        => 'Type',
         '#description'  => 'The type of target database being added',
         '#options'      => array(
-            'Protein'       => t('Protein'),
-            'Genome'        => t('Genome'),
-            'Gene'          => t('Gene'),
+            'csv'       => t('CSV (Comma Separated Values)'),
+            'xls'       => t('Excel XLS (Pre-2007)'),
+            'xlsx'      => t('Excel XLSX (2007-Current)'),
         ),
     );
+    
+    $form['submit_button'] = array(
+        '#type'     => 'submit',
+        '#value'    => t('Export'),
+    );
+    
+    /*$form['backLink'] = array(
+        '#type'     => 'markup',
+        '#markup'    => t('<br /><br /><a href="'.base_path().'admin/tripal/extension/diamond/">Go back</a>')
+    );*/
     
     return $form;
 }
 
+function tripal_diamond_database_export_form_validate($form, &$form_state)
+{
+    
+}
+
+function tripal_diamond_database_export_form_submit($form, &$form_state)
+{
+    $db = DiamondDatabases::getDatabases('%');
+    
+    if (tripal_diamond_db_export($db, $form_state['values']['Type']))
+    {
+       drupal_set_message("Databases successfully exported"); 
+    }
+    else
+    {
+        drupal_set_message("Database list failed to export.", 'error');
+    }
+    
+    //$form_state['redirect'] = 'admin/tripal/extension/diamond';
+}
+
 function tripal_diamond_database_import_form($form, &$form_state)
 {
-    $form['File select'] = array(
+    $form['FileSelect'] = array(
         '#type'         => 'managed_file',
         '#title'        => 'Import a file of databases',
         '#size'         => '50',
@@ -409,6 +440,43 @@ function tripal_diamond_database_import_form($form, &$form_state)
             'file_validate_extensions' => array('csv xls xlsx'),
         ),
     );
+    /*
+     * May not be necessary - user may just have to point to .fa* files and 
+     * let the app server create the index every time (if write access for
+     * creating the diamond indexes is an issue. 
+     */
+    $form['indexCheck'] = array(
+        '#type'         => 'checkbox',
+        '#title'        => 'Automatically index',
+        '#description:' => 'Click here to automatically create a Diamond index'
+    );
+    
+    $form['submit_button'] = array(
+        '#type'     => 'submit',
+        '#value'    => t('Export'),
+    );
     
     return $form;
+}
+
+function tripal_diamond_database_import_form_validate($form, &$form_state)
+{
+    $fid = $form_state['values']['FileSelect'];
+    
+    $importFile = file_load($fid);
+    
+    $fileName = $importFile->filename;
+}
+
+function tripal_diamond_database_import_form_submit($form, &$form_state)
+{
+    $fid = $form_state['values']['FileSelect'];
+    
+    $importFile = file_load($fid);
+    
+    $fileName = $importFile->filename;
+    
+    $theFile = fopen($fileName,"r");
+    
+    echo $theFile;
 }
