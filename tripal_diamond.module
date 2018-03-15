@@ -36,6 +36,9 @@ function tripal_diamond_init()
 {
 }
 
+/*
+ * Generate the links for the module
+ */
 function tripal_diamond_menu()
 {
     $items = array();

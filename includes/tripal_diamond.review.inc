@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * @param $jobID
+ *  Tripal Job ID (to fetch the data from the specified job)
+ * 
+ * @return 
+ *  Page displaying info (via theme $tripal_diamond_results)
+ */
 function tripal_diamond_review($jobID)
 {
     

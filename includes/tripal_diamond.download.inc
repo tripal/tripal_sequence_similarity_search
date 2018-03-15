@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * @param $job_id
+ *  The numeric id of the Tripal Job to which the desired results belong
+ * 
+ * @return file
+ *  The results of the job (STDOUT.txt). This is only available to jobs that run successfully
+ *  so there is no need for returning the STDERR file (for now)
+ * 
+ */
+
 function tripal_diamond_download($job_id)
 {
     $file = "/var/www/html/Drupal/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
@@ -18,7 +28,16 @@ function tripal_diamond_download($job_id)
     }
     
 }
-
+/*
+ * @pararm $db
+ *  An array that represents the database to be exported
+ * 
+ * @param $type
+ *  Specify which type of database to export (Genome, Gene, Protein, or All)
+ * 
+ * @return boolean
+ *  Specify if the export operation was a success or not
+ */
 function tripal_diamond_db_export($db, $type)
 {
     if ($type = 'csv')

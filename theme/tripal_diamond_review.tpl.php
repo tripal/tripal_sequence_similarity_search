@@ -77,6 +77,7 @@ if ($status == 'Completed')
            
            foreach($jobResults as $resultLine)
            {
+               //Possible pumpkin
                $resultLineE = explode("\t", $resultLine);
                foreach ($resultLineE as $resultData)
                {

@@ -12,7 +12,11 @@ function tripal_diamond_config_page_build($page)
      */
     $headers = array('','Name','Version','Type','Location (remote)','Accessible', 'Actions');
     $rows = array();
-    
+    /*
+     * Getting details from the database
+     * @todo
+     *  Handle database errors
+     */
     $db = DiamondDatabases::getDatabases('%');
     $returnedDBs = array();
     
@@ -30,20 +34,21 @@ function tripal_diamond_config_page_build($page)
     drupal_set_breadcrumb($breadcrumb);
     
     /*
-    foreach ($databaseList as $db)
+     * Check to see if the listed resource (Diamond file) is accessible
+     * @todo
+     *  this
+     */
+    /*foreach ($databaseList as $db)
     {
         $edit = l('Edit','admin/tripal/extension/diamond/edit_db/' . $db['db_id']);
-        $delete = l('Delete','admin/tripal/extension/diamond/delete_db/' . $db['db_id']);
         
-        $returnedDBs[] = array($i,$db['name'],$db['version'],$db['type'],$db['location'],$edit.' | '.$delete);
+        $accessible[] = array($i,$db['name'],$db['version'],$db['type'],$db['location'],$edit.' | '.$delete);
         $i++;
-    }
-     * 
-     */
+    }*/
+    
     // Generate link to add another database
     $contents['addLink'] = array(
-        '#markup'   => l('Add an existing database |','./admin/tripal/extension/diamond/add_db'),
-        '#markup'   => t('<p><a href="add_db">Add an existing database to this list</a></p>'),
+        '#markup'   => l('Add an existing database','./admin/tripal/extension/diamond/add_db'),
         '#weight'   => '1',
     );
     
@@ -64,14 +69,16 @@ function tripal_diamond_config_page_build($page)
             $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['location'],$readable,$edit.' | '.$delete);
         }
     }
-    //$emptyCase = (($page * 10) % count($db) > 10) ? t('No databases have been added yet.' : t('Not that many databases!');
-    if (($page * 10) % count($db) < 10)
-    {
-        $emptyCase = l('There aren\'t that many databases yet. Click here to go back to the list','admin/tripal/extension/diamond');
-    }
-    else
+    
+    //Check to see if there are databases
+    $emptyCase = '';
+    if (count($db) == 0)
     {
         $emptyCase = t('No databases have been added yet.');
+    }
+    else if (($page * 10) % count($db) < 10)
+    {
+        $emptyCase = l('There aren\'t that many databases yet. Click here to go back to the list','admin/tripal/extension/diamond');
     }
     
     $table_vars = array(
@@ -88,35 +95,33 @@ function tripal_diamond_config_page_build($page)
         '#weight'   => '4',
     );
     
-    $contents['EI_links'] = array(
+    /*
+     * Import/Export links. currently disabled
+     * @todo
+     *  implement this properly using Drupal (or Tripal?) content types
+     */
+    /*$contents['EI_links'] = array(
         '#markup'   => t('<a href="'.base_path().'admin/tripal/extension/diamond/export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="'.base_path().'admin/tripal/extension/diamond/import">Import a list (CSV, Excel)</a>'),
         '#weight'    => '3',
-    );
+    );*/
     
     // Generate the pagination links
-    $pageLinks = 'Nagivate to a page: ';
-    $pageLinks = $pageLinks.'<a href="1">1</a>';
+    $pageLinks = '';
     if (count($db) > 10)
     {
+        $pageLinks = 'Nagivate to a page: ';
+        $pageLinks = $pageLinks.'<a href="diamond/1">1</a>';
         $numPages = ceil(count($db) / 10);
         for ($i = 2; $i <= $numPages; $i++)
         {
-            $pageLinks = $pageLinks.' | <a href="'.$i.'">'.$i.'</a>';
+            $pageLinks = $pageLinks.' | <a href="diamond/'.$i.'">'.$i.'</a>';
         }
     }
-    
     
     $contents['pagination'] = array(
         '#markup'   => $pageLinks,
         '#weight'   => '10',
     );
-    
-    /*$contents['exportLink'] = array(
-        '#markup'   => array(l('Export this list', 'http://midspin.net/Home/'),t('|')),
-        '#weight'    => '1',
-    );*/
-    
-    
     
     return $contents;
 }
@@ -207,10 +212,16 @@ function tripal_diamond_database_add_form_submit($form, &$form_state)
         'name' => $form_state['values']['Name'],
         'type' => $form_state['values']['Type'],
         'version' => $form_state['values']['Version'],
-        'location' => $form_state['values']['Location']
+        'location' => $form_state['values']['Location'],
     );
     
     drupal_write_record('diamond_db_existing_locations', $newDB);
+    /* Congratulate the user and let them return to the configuration screen
+     * Defaults to staying at current location in case user wants to add
+     * another
+     */ 
+    drupal_set_message("This database was successfully added");
+    drupal_set_message(l('Return to Database list','admin/tripal/extension/diamond'));
 }
 /*
  * Edit a database in the list (form)
@@ -440,6 +451,7 @@ function tripal_diamond_database_import_form($form, &$form_state)
             'file_validate_extensions' => array('csv xls xlsx'),
         ),
     );
+    
     /*
      * May not be necessary - user may just have to point to .fa* files and 
      * let the app server create the index every time (if write access for
@@ -448,35 +460,79 @@ function tripal_diamond_database_import_form($form, &$form_state)
     $form['indexCheck'] = array(
         '#type'         => 'checkbox',
         '#title'        => 'Automatically index',
-        '#description:' => 'Click here to automatically create a Diamond index'
+        '#description' => 'Click here to automatically create a Diamond index',
+        '#states' => array(
+            'visible' => array(
+                ':input[name="FileSelect"]' => array('value' => 'upload'),
+            ),
+        ),
+    );    
+    
+    $form['userValidate'] = array(
+        '#type'         => 'checkbox',
+        '#title'        => 'This looks OK',
+        '#description'  => 'Make sure your data is being loaded correctly.',
+        '#disabled'     => FALSE,
+        '#states' => array(
+            'visible' => array(
+                ':input[name="dda"]' => array('d' => 'd'),
+            ),
+        ),
+        '#weight'       => '2',
     );
     
     $form['submit_button'] = array(
         '#type'     => 'submit',
-        '#value'    => t('Export'),
-    );
+        '#value'    => t('Import'),
+        '#weight'   => '3',
+    );    
     
     return $form;
 }
 
 function tripal_diamond_database_import_form_validate($form, &$form_state)
-{
+{    
     $fid = $form_state['values']['FileSelect'];
     
     $importFile = file_load($fid);
+    //str_replace("temporary://","",);
+    $fileName = "/tmp/".str_replace("temporary://","",$importFile->uri);
     
-    $fileName = $importFile->filename;
+    $theFile = fopen($fileName,"r");
+    $k = 0;
+    while (!feof($theFile))
+    {
+        $fileLines[$k] = fgetcsv($theFile);
+        $k++;
+    }
+    
+    $table = "<table><tr><th>Type</th><th>Name</th><th>Version</th><th>Location</th></tr>";
+    $table .= "<tr>";
+    for ($i = 0; $i < count($fileLines);$i++)
+    {
+        $table .="<tr>";
+        for ($j = 0; $j < count($fileLines[$i]);$j++)
+        {
+            $table .="<td>".$fileLines[$i][$j]."</td>";
+        }
+        $table .="</tr>";
+        //}
+        /*else
+        {
+        $table .= "<td>".$fileLines[$i]."</td>";
+        }*/
+    }
+    $table .= "</table>";
+    drupal_set_message($table);
+   
+    
+    if (empty($form_state['values']['userValidate']))
+    {
+        form_set_error('userValidate',t("Make sure the data above is correct, then click Import"));
+    }
 }
 
 function tripal_diamond_database_import_form_submit($form, &$form_state)
 {
-    $fid = $form_state['values']['FileSelect'];
-    
-    $importFile = file_load($fid);
-    
-    $fileName = $importFile->filename;
-    
-    $theFile = fopen($fileName,"r");
-    
-    echo $theFile;
+    drupal_set_message("Pumpkin importation");
 }

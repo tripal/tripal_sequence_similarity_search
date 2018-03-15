@@ -2,13 +2,134 @@
 /*
  *  create database tables and columns
  */
-function tripal_diamond_install()
-{
-    return null;
+function tripal_diamond_install() {
+    /*Create the content type in which will store the information for the
+     *existing Diamond databases
+     */
+    $t = get_t();
+    
+    $content_type = array(
+        'type'          =>  'diamond_database',
+        'name'          =>  $t('DiamondDatabase'),
+        'description'   =>  $t('Diamond Database for use with the Tripal Sequence Similarity Search module'),
+        'title_label'   =>  $t('Database name'),
+        'base'          =>  'node_content',
+        'custom'        =>  TRUE
+    );
+    
+    $node_type = node_type_set_defaults($content_type);
+    node_type_save($node_type);
+    
+    $fields = array(
+        //Name
+        'diamonddb_name'    =>  array(
+            'field_name'    =>  'diamonddb_name',
+            'type'          =>  'text',
+            'cardinality'   =>  1,
+        ),
+        //Type
+        'diamonddb_type'    =>  array(
+            'field_name'    =>  'diamonddb_type',
+            'type'          =>  'text',
+            'cardinality'   =>  1,
+        ),
+        //Version
+        'diamonddb_version' =>  array(
+            'field_name'    =>  'diamonddb_version',
+            'type'          =>  'text',
+            'cardinality'   =>  1,
+        ),
+        //Location
+        'diamonddb_location'=>  array(
+            'field_name'    =>  'diamonddb_location',
+            'type'          =>  'text',
+            'cardinality'   =>  1,
+        ),
+    );
+    
+    foreach( $fields as $field) {
+        field_create_field($field);
+    }
+    
+    
+    $typeFields = array(
+        //Name
+        'diamonddb_name'    =>  array(
+            'field_name'    =>  'diamonddb_name',
+            'lable'         =>  $t('Name'),
+            'required'      =>  TRUE,
+            'widget'        =>  array(
+                'type'  =>  'text_textfield'
+            ),
+        ),
+        //Type
+        'diamonddb_type'    =>  array(
+            'field_name'    =>  'diamonddb_type',
+            'lable'         =>  $t('Type'),
+            'required'      =>  TRUE,
+            'widget'        =>  array(
+                'type'  =>  'text_textfield'
+            ),
+        ),
+        //Version
+        'diamonddb_version'    =>  array(
+            'field_name'    =>  'diamonddb_version',
+            'lable'         =>  $t('Version'),
+            'required'      =>  TRUE,
+            'widget'        =>  array(
+                'type'  =>  'text_textfield'
+            ),
+        ),
+        //Location
+        'diamonddb_location'    =>  array(
+            'field_name'    =>  'diamonddb_location',
+            'lable'         =>  $t('Location'),
+            'required'      =>  TRUE,
+            'widget'        =>  array(
+                'type'  =>  'text_textfield'
+            ),
+        ),
+    );
+    
+    foreach( $typeFields as $typeField ) {
+        $typeField['entity_type']   =   'node';
+        $typeField['bundle']        =   'diamond_database';
+        
+        field_create_instance($typeField);
+    }
 }
 
-function tripal_diamond_schema()
-{
+    /*
+     * Be nice, prevent clutter by uninstalling the content type
+     * 
+     * Is it possible to remove the content type but keep nodes in place
+     * in the event of a reinstall/accidental uninstall?
+     */
+function tripal_diamond_uninstall() {
+    $query = 'SELECT nid FROM {node} WHERE {node}.type = :type ';
+    
+    $result = db_query($query, array(':type'   => 'diamond_database'));
+    
+    $nids = array();
+    
+    foreach( $result as $row )
+    {
+        $nids[] = $row->nid;
+    }
+    
+    node_delete_multiple( $nids );
+    
+    foreach (field_info_instances('node', 'diamond_database') as $field_name => $instance )
+    {
+        field_delete_instance($instance);
+    }
+    
+    node_type_delete('diamond_database');
+    
+    field_purge_batch(1000);
+}
+
+function tripal_diamond_schema() {
     $schema['diamond_jobs'] = array(
         'description' => t('Tripal Diamond Jobs'),
         'fields' => array(
