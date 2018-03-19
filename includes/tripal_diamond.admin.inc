@@ -19,6 +19,14 @@ function tripal_diamond_config_page_build($page)
      */
     $db = DiamondDatabases::getDatabases('%');
     $returnedDBs = array();
+    $filesToCheck = array();
+    //Collect list of files to check for "accessibility"
+    for ($k = 0; $k < count($db);$k++)
+    {
+        $filesToCheck[$k] = $db[$k]['location'];
+    }
+    $accessible = array();
+    $accessible = tripal_remote_check_files($filesToCheck);
     
     // Deal with bad numbers 
     if ($page == 'tripal_diamond_config_page' || $page <= 0)
@@ -63,10 +71,10 @@ function tripal_diamond_config_page_build($page)
             $delete = l('Delete','admin/tripal/extension/diamond/delete_db/' .
                     $db[$i]['db_id']);
             
-            $readable = (string)is_readable($db[$i]['location']);
-            $readable = $readable ? "Yes":"No";
+            //$readable = (string)is_readable($db[$i]['location']);
+            //$readable = $readable ? "Yes":"No";
             //$readable = tripal_remote_check_files($db);   //Not implemented
-            $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['location'],$readable,$edit.' | '.$delete);
+            $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['location'],$accessible[$i],$edit.' | '.$delete);
         }
     }
     
@@ -110,11 +118,12 @@ function tripal_diamond_config_page_build($page)
     if (count($db) > 10)
     {
         $pageLinks = 'Nagivate to a page: ';
-        $pageLinks = $pageLinks.'<a href="diamond/1">1</a>';
+        $modulePath = base_path().'admin/tripal/extension/diamond/';
+        $pageLinks = $pageLinks.'<a href="'.$modulePath.'1">1</a>';
         $numPages = ceil(count($db) / 10);
         for ($i = 2; $i <= $numPages; $i++)
         {
-            $pageLinks = $pageLinks.' | <a href="diamond/'.$i.'">'.$i.'</a>';
+            $pageLinks = $pageLinks.' | <a href="'.$modulePath.$i.'">'.$i.'</a>';
         }
     }
     
