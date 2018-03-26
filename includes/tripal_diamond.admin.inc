@@ -25,8 +25,12 @@ function tripal_diamond_config_page_build($page)
     {
         $filesToCheck[$k] = $db[$k]['location'];
     }
-    $accessible = array();
-    $accessible = tripal_remote_check_files($filesToCheck);
+    if (module_exists('tripal_remote_job')) { 
+        $accessible = array();
+        $accessible = tripal_remote_check_files($filesToCheck);
+    }
+
+    
     
     // Deal with bad numbers 
     if ($page == 'tripal_diamond_config_page' || $page <= 0)
