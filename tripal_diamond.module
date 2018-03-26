@@ -152,6 +152,16 @@ function tripal_diamond_menu()
         'type' => MENU_NORMAL_ITEM
         );
     
+    $items['admin/tripal/extension/diamond/config'] = array(
+        'title' =>  'Configuration',
+        'description'   =>  'Configuration for the Tripal Diamond module',
+        'page callback' =>  'drupal_get_form',
+        'page arguments'=>  array('tripal_diamond_configuration_form'),
+        'type'  =>  MENU_LOCAL_TASK,
+        'file'  =>  'includes/tripal_diamond.admin.inc',
+        'file path'     =>  drupal_get_path('module','tripal_diamond'),
+    );
+    
     return $items;
 }
 

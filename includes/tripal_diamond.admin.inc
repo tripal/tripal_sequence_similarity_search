@@ -545,3 +545,9 @@ function tripal_diamond_database_import_form_submit($form, &$form_state)
 {
     drupal_set_message("Pumpkin importation");
 }
+
+function tripal_diamond_configuration_form($form, &$form_state)
+{
+    drupal_set_message("Pumpkins!");
+    
+}
