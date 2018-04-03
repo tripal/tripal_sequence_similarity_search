@@ -1,4 +1,5 @@
 name = Tripal Diamond
 description = Diamond Module for Tripal
+dependencies[] = tripal_remote_job:tripal_remote_job
 core = 7.x
 configure = admin/config/diamond
