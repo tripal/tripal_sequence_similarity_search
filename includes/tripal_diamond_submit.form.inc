@@ -27,19 +27,19 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#collapsible'  => FALSE,
         //'#description'  => t('DIAMOND is a BLAST-compatible local aligner for mapping translated DNA query sequences against a protein reference database ( BLASTX alignment mode). The speedup over BLAST many times faster on short reads at a typical sensitivity of 90 - 99% relative to BLAST depending on the data and settings. <br/ >Use the following form to submit a new Diamond job to TreeGenes')
         '#description'  => t('Sequence similarity search is supported in TreeGenes against genes, TreeGenes UniGenes, proteins, and full genomes.  Nucleotide searches are executed with BLAST (BLASTN) while protein or translated protein searches are executed with DIAMOND (BLASTX or BLASTP equivalent).  DIAMOND will execute searches in a fraction of the time of BLAST at a similar sensitivity.  Both packages accept similar input parameters and these can be modified below.  You may upload FASTA formatted sequences or paste FASTA formatted sequences for searching.  You can select from a list of pre-formatted DIAMOND and BLAST databases OR upload your own.  This can be pre-formatted or provided in FASTA format and formatted for you.  In order to execute a search, you must be logged in to the database.  Results are provided to the user in text format.'),
-        '#suffix'       => '<br /><br />'
+        '#suffix'       => '<br /><br /><h2>Type</h2>'
     );
 
     $form['QueryType'] = array (
         '#type'         => 'radios',
-        '#title'        => t('Select sequence search type:'),
+        //'#title'        => t('Select sequence search type:'),
         //'#description'  => t('Choose the type of query'),
         '#options'      => array(
             'Protein'   => t('Protein'),
             'Gene'      => t('Gene'),
             'Genome'    => t('Genome'),
         ),
-        '#field_prefix'       => 'Slightly more specific and/or helpful instructions would go here!'
+        '#prefix'       => 'To get started, choose your search type:'
     );
     
     /*  Query		Target		Program
@@ -94,6 +94,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually')),
+        '#prefix'   =>  '<h2>Query</h2>',
     );
     
     $form['QueryFile'] = array(
@@ -143,6 +144,7 @@ function tripal_diamond_submit_form($form, &$form_state)
             'paste' => t('Type or paste manually'),
             ),
         '#disabled_options' => array('upload'),
+        '#prefix' => '<h2>Target</h2>'
     );
     
     /*
@@ -247,7 +249,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#required'     =>  true,
         '#default_value'      =>  t('0.003'),
         '#prefix'       => '<b>Advanced Options</b>',
-        '#field_prefix' => 'Expected number of chance matches in a random model. This number should be give in a decimal format.',
+        '#field_prefix' => 'Expected number of chance matches in a random model. This number should be give in a decimal format.<br />',
     );
     
     $form['targetCoverage'] = array(
@@ -271,7 +273,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['maxAlignments'] = array(
         '#type'         =>  'select',
         '#title'        =>  'Max Alignments',
-        '#field_prefix'  =>  'The maximum number of target sequences per query to report alignments for.',
+        '#field_prefix'  =>  'The maximum number of target sequences per query to report alignments for.<br />',
         '#required'     =>  false,
         '#options'      => array(
             '5'         => t('5'),
