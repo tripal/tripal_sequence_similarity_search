@@ -27,7 +27,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#collapsible'  => FALSE,
         //'#description'  => t('DIAMOND is a BLAST-compatible local aligner for mapping translated DNA query sequences against a protein reference database ( BLASTX alignment mode). The speedup over BLAST many times faster on short reads at a typical sensitivity of 90 - 99% relative to BLAST depending on the data and settings. <br/ >Use the following form to submit a new Diamond job to TreeGenes')
         '#description'  => t('Sequence similarity search is supported in TreeGenes against genes, TreeGenes UniGenes, proteins, and full genomes.  Nucleotide searches are executed with BLAST (BLASTN) while protein or translated protein searches are executed with DIAMOND (BLASTX or BLASTP equivalent).  DIAMOND will execute searches in a fraction of the time of BLAST at a similar sensitivity.  Both packages accept similar input parameters and these can be modified below.  You may upload FASTA formatted sequences or paste FASTA formatted sequences for searching.  You can select from a list of pre-formatted DIAMOND and BLAST databases OR upload your own.  This can be pre-formatted or provided in FASTA format and formatted for you.  In order to execute a search, you must be logged in to the database.  Results are provided to the user in text format.'),
-        '#suffix'       => '<br /><br /><h2>Type</h2>'
+        '#suffix'       => '<br /><br /><h3>Type</h3>'
     );
 
     $form['QueryType'] = array (
@@ -84,7 +84,7 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="QueryType"]' => array('value' => 'Protein'),
             ),
         ),
-        '#suffix' => '<div class="block"><h2></h2></div>',
+        '#suffix' => '<div class="block"><h3></h3></div>',
     );
     
     $form['QueryDataType'] = array(
@@ -94,7 +94,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually')),
-        '#prefix'   =>  '<h2>Query</h2>',
+        '#prefix'   =>  '<h3>Query</h3>',
     );
     
     $form['QueryFile'] = array(
@@ -131,7 +131,7 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="QueryDataType"]' => array('value' => 'paste'),
             ),
         ),
-        '#suffix' => '<div class="block"><h2></h2></div>',
+        '#suffix' => '<div class="block"><h3></h3></div>',
     );
     
     $form['TargetDataType'] = array(
@@ -144,7 +144,7 @@ function tripal_diamond_submit_form($form, &$form_state)
             'paste' => t('Type or paste manually'),
             ),
         '#disabled_options' => array('upload'),
-        '#prefix' => '<h2>Target</h2>'
+        '#prefix' => '<h3>Target</h3>'
     );
     
     /*
