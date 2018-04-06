@@ -33,12 +33,13 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryType'] = array (
         '#type'         => 'radios',
         '#title'        => t('Select sequence search type:'),
-        '#description'  => t('Choose the type of query'),
+        //'#description'  => t('Choose the type of query'),
         '#options'      => array(
             'Protein'   => t('Protein'),
             'Gene'      => t('Gene'),
             'Genome'    => t('Genome'),
         ),
+        '#field_prefix'       => 'Slightly more specific and/or helpful instructions would go here!'
     );
     
     /*  Query		Target		Program
@@ -73,7 +74,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['BlastEquivPro'] = array(
         '#type'         => 'select',
         '#title'        => t('Database Search Type'),
-        '#description'  => t('Select what type of Search you would like to run:'),
+        //'#description'  => t('Select what type of Search you would like to run:'),
         '#options'      => array(//'tblastn' => t('tBLASTn (for use with a Nucleotide Database)'), //Diamond doesn't do this yet
             'blastp' => t('BLASTp (for use with a Protein target database, uses Diamond)'),
             'tblastn' => t('tBLASTn (for use with a Nucleotide target database)'),
@@ -89,7 +90,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryDataType'] = array(
         '#type'         => 'radios',
         '#title'        => t('Provide sequence set for search:'),
-        '#description'  => t('Select how you want to upload your query.'),
+        //'#description'  => t('Select how you want to upload your query.'),
         '#options'      => array(
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually')),
@@ -98,7 +99,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryFile'] = array(
         '#type'         => 'managed_file',
         '#title'        => t('Query File'),
-        '#description'  => t('Don\'t forget to hit \'upload\''),
+        //'#description'  => t('Don\'t forget to hit \'upload\''),
         '#process'      => array('fix_ajax_upload'),
         '#states' => array(
             'visible' => array(
@@ -111,7 +112,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryPaste'] = array(
         '#type'         => 'textarea',
         '#title'        => t('Raw query data'),
-        '#description'  => t('Paste or type your query data into the box above'),
+        //'#description'  => t('Paste or type your query data into the box above'),
         '#required'     => false,
         '#states' => array(
             'visible' => array(
@@ -123,7 +124,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryPasteDemo'] = array(
         '#type'         => 'checkbox',
         '#title'        => 'Show an example single sequence',
-        //'#description'  => 'Example Description',
+       // //'#description'  => 'Example Description',
         '#states' => array(
             'visible' => array(
                 ':input[name="QueryDataType"]' => array('value' => 'paste'),
@@ -135,7 +136,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['TargetDataType'] = array(
         '#type'         => 'radios',
         '#title'        => t('Provide/Select search database:'),
-        '#description'  => t('Select the database target type'),
+        //'#description'  => t('Select the database target type'),
         '#options'      => array(
             'database' => t('Select from an existing database'),
             'upload' => t('Upload a File'),
@@ -171,7 +172,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryTargetDBProtein'] = array(
         '#type'         => 'select',
         '#title'        => t('Query target database (Protein)'),
-        '#description'  => t('Select which database to run against.'),
+        //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowProtein,
         '#states' => array(
             'visible' => array(
@@ -184,7 +185,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryTargetDBGene'] = array(
         '#type'         => 'select',
         '#title'        => t('Query target database (Gene)'),
-        '#description'  => t('Select which database to run against.'),
+        //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowGene,
         '#states' => array(
             'visible' => array(
@@ -197,7 +198,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryTargetDBGenome'] = array(
         '#type'         => 'select',
         '#title'        => t('Query target database (Genome)'),
-        '#description'  => t('Select which database to run against.'),
+        //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowGenome,
         '#states' => array(
             'visible' => array(
@@ -210,7 +211,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryTargetFile'] = array(
         '#type'         => 'managed_file',
         '#title'        => t('Target File'),
-        '#description'  => t('Don\'t forget to hit \'Upload\''),
+        //'#description'  => t('Don\'t forget to hit \'Upload\''),
         '#upload_validators' => array(
             'file_validate_extensions' => array('txt dmnd gz'),
         ),
@@ -224,7 +225,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['QueryTargetPaste'] = array(
         '#type'         => 'textarea',
         '#title'        => t('Raw target data'),
-        '#description'  => t('Paste or type your target data into the box above'),
+        //'#description'  => t('Paste or type your target data into the box above'),
         '#required'     => false,
         '#states' => array(
             'visible' => array(
@@ -242,17 +243,18 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#type'         =>  'textfield',
         '#title'        =>  'E-value',
         '#size'         =>  '10',
-        '#description'  =>  'Expected number of chance matches in a random model. This number should be give in a decimal format.',
+        //'#description'  =>  'Expected number of chance matches in a random model. This number should be give in a decimal format.',
         '#required'     =>  true,
         '#default_value'      =>  t('0.003'),
-        '#prefix'       => '<b>Advanced Options</b>'
+        '#prefix'       => '<b>Advanced Options</b>',
+        '#field_prefix' => 'Expected number of chance matches in a random model. This number should be give in a decimal format.',
     );
     
     $form['targetCoverage'] = array(
         '#type'         =>  'textfield',
         '#title'        =>  'Target Coverage',
         '#size'         =>  '10',
-        '#description'  =>  'Report only alignments above the given percentage of subject cover.',
+        '#field_prefix'  =>  'Report only alignments above the given percentage of subject cover.<br />',
         '#required'     =>  true,
         '#default_value'      =>  t('50'),
     );
@@ -261,7 +263,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#type'         =>  'textfield',
         '#title'        =>  'Query Coverage',
         '#size'         =>  '10',
-        '#description'  =>  'Report only alignments above the given percentage of query cover.',
+        '#field_prefix'  =>  'Report only alignments above the given percentage of query cover.<br />',
         '#required'     =>  true,
         '#default_value'      =>  t('50'),
     );
@@ -269,7 +271,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['maxAlignments'] = array(
         '#type'         =>  'select',
         '#title'        =>  'Max Alignments',
-        '#description'  =>  'The maximum number of target sequences per query to report alignments for.',
+        '#field_prefix'  =>  'The maximum number of target sequences per query to report alignments for.',
         '#required'     =>  false,
         '#options'      => array(
             '5'         => t('5'),

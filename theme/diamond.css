@@ -1,0 +1,15 @@
+.form-item-QueryType .QueryTypeHelp
+{
+    display:none;
+    color:#F00;
+}
+
+.form-item-QueryType:hover .QueryTypeHelp
+{
+    display:block;
+}
+
+.QueryTypeHelp
+{
+    color:blueviolet;
+}
