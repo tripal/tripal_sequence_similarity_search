@@ -13,3 +13,8 @@
 {
     color:blueviolet;
 }
+
+#edit-targetdatatype .form-radio
+{
+    display:inline;
+}
