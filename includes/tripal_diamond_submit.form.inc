@@ -26,20 +26,30 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#title'        => 'Similarity Search Overview',
         '#collapsible'  => FALSE,
         //'#description'  => t('DIAMOND is a BLAST-compatible local aligner for mapping translated DNA query sequences against a protein reference database ( BLASTX alignment mode). The speedup over BLAST many times faster on short reads at a typical sensitivity of 90 - 99% relative to BLAST depending on the data and settings. <br/ >Use the following form to submit a new Diamond job to TreeGenes')
-        '#description'  => t('Sequence similarity search is supported in TreeGenes against genes, TreeGenes UniGenes, proteins, and full genomes.  Nucleotide searches are executed with BLAST (BLASTN) while protein or translated protein searches are executed with DIAMOND (BLASTX or BLASTP equivalent).  DIAMOND will execute searches in a fraction of the time of BLAST at a similar sensitivity.  Both packages accept similar input parameters and these can be modified below.  You may upload FASTA formatted sequences or paste FASTA formatted sequences for searching.  You can select from a list of pre-formatted DIAMOND and BLAST databases OR upload your own.  This can be pre-formatted or provided in FASTA format and formatted for you.  In order to execute a search, you must be logged in to the database.  Results are provided to the user in text format.'),
-        '#suffix'       => '<br /><br /><h3>Type</h3>'
+        '#description'  => t('Sequence similarity search is supported in TreeGenes against genes, '
+                . 'TreeGenes UniGenes, proteins, and full genomes.  Nucleotide searches are executed '
+                . 'with BLAST (BLASTN) while protein or translated protein searches are executed with '
+                . 'DIAMOND (BLASTX or BLASTP equivalent).  DIAMOND will execute searches in a fraction '
+                . 'of the time of BLAST at a similar sensitivity.  Both packages accept similar input '
+                . 'parameters and these can be modified below.  You may upload FASTA formatted sequences '
+                . 'or paste FASTA formatted sequences for searching.  You can select from a list of '
+                . 'pre-formatted DIAMOND and BLAST databases OR upload your own.  This can be '
+                . 'pre-formatted or provided in FASTA format and formatted for you.  In order to execute'
+                . ' a search, you must be logged in to the database.  Results are provided to the user '
+                . 'in text format.'),
     );
 
     $form['QueryType'] = array (
         '#type'         => 'radios',
-        //'#title'        => t('Select sequence search type:'),
+        '#title'        => t('Select sequence search type:'),
         //'#description'  => t('Choose the type of query'),
         '#options'      => array(
             'Protein'   => t('Protein'),
             'Gene'      => t('Gene'),
             'Genome'    => t('Genome'),
         ),
-        '#prefix'       => 'To get started, choose your search type:'
+        '#prefix'           => '<h3>Type</h3>',
+        //'#field_prefix'       => 'To get started, choose your search type:',
     );
     
     /*  Query		Target		Program
@@ -534,17 +544,14 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         if($form_state['values']['QueryType'] == "Protein")
         {
             $targetDB = $form_state['values']['QueryTargetDBProtein'];
-            drupal_set_message($form_state['values']['QueryType']);
         }
         if($form_state['values']['QueryType'] == "Gene")
         {
             $targetDB = $form_state['values']['QueryTargetDBGene'];
-            drupal_set_message($form_state['values']['QueryType']);
         }
         if($form_state['values']['QueryType'] == "Genome")
         {
             $targetDB = $form_state['values']['QueryTargetDBGenome'];
-            drupal_set_message($form_state['values']['QueryType']);
         }
         $targetDBU = strtoupper($targetDB);
         //$targetDBPath = "/linuxshare/projects/treegenes/tgwebprod_store/FTP/Genomes/".$targetDB."/index/".$targetDBU."_dmndBlast/".$targetDBU."_diamond/";
