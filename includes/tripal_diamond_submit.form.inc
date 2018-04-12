@@ -122,7 +122,11 @@ function tripal_diamond_submit_form($form, &$form_state)
         ),
     );
     
-    $form['QueryPasteDemo'] = array(
+    /*
+     * Provides the user with an example of what the form is expecting
+     * Should be query data that actually works
+     */
+    /*$form['QueryPasteDemo'] = array(
         '#type'         => 'checkbox',
         '#title'        => 'Show an example single sequence',
        // //'#description'  => 'Example Description',
@@ -132,20 +136,9 @@ function tripal_diamond_submit_form($form, &$form_state)
             ),
         ),
         '#suffix' => '<div class="block"><h3></h3></div>',
-    );
+    );*/
     
-    $form['TargetDataType'] = array(
-        '#type'         => 'radios',
-        '#title'        => t('Provide/Select search database:'),
-        //'#description'  => t('Select the database target type'),
-        '#options'      => array(
-            'database' => t('Select from an existing database'),
-            'upload' => t('Upload a File'),
-            'paste' => t('Type or paste manually'),
-            ),
-        '#disabled_options' => array('upload'),
-        '#prefix' => '<h3>Target</h3>'
-    );
+    
     
     /*
      * Get the available databases
@@ -173,13 +166,21 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['QueryTargetDBProtein'] = array(
         '#type'         => 'select',
-        '#title'        => t('Query target database (Protein)'),
+        //'#title'        => t('Query target database (Protein)'),
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowProtein,
+        '#field_prefix' => '<h3>Target</h3>',
         '#states' => array(
             'visible' => array(
-                ':input[name="TargetDataType"]' => array('value' => 'database'),
+                //':input[name="TargetDataType"]' => array('value' => 'database'),
                 ':input[name="QueryType"]' => array('value' => 'Protein'),
+            ),
+            'disabled' => array(
+                array(
+                    array(':input[name="TargetDataType"]' => array('value' => 'upload')),
+                    'or',
+                    array(':input[name="TargetDataType"]' => array('value' => 'paste')),
+                ),
             ),
         ),
     );
@@ -189,10 +190,18 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#title'        => t('Query target database (Gene)'),
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowGene,
+        '#field_prefix' => '<h3>Target</h3>',
         '#states' => array(
             'visible' => array(
-                ':input[name="TargetDataType"]' => array('value' => 'database'),
+                //':input[name="TargetDataType"]' => array('value' => 'database'),
                 ':input[name="QueryType"]' => array('value' => 'Gene'),
+            ),
+            'disabled' => array(
+                array(
+                    array(':input[name="TargetDataType"]' => array('value' => 'upload')),
+                    'or',
+                    array(':input[name="TargetDataType"]' => array('value' => 'paste')),
+                ),
             ),
         ),
     );
@@ -202,15 +211,43 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#title'        => t('Query target database (Genome)'),
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowGenome,
+        '#field_prefix' => '<h3>Target</h3>',
         '#states' => array(
             'visible' => array(
-                ':input[name="TargetDataType"]' => array('value' => 'database'),
+                //':input[name="TargetDataType"]' => array('value' => 'database'),
                 ':input[name="QueryType"]' => array('value' => 'Genome'),
+            ),
+            'disabled' => array(
+                array(
+                    array(':input[name="TargetDataType"]' => array('value' => 'upload')),
+                    'or',
+                    array(':input[name="TargetDataType"]' => array('value' => 'paste')),
+                ),
             ),
         ),
     );
     
-    $form['QueryTargetFile'] = array(
+    $form['OtherTarget'] = array(
+      '#type'           => 'fieldset',
+      '#title'          => 'Other Target upload options',
+      '#collapsible'    => TRUE,
+      '#collapsed'      => TRUE,
+    );
+    
+    $form['OtherTarget']['TargetDataType'] = array(
+        '#type'         => 'radios',
+        '#title'        => t('Provide/Select search database:'),
+        //'#description'  => t('Select the database target type'),
+        '#default_value'=> 'database',
+        '#options'      => array(
+            'database' => t('Select from an existing database'),
+            'upload' => t('Upload a File'),
+            'paste' => t('Type or paste manually'),
+            ),
+        //'#prefix' => '<h3>Target</h3>'
+    );
+    
+    $form['OtherTarget']['QueryTargetFile'] = array(
         '#type'         => 'managed_file',
         '#title'        => t('Target File'),
         //'#description'  => t('Don\'t forget to hit \'Upload\''),
@@ -224,7 +261,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         ),
     );
 
-    $form['QueryTargetPaste'] = array(
+    $form['OtherTarget']['QueryTargetPaste'] = array(
         '#type'         => 'textarea',
         '#title'        => t('Raw target data'),
         //'#description'  => t('Paste or type your target data into the box above'),
@@ -234,8 +271,15 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="TargetDataType"]' => array('value' => 'paste'),
             ),
         ),
-        '#suffix' => '<div class="block"><h2></h2></div>',
+        // Last ditch attempt at a solution using JS
+        //'#suffix' => '<a onclick="resetTargetDataType()">Reset</a>',
     );
+    
+    
+    
+    function reset_Target($form, &$form_state) {
+        $form_state['values']['TargetDataType'] = '';
+    }
     
     /*
      * Forms for simple command line options 
