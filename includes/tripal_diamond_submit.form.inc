@@ -187,7 +187,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['QueryTargetDBGene'] = array(
         '#type'         => 'select',
-        '#title'        => t('Query target database (Gene)'),
+        //'#title'        => t('Query target database (Gene)'),
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowGene,
         '#field_prefix' => '<h3>Target</h3>',
@@ -208,7 +208,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['QueryTargetDBGenome'] = array(
         '#type'         => 'select',
-        '#title'        => t('Query target database (Genome)'),
+        //'#title'        => t('Query target database (Genome)'),
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowGenome,
         '#field_prefix' => '<h3>Target</h3>',
@@ -460,7 +460,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     
     //diamond blast* --threads # --db xxxx --(q)uery query.data
     //Get the options/parameters
-    if ($form_state['values']['QueryType'] = 'Protein')
+    if ($form_state['values']['QueryType'] == 'Protein')
     {
         $blastEquiv = 'diamond '.$form_state['values']['BlastEquivPro'];
     }
@@ -534,14 +534,17 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         if($form_state['values']['QueryType'] == "Protein")
         {
             $targetDB = $form_state['values']['QueryTargetDBProtein'];
+            drupal_set_message($form_state['values']['QueryType']);
         }
         if($form_state['values']['QueryType'] == "Gene")
         {
             $targetDB = $form_state['values']['QueryTargetDBGene'];
+            drupal_set_message($form_state['values']['QueryType']);
         }
         if($form_state['values']['QueryType'] == "Genome")
         {
             $targetDB = $form_state['values']['QueryTargetDBGenome'];
+            drupal_set_message($form_state['values']['QueryType']);
         }
         $targetDBU = strtoupper($targetDB);
         //$targetDBPath = "/linuxshare/projects/treegenes/tgwebprod_store/FTP/Genomes/".$targetDB."/index/".$targetDBU."_dmndBlast/".$targetDBU."_diamond/";
