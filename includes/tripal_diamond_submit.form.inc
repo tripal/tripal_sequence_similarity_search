@@ -14,7 +14,7 @@ error_reporting(E_ALL);
      return $element;
 
     }
-    
+
 function tripal_diamond_submit_form($form, &$form_state)
 {
     /*
@@ -24,7 +24,8 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['Overview'] = array(
         '#type'         => 'fieldset',
         '#title'        => 'Similarity Search Overview',
-        '#collapsible'  => FALSE,
+        '#collapsible'  => TRUE,
+        '#collapsed'    => FALSE,
         //'#description'  => t('DIAMOND is a BLAST-compatible local aligner for mapping translated DNA query sequences against a protein reference database ( BLASTX alignment mode). The speedup over BLAST many times faster on short reads at a typical sensitivity of 90 - 99% relative to BLAST depending on the data and settings. <br/ >Use the following form to submit a new Diamond job to TreeGenes')
         '#description'  => t('Sequence similarity search is supported in TreeGenes against genes, '
                 . 'TreeGenes UniGenes, proteins, and full genomes.  Nucleotide searches are executed '
@@ -104,7 +105,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually')),
-        '#prefix'   =>  '<h3>Query</h3>',
+        '#prefix'   =>  '<hr><h3>Query</h3>',
     );
     
     $form['QueryFile'] = array(
@@ -173,6 +174,11 @@ function tripal_diamond_submit_form($form, &$form_state)
     {
         $databaseList_toShowGenome[$dbList['db_id']] = $dbList['name'].', version '.$dbList['version'];
     }
+    
+    $form['QueryContainer'] = array(
+      '#type'           => 'container',
+      '#suffix'         => '<hr>'
+    );
     
     $form['QueryTargetDBProtein'] = array(
         '#type'         => 'select',
@@ -463,7 +469,7 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
 
 function tripal_diamond_submit_form_submit($form, &$form_state)
 {
-    
+    $debug = FALSE;
     /*
      * Build the command
      */
@@ -505,11 +511,11 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         if (is_object($queryFile))
         {
           $queryFile = drupal_realpath($queryFile->uri);
-          drupal_set_message("Query File: ".$queryFile);
+          if($debug){drupal_set_message("Query File: ".$queryFile);}
         }
         else
         {
-            drupal_set_message("Query File uplaod failed.");//pumpkin
+            if($debug){drupal_set_message("Query File uplaod failed.");}
         }        
     }
     
@@ -530,7 +536,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         if (is_object($targetFile))
         {
           $targetFile = drupal_realpath($targetFile->uri);
-          drupal_set_message("Target File: ".$targetFile);
+          if($debug){drupal_set_message("Target File: ".$targetFile);}
         }
         else
         {
@@ -558,7 +564,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         //$targetDBFile = $targetDBU.".dmnd";
         //
         $targetFile = DiamondDatabases::getDBInfo($targetDB,"location");
-        drupal_set_message("targetdbfile: ".$targetDB);
+        if($debug){drupal_set_message("targetdbfile: ".$targetDB);}
         //drupal_set_message("Target DB path: ".$targetDBPath);
         //drupal_set_message("Full path to file: ".$targetDBPath.$targetDBFile);
         //$targetFile = $targetDBPath.$targetDBFile;
@@ -575,8 +581,8 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     $queryFileNoPath = $queryFileParts[count($queryFileParts)-1];
     $targetFileNoPath = $targetFileParts[count($targetFileParts)-1];
     
-    drupal_set_message("Query File No path: ".$queryFileNoPath);
-    drupal_set_message("Target File No path: ".$targetFileNoPath);
+    if($debug){drupal_set_message("Query File No path: ".$queryFileNoPath);}
+    if($debug){drupal_set_message("Target File No path: ".$targetFileNoPath);}
     
     //Are we running a Diamond job or straight BLAST?
     // Is this block useless? pumpkin
@@ -594,15 +600,15 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     {
         $command_to_run = $blastEquiv." --threads 1 --db ".$targetFile." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
         $command_to_run = $command_to_run." & echo $! > PID"; //Get PID so we can check up on the job
-        drupal_set_message("Will run command: ".$command_to_run);
-        //$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($queryFile),FALSE);
+        if($debug){drupal_set_message("Will run command: ".$command_to_run);}
+        $remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($queryFile),FALSE);
     }
     else
     {
         $command_to_run = $blastEquiv." --threads 1 --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
         $command_to_run = $command_to_run." & echo $! > PID"; //Get PID so we can check up on the job
-        drupal_set_message("Will run command: ".$command_to_run);
-        //$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),FALSE);
+        if($debug){drupal_set_message("Will run command: ".$command_to_run);}
+        $remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),FALSE);
     }
     
     drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"/Drupal/Diamond/results/$remote_diamond_job_id\"'>here</a>");
