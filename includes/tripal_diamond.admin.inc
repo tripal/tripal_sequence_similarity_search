@@ -10,7 +10,7 @@ function tripal_diamond_config_page_build($page)
     /*
      * The table of currently stored databases
      */
-    $headers = array('','Name','Version','Type','Location (remote)','Accessible', 'Actions');
+    $headers = array('','Name','Version','Type','Location (remote)',/*'Accessible',*/ 'Actions');
     $rows = array();
     /*
      * Getting details from the database
@@ -42,7 +42,7 @@ function tripal_diamond_config_page_build($page)
     $breadcrumb = array();
     $breadcrumb[] = l('Diamond', '<front>');
     $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
-    $breadcrumb[] = l('Database list, page '.$page, 'admin/tripal/extension/diamond/'.$page);
+    $breadcrumb[] = l('Database list, page '.$page, 'admin/tripal/extension/diamond/config/dblist/'.$page);
     drupal_set_breadcrumb($breadcrumb);
     
     /*
@@ -78,7 +78,7 @@ function tripal_diamond_config_page_build($page)
             //$readable = (string)is_readable($db[$i]['location']);
             //$readable = $readable ? "Yes":"No";
             //$readable = tripal_remote_check_files($db);   //Not implemented
-            $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['location'],$accessible[$i],$edit.' | '.$delete);
+            $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['location'],/*$accessible[$i],*/$edit.' | '.$delete);
         }
     }
     
@@ -122,7 +122,7 @@ function tripal_diamond_config_page_build($page)
     if (count($db) > 10)
     {
         $pageLinks = 'Nagivate to a page: ';
-        $modulePath = base_path().'admin/tripal/extension/diamond/';
+        $modulePath = base_path().'admin/tripal/extension/diamond/config/dblist/';
         $pageLinks = $pageLinks.'<a href="'.$modulePath.'1">1</a>';
         $numPages = ceil(count($db) / 10);
         for ($i = 2; $i <= $numPages; $i++)
@@ -234,7 +234,7 @@ function tripal_diamond_database_add_form_submit($form, &$form_state)
      * another
      */ 
     drupal_set_message("This database was successfully added");
-    drupal_set_message(l('Return to Database list','admin/tripal/extension/diamond'));
+    drupal_set_message(l('Return to Database list','admin/tripal/extension/diamond/config'));
 }
 /*
  * Edit a database in the list (form)
@@ -552,6 +552,42 @@ function tripal_diamond_database_import_form_submit($form, &$form_state)
 
 function tripal_diamond_configuration_form($form, &$form_state)
 {
-    drupal_set_message("Pumpkins!");
+    $form['settings']['threads'] = array(
+        '#type'         =>  'textfield',
+        '#title'        =>  'Threads',
+        '#size'         =>  '5',
+        //'#description'  =>  'Expected number of chance matches in a random model. This number should be give in a decimal format.',
+        '#required'     =>  true,
+        '#default_value'      =>  t('1'),
+        //'#prefix'       => '<b>Advanced Options</b>',
+        '#field_prefix' => 'Define the number of threads the job is allowed to use.',
+        '#suffix' => 'Enter \'0\' to have Diamond use as many threads as there are virtual cores available (default)</p>',
+    );
+    
+    $form['settings']['expiry'] = array(
+        '#type'         =>  'textfield',
+        '#title'        =>  'File Expiration',
+        '#size'         =>  '5',
+        //'#description'  =>  'Expected number of chance matches in a random model. This number should be give in a decimal format.',
+        '#required'     =>  true,
+        '#default_value'      =>  t('30'),
+        //'#prefix'       => '<b>Advanced Options</b>',
+        '#field_prefix' => 'Define, in days, how long to keep stored files',
+    );   
+    
+    $form['submit_button'] = array(
+        '#type' => 'submit',
+        '#value' => t('Submit'),
+    );
+    return $form;
+}
+function tripal_diamond_configuration_form_validate($form, &$form_state)
+{
+    drupal_set_message("Pumpkin validate!");
+    
+}
+function tripal_diamond_configuration_form_submit($form, &$form_state)
+{
+    drupal_set_message("Pumpkin!");
     
 }

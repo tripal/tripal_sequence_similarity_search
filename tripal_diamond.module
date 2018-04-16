@@ -74,11 +74,36 @@ function tripal_diamond_menu()
         );
         
     // Configuration page
-    $items['admin/tripal/extension/diamond'] = array(
-        'title' => 'Tripal Diamond Configuration',
+    $items['admin/tripal/extension/diamond/config'] = array(
+        'title' =>  'Diamond Configuration',
+        'description'   =>  'Configuration for the Tripal Diamond module',
+        'page callback' => 'tripal_diamond_config_page_build',
+        'page arguments'=>  array('1','tripal_diamond_config_page'),
+        'type'  =>  MENU_NORMAL_ITEM,
+        'file'  =>  'includes/tripal_diamond.admin.inc',
+        'file path'     =>  drupal_get_path('module','tripal_diamond'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+    );
+    
+    $items['admin/tripal/extension/diamond/config/dblist'] = array(
+        'title' => 'Existing Database List',
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'tripal_diamond_config_page_build',
         'page arguments' => array('1','tripal_diamond_config_page'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_DEFAULT_LOCAL_TASK ,
+        'file' => 'includes/tripal_diamond.admin.inc',
+        'file path' => drupal_get_path ('module', 'tripal_diamond')
+        );
+    
+    // Configuration page (w/ Specified page #)
+    $items['admin/tripal/extension/diamond/config/dblist/%'] = array(
+        'title' => 'Tripal Diamond Configuration',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'tripal_diamond_config_page_build',
+        'page arguments' => array(6,'tripal-diamond_config_page'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_NORMAL_ITEM,
@@ -86,28 +111,27 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
         );
     
-    // Configuration page (w/ Specified page #)
-    $items['admin/tripal/extension/diamond/%'] = array(
-        'title' => 'Tripal Diamond Configuration',
-        'description' => 'Tripal Diamond Admin Configuration page',
-        'page callback' => 'tripal_diamond_config_page_build',
-        'page arguments' => array(4,'tripal-diamond_config_page'),
+    $items['admin/tripal/extension/diamond/config/settings'] = array(
+        'title' => 'Settings',
+        'type'  => MENU_LOCAL_TASK,
+        'weight' => 1,
+        'priority' => 1,
+        'page callback' =>  'drupal_get_form',
+        'page arguments'=>  array('tripal_diamond_configuration_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'includes/tripal_diamond.admin.inc',
-        'file path' => drupal_get_path ('module', 'tripal_diamond')
-        );
+        
+    );
     
     // Admin: add a new target database
     $items['admin/tripal/extension/diamond/add_db'] = array(
         'title' => 'Add Target Database',
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'drupal_get_form',
-        'page arguments' => array('tripal_diamond_database_add_form'),
+        'page arguments' => array('tripal_diamond_database_add_form',5),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_NORMAL_ITEM,
+        'type' => MENU_CALLBACK,
         );
     
     // Admin: edit an existing database
@@ -131,7 +155,7 @@ function tripal_diamond_menu()
         'type' => MENU_CALLBACK
         );
     //Admin: Export the database list
-    $items['admin/tripal/extension/diamond/export'] = array(
+    /*$items['admin/tripal/extension/diamond/export'] = array(
         'title' => 'Tripal Diamond Database Export',
         'description' => 'Export the database list to a CSV file for backup/transfer',
         'page callback' => 'drupal_get_form',
@@ -151,16 +175,10 @@ function tripal_diamond_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_NORMAL_ITEM
         );
+     * 
+     */
     
-    $items['admin/tripal/extension/diamond/config'] = array(
-        'title' =>  'Configuration',
-        'description'   =>  'Configuration for the Tripal Diamond module',
-        'page callback' =>  'drupal_get_form',
-        'page arguments'=>  array('tripal_diamond_configuration_form'),
-        'type'  =>  MENU_LOCAL_TASK,
-        'file'  =>  'includes/tripal_diamond.admin.inc',
-        'file path'     =>  drupal_get_path('module','tripal_diamond'),
-    );
+    
     
     return $items;
 }
