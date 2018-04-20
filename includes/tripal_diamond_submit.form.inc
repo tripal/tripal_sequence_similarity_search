@@ -35,9 +35,7 @@ function tripal_diamond_submit_form($form, &$form_state)
                 . 'parameters and these can be modified below.  You may upload FASTA formatted sequences '
                 . 'or paste FASTA formatted sequences for searching.  You can select from a list of '
                 . 'pre-formatted DIAMOND and BLAST databases OR upload your own.  This can be '
-                . 'pre-formatted or provided in FASTA format and formatted for you.  In order to execute'
-                . ' a search, you must be logged in to the database.  Results are provided to the user '
-                . 'in text format.'),
+                . 'pre-formatted or provided in FASTA format and formatted for you.'),
     );
 
     $form['QueryType'] = array (
@@ -95,7 +93,6 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="QueryType"]' => array('value' => 'Protein'),
             ),
         ),
-        '#suffix' => '<div class="block"><h3></h3></div>',
     );
     
     $form['QueryDataType'] = array(
@@ -360,6 +357,10 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Submit'),
+        '#suffix' => t('<p>Upon Submission, your search will enter the '
+                . 'queue with either BLAST or Diamond as the engine. You will'
+                . ' be given a link to view the progress and results of the '
+                . 'job.</p>')
     );
     
     return $form;
@@ -585,7 +586,6 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     if($debug){drupal_set_message("Target File No path: ".$targetFileNoPath);}
     
     //Are we running a Diamond job or straight BLAST?
-    // Is this block useless? pumpkin
     if ($form_state['values']['QueryType'] == "Protein")
     {
         $command_to_run = "diamond ";

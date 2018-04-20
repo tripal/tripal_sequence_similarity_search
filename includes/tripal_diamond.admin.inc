@@ -21,17 +21,15 @@ function tripal_diamond_config_page_build($page)
     $returnedDBs = array();
     $filesToCheck = array();
     //Collect list of files to check for "accessibility"
-    for ($k = 0; $k < count($db);$k++)
+    /*for ($k = 0; $k < count($db);$k++)
     {
         $filesToCheck[$k] = $db[$k]['location'];
     }
     if (module_exists('tripal_remote_job')) { 
         $accessible = array();
-        $accessible = tripal_remote_check_files($filesToCheck);
-    }
-
-    
-    
+        $accessible = tripal_remote_check_files($filesToCheck,NULL);
+    }*/
+        
     // Deal with bad numbers 
     if ($page == 'tripal_diamond_config_page' || $page <= 0)
     {
@@ -364,7 +362,7 @@ function tripal_diamond_database_edit_form_submit($form, &$form_state)
     //Remove the $db_id variable from &drupal_static
     //drupal_static_reset();
     drupal_set_message("This database was successfully updated");
-    drupal_set_message(l('Return to Database list','admin/tripal/extension/diamond'));
+    drupal_set_message(l('Return to Database list','admin/tripal/extension/diamond/config'));
 }
 /*
  * Delete a database in the list (form)
@@ -402,7 +400,7 @@ function tripal_diamond_database_delete_form_submit($form, &$form_state)
      * Delete the offending database from the database
      */
     db_query('DELETE FROM diamond_db_existing_locations where db_id = '.$form_state['values']['db_id']);
-    drupal_goto('/admin/tripal/extension/diamond');
+    drupal_goto('/admin/tripal/extension/diamond/config');
 }
 
 function tripal_diamond_database_export_form($form, &$form_state)
@@ -582,12 +580,11 @@ function tripal_diamond_configuration_form($form, &$form_state)
     return $form;
 }
 function tripal_diamond_configuration_form_validate($form, &$form_state)
-{
-    drupal_set_message("Pumpkin validate!");
+{  
     
 }
 function tripal_diamond_configuration_form_submit($form, &$form_state)
 {
-    drupal_set_message("Pumpkin!");
+    drupal_goto('/admin/tripal/extension/diamond/config');
     
 }
