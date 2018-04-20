@@ -102,7 +102,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually')),
-        '#prefix'   =>  '<hr><h2>Query</h2>',
+        '#prefix'   =>  '<h2>Query</h2>',
     );
     
     $form['QueryFile'] = array(
