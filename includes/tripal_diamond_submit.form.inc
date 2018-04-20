@@ -174,7 +174,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['QueryContainer'] = array(
       '#type'           => 'container',
-      '#suffix'         => '<hr>'
+      //'#suffix'         => '<hr>'
     );
     
     $form['QueryTargetDBProtein'] = array(
