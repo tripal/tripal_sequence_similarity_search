@@ -47,7 +47,7 @@ function tripal_diamond_submit_form($form, &$form_state)
             'Gene'      => t('Gene'),
             'Genome'    => t('Genome'),
         ),
-        '#prefix'           => '<h3>Type</h3>',
+        '#prefix'           => '<h2>Type</h2>',
         //'#field_prefix'       => 'To get started, choose your search type:',
     );
     
@@ -102,7 +102,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually')),
-        '#prefix'   =>  '<hr><h3>Query</h3>',
+        '#prefix'   =>  '<hr><h2>Query</h2>',
     );
     
     $form['QueryFile'] = array(
@@ -182,7 +182,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         //'#title'        => t('Query target database (Protein)'),
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowProtein,
-        '#field_prefix' => '<h3>Target</h3>',
+        '#field_prefix' => '<h2>Target</h2>',
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
@@ -203,7 +203,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         //'#title'        => t('Query target database (Gene)'),
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowGene,
-        '#field_prefix' => '<h3>Target</h3>',
+        '#field_prefix' => '<h2>Target</h2>',
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
@@ -224,7 +224,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         //'#title'        => t('Query target database (Genome)'),
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowGenome,
-        '#field_prefix' => '<h3>Target</h3>',
+        '#field_prefix' => '<h2>Target</h2>',
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
@@ -257,7 +257,6 @@ function tripal_diamond_submit_form($form, &$form_state)
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually'),
             ),
-        //'#prefix' => '<h3>Target</h3>'
     );
     
     $form['OtherTarget']['QueryTargetFile'] = array(
