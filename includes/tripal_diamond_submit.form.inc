@@ -47,7 +47,7 @@ function tripal_diamond_submit_form($form, &$form_state)
             'Gene'      => t('Gene'),
             'Genome'    => t('Genome'),
         ),
-        '#prefix'           => '<div id="typeSelect"><h2>Type</h2>',
+        '#prefix'           => '<span class="col-md-6"><h2>Type</h2>',
         //'#field_prefix'       => 'To get started, choose your search type:',
     );
     
@@ -93,7 +93,7 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="QueryType"]' => array('value' => 'Protein'),
             ),
         ),
-        '#suffix' => "</div>",//End the "typeSelect" div
+        '#suffix' => "</span>",//End the "typeSelect" div
     );
     
     $form['QueryDataType'] = array(
@@ -103,7 +103,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually')),
-        '#prefix'   =>  '<div id="queryType"><h2>Query</h2>',
+        '#prefix'   =>  '<span class="col-md-6"><h2>Query</h2>',
     );
     
     $form['QueryFile'] = array(
@@ -173,7 +173,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['QueryContainer'] = array(
       '#type'           => 'container',
-      '#suffix'         => '</div><div id="targetSelect">', //End "queryType" div
+      '#suffix'         => '</span>', //End "queryType" div
     );
     
     $form['QueryTargetDBProtein'] = array(
@@ -244,7 +244,7 @@ function tripal_diamond_submit_form($form, &$form_state)
       '#title'          => 'Other Target upload options',
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
-      '#prefix'         => '</div><div id="otherTargetArea">', //End 'targetSelect' div
+      '#prefix'         => '', //End 'targetSelect' div
     );
     
     $form['OtherTarget']['TargetDataType'] = array(
@@ -283,7 +283,7 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="TargetDataType"]' => array('value' => 'paste'),
             ),
         ),
-        '#suffix' => '</div>', //End 'otherTargetArea' div
+        '#suffix' => '', //End 'otherTargetArea' div
         // Last ditch attempt at a solution using JS
         //'#suffix' => '<a onclick="resetTargetDataType()">Reset</a>',
     );
@@ -302,7 +302,7 @@ function tripal_diamond_submit_form($form, &$form_state)
       '#title'          => 'Advanced Options',
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
-      '#prefix'         => '<div id="advancedArea">',
+      '#prefix'         => '',
     );
     
     
@@ -352,18 +352,18 @@ function tripal_diamond_submit_form($form, &$form_state)
             '1000'      => t('1000'),            
             ),
         '#default_value' => '10',
-        '#suffix'       => '</div>', //end 'advancedArea' div
+        '#suffix'       => '', //end 'advancedArea' div
     );
            
 
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Submit'),
-        '#prefix' => '<div id="submitArea">',
+        '#prefix' => '',
         '#suffix' => t('<p>Upon Submission, your search will enter the '
                 . 'queue with either BLAST or Diamond as the engine. You will'
                 . ' be given a link to view the progress and results of the '
-                . 'job.</p></div>')
+                . 'job.</p>')
     );
     
     return $form;
