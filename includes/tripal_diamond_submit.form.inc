@@ -361,8 +361,15 @@ function tripal_diamond_submit_form($form, &$form_state)
                 . ' be given a link to view the progress and results of the '
                 . 'job.</p>')
     );
-    
-    return $form;
+    global $user;
+    if ($user->uid) {
+        return $form;
+    }
+    else
+    {
+        $loginPage = $GLOBALS['base_url'].'/    user';
+        drupal_set_message("In order to use this tool, you must be logged in. Click <a href=\"$loginPage\">here</a> to log in.");
+    }
 }
 
 function tripal_diamond_submit_form_validate($form, &$form_state)
