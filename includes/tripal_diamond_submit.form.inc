@@ -47,7 +47,7 @@ function tripal_diamond_submit_form($form, &$form_state)
             'Gene'      => t('Gene'),
             'Genome'    => t('Genome'),
         ),
-        '#prefix'           => '<span class="col-md-6"><h2>Type</h2>',
+        '#prefix'           => '<h2>Type</h2>',
         //'#field_prefix'       => 'To get started, choose your search type:',
     );
     
@@ -93,7 +93,6 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="QueryType"]' => array('value' => 'Protein'),
             ),
         ),
-        '#suffix' => "</span>",//End the "typeSelect" div
     );
     
     $form['QueryDataType'] = array(
@@ -103,7 +102,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(
             'upload' => t('Upload a File'),
             'paste' => t('Type or paste manually')),
-        '#prefix'   =>  '<span class="col-md-6"><h2>Query</h2>',
+        '#prefix'   =>  '<h2>Query</h2>',
     );
     
     $form['QueryFile'] = array(
@@ -173,7 +172,6 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['QueryContainer'] = array(
       '#type'           => 'container',
-      '#suffix'         => '</span>', //End "queryType" div
     );
     
     $form['QueryTargetDBProtein'] = array(
@@ -244,7 +242,6 @@ function tripal_diamond_submit_form($form, &$form_state)
       '#title'          => 'Other Target upload options',
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
-      '#prefix'         => '', //End 'targetSelect' div
     );
     
     $form['OtherTarget']['TargetDataType'] = array(
@@ -283,16 +280,16 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="TargetDataType"]' => array('value' => 'paste'),
             ),
         ),
-        '#suffix' => '', //End 'otherTargetArea' div
         // Last ditch attempt at a solution using JS
         //'#suffix' => '<a onclick="resetTargetDataType()">Reset</a>',
     );
     
     
     
-    function reset_Target($form, &$form_state) {
+    /* Does the absense of this function break the page? 4/22/18 pumpkin
+     * function reset_Target($form, &$form_state) {
         $form_state['values']['TargetDataType'] = '';
-    }
+    }*/
     
     /*
      * Forms for simple command line options 
