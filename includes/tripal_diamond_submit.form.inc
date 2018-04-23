@@ -244,7 +244,7 @@ function tripal_diamond_submit_form($form, &$form_state)
       '#title'          => 'Other Target upload options',
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
-      '#prefix'         => '<span class="col-md-6">', //End 'targetSelect' div
+      '#prefix'         => '<br><span class="col-md-12">', //End 'targetSelect' div
     );
     
     $form['OtherTarget']['TargetDataType'] = array(
