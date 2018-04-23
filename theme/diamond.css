@@ -18,3 +18,51 @@
 {
     display:inline;
 }
+
+#typeSelect
+{
+    background-color:#FAF;
+    position:inherit;
+    width: 50%;
+    float:left;
+}
+
+#queryType
+{
+    background-color:#FFA;
+    position:inherit;
+    width: 50%;
+    float:left;
+}
+
+#targetSelect
+{
+    background-color:#AFF;
+    position:inherit;
+    width:100%;
+    float:left;
+}
+
+#otherTargetArea
+{
+    background-color:#FAF;
+    position:inherit;
+    width:100%;
+    float:left;
+}
+
+#advancedArea
+{
+    background-color:FFA;
+    position:inherit;
+    width:100%;
+    float:left;
+}
+
+#submitArea
+{
+    background-color:AFF;
+    position:inherit;
+    width:100%;
+    float:left;
+}
