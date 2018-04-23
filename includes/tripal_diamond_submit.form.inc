@@ -367,8 +367,9 @@ function tripal_diamond_submit_form($form, &$form_state)
     }
     else
     {
-        $loginPage = $GLOBALS['base_url'].'/    user';
+        $loginPage = $GLOBALS['base_url'].'/user';
         drupal_set_message("In order to use this tool, you must be logged in. Click <a href=\"$loginPage\">here</a> to log in.");
+        return NULL;
     }
 }
 
