@@ -173,7 +173,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['QueryContainer'] = array(
       '#type'           => 'container',
-      '#suffix'         => '</span>', //End "queryType" div
+      '#suffix'         => '</span>',//End "queryType" div
     );
     
     $form['QueryTargetDBProtein'] = array(
@@ -244,7 +244,7 @@ function tripal_diamond_submit_form($form, &$form_state)
       '#title'          => 'Other Target upload options',
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
-      '#prefix'         => '', //End 'targetSelect' div
+      '#prefix'         => '<span class="col-md-6">', //End 'targetSelect' div
     );
     
     $form['OtherTarget']['TargetDataType'] = array(
@@ -283,7 +283,7 @@ function tripal_diamond_submit_form($form, &$form_state)
                 ':input[name="TargetDataType"]' => array('value' => 'paste'),
             ),
         ),
-        '#suffix' => '', //End 'otherTargetArea' div
+        '#suffix' => '</span>', //End 'otherTargetArea' div
         // Last ditch attempt at a solution using JS
         //'#suffix' => '<a onclick="resetTargetDataType()">Reset</a>',
     );
@@ -302,7 +302,7 @@ function tripal_diamond_submit_form($form, &$form_state)
       '#title'          => 'Advanced Options',
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
-      '#prefix'         => '',
+      '#prefix'         => '<span class="col-md-6">',
     );
     
     
@@ -352,18 +352,18 @@ function tripal_diamond_submit_form($form, &$form_state)
             '1000'      => t('1000'),            
             ),
         '#default_value' => '10',
-        '#suffix'       => '', //end 'advancedArea' div
+        '#suffix'       => '</span>', //end 'advancedArea' div
     );
            
 
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Submit'),
-        '#prefix' => '',
+        '#prefix' => '<span class="col-md-6">',
         '#suffix' => t('<p>Upon Submission, your search will enter the '
                 . 'queue with either BLAST or Diamond as the engine. You will'
                 . ' be given a link to view the progress and results of the '
-                . 'job.</p>')
+                . 'job.</p></span>')
     );
     
     return $form;
