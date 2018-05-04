@@ -135,8 +135,8 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['Target'] = array(
       '#type'           => 'container',
-      '#prefix'         => '<hr><h2>Target/Database Selection</h2><div id="targetContainer" style="padding-left:15px;">',
-      '#suffix'         => '</div><hr>',
+      '#prefix'         => '<h2>Target/Database Selection</h2><div id="targetContainer" style="padding-left:15px;">',
+      '#suffix'         => '</div>',
     );
     
     /*
