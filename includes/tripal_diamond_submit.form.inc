@@ -320,7 +320,6 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['Query'] = array(
       '#type'           => 'container',
       '#prefix'         => '<h2>Query Sequence</h2>',
-      '#suffix'         => '<hr>',
     );
     //We don't need this anymore since we're always showing everything
     /*$form['QueryDataType'] = array(
