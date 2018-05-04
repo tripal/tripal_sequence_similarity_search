@@ -46,7 +46,7 @@ Current status of your job in the Tripal Job System: <?php echo $status; ?>
 
 <!-- Show results if job was successful -->
 <?php
-$outputPath = '/var/www/html/Drupal/sites/default/files/tripal/jobs/';
+$outputPath = '/var/www/html/sites/default/files/tripal/jobs/';
 if ($status == 'Completed')
 {   
     //echo "OUT: ".filesize($outputPath.$job_id.'/STDOUT.txt');

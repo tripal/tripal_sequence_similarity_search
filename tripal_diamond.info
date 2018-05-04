@@ -4,3 +4,4 @@ dependencies[] = tripal_remote_job:tripal_remote_job
 core = 7.x
 configure = admin/config/diamond
 stylesheets[all][] = theme/diamond.css
+scripts[]          = includes/js/diamond.js

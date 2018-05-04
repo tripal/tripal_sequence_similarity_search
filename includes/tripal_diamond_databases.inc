@@ -25,7 +25,33 @@ class DiamondDatabases
         $this->location = $dbInfo['location'];
     }
     
-    // Return a list of all stored databases
+    /*
+     * @param $filter
+     *  The value to filter databases by
+     * @param $filterBy
+     *  The column to filter the databases by (must be existing column in diamond_db_existing_locations table
+     */
+    public static function getDatabasesFiltered($filters, $filterBys)
+    {
+        $queryFilter = "$filterBys[0] LIKE '%$filters[0]%'";
+        //$queryFilter = $filterBys[0].' LIKE '.$filters[0];
+        for ($i = 1; $i < count($filters); $i++)
+        {
+            $queryFilter .= "AND $filterBys[$i] LIKE '%$filters[$i]%'";
+        }
+        $query = "SELECT * FROM diamond_db_existing_locations WHERE $queryFilter ORDER BY name ASC, version DESC";
+        $results = db_query($query);
+        $databases = array();
+        
+        //Iterate through the returned database 
+        for($i = 0; $i< $results->rowCount();$i++)
+        {
+          $databases[$i] = $results->fetchAssoc();
+        }
+        
+        return $databases;
+    }
+    
     public static function getDatabases($type)
     {
         $query = "SELECT * FROM diamond_db_existing_locations WHERE type LIKE '$type' ORDER BY name ASC, version DESC";  
