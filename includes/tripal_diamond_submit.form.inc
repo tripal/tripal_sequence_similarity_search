@@ -832,11 +832,10 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     {
         $command_to_run = $blastEquiv." --threads 1 --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
         //$command_to_run = $command_to_run." & echo $! > PID"; //Get PID so we can check up on the job
-        /*if($debug)*/drupal_set_message("Will run command: ".$command_to_run);
+        if($debug)drupal_set_message("Will run command: ".$command_to_run);
         if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),FALSE);}
     }
     $baseP = base_path();
-    drupal_set_message("Base path: ".$baseP);
     drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
     
     
