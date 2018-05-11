@@ -293,6 +293,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#upload_validators' => array(
             'file_validate_extensions' => array('txt dmnd gz'),
         ),
+        '#upload_location' => 'public://',
         '#states' => array(
             'visible' => array(
                 ':input[name="TargetDataType"]' => array('value' => 'upload'),
@@ -337,6 +338,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#title'        => t('Query File'),
         //'#description'  => t('Don\'t forget to hit \'upload\''),
         '#process'      => array('fix_ajax_upload'),
+        '#upload_location' => 'public://',
         /*'#states' => array(
             'visible' => array(
                 ':input[name="QueryDataType"]' => array('value' => 'upload'),

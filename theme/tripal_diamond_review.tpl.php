@@ -90,13 +90,17 @@ if ($status == 'Completed')
         }
         echo "<hr />";
     }
-    if (file_exists($outputPath.$job_id.'/STDERR.txt'))
+    elseif (file_exists($outputPath.$job_id.'/STDERR.txt'))
     {
-    if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
-        {
-           echo "Looks like your job failed: ";
-           readfile($outputPath.$job_id.'/STDERR.txt'); 
-        }
+        if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
+            {
+               echo "Looks like your job failed: ";
+               readfile($outputPath.$job_id.'/STDERR.txt'); 
+            }
+    }
+    else
+    {
+        echo "The results of that job can not be found. Be aware that results for Diamond jobs expire after 60 days";
     }
 }
 
