@@ -649,20 +649,19 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
 
 function tripal_diamond_submit_form_submit($form, &$form_state)
 {
-    $debug = FALSE;
+    $debug = FALSE;         //Debug Mode
+    $prepError = FALSE;     //Errors with preparing the job (checked prior
+                            //to launching job
     /*
      * Build the command
      */
-    
-    //diamond blast* --threads # --db xxxx --(q)uery query.data
-    //Get the options/parameters
-    
-    
+    //Example command: diamond blast* --threads # --db xxxx --(q)uery query.data
+
+    //Get the advanced settings    
     $eValue = $form_state['values']['eValue'];
     $targetCoverage = $form_state['values']['targetCoverage'];
     $queryCoverage = $form_state['values']['queryCoverage'];
     $maxAlignments = $form_state['values']['maxAlignments'];
-     
     
     /*
      * Deal with the Query
@@ -672,7 +671,8 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     if(!empty($form_state['values']['QueryPaste']))
     {
         $queryFile = "/tmp/".date('YMd_His').'.fasta';
-        file_put_contents($queryFile, $form_state['values']['QueryPaste']);
+        $queryFileWrite = file_put_contents($queryFile, $form_state['values']['QueryPaste']);
+        if ($queryFileWrite === FALSE){$prepError = TRUE;}
     }
  
     
@@ -699,7 +699,8 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     if($form_state['values']['TargetDataType'] == 'paste')
     {
         $targetFile = "/tmp/".date('YMd_His').'.dmnd';
-        file_put_contents($targetFile, $form_state['values']['TargetPaste']);
+        $targetFileWrite = file_put_contents($targetFile, $form_state['values']['TargetPaste']);
+        if ($targetFileWrite === FALSE){$prepError = TRUE;}
     }
     
     //Target Upload
@@ -821,7 +822,10 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         $blastEquiv = "blastn";
     }
     */
-        
+     
+    // Check if there were preperation errors
+    if (!$prepError)
+    {
     $remote_diamond_job_id = -1;
     if ($form_state['values']['TargetDataType'] == 'database')
     {
@@ -839,7 +843,11 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     }
     $baseP = base_path();
     drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
-    
+    }
+    else
+    {
+        drupal_set_message("There seems to have been errors generating the requested job.");
+    }
     
     //$form_state['redirect'] = 'Diamond/results/'.$remote_diamond_job_id;
  
