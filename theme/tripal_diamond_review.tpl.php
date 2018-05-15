@@ -51,47 +51,65 @@ if ($status == 'Completed')
 {   
     //echo "OUT: ".filesize($outputPath.$job_id.'/STDOUT.txt');
     //echo "ERR: ".filesize($outputPath.$job_id.'/STDERR.txt');
-    if ( (file_exists($outputPath.$job_id.'/STDOUT.txt')) && (filesize($outputPath.$job_id.'/STDOUT.txt') > 0) )
-    {
-        echo "Your job results: <br /><br />";
-        $jobResults = file($outputPath.$job_id.'/STDOUT.txt');
-        //$jobResults2 = explode("\t", $jobResults[0]);
-        //Table header
-        echo "<table>"
-                . "<tr>"
-                . "<th>Query Label</th>"
-                . "<th>Target</th>"
-                . "<th>% Identity</th>"
-                . "<th>Alignment Length</th>"
-                . "<th>Mismatches</th>"
-                . "<th>Gap opens</th>"
-                . "<th>Start Position (query)</th>"
-                . "<th>End Position (query)</th>"
-                . "<th>Start Position (target)</th>"
-                . "<th>End Position (target)</th>"
-                . "<th>E-value</th>"
-                . "<th>Bit score</th>"
-                . "</tr><tr>";
-
-        foreach($jobResults as $resultLine)
+    $empty = 0;
+    // If both output files are present
+    if (file_exists($outputPath.$job_id.'/STDOUT.txt') && file_exists($outputPath.$job_id.'/STDERR.txt'))
+    {   
+        //Display output if there is any data to show in STDOUT
+        if (filesize($outputPath.$job_id.'/STDOUT.txt') > 0)
         {
-            //Possible pumpkin
-            $resultLineE = explode("\t", $resultLine);
-            foreach ($resultLineE as $resultData)
+            echo "Your job results: <br /><br />";
+            $jobResults = file($outputPath.$job_id.'/STDOUT.txt');
+            //$jobResults2 = explode("\t", $jobResults[0]);
+            //Table header
+            echo "<table>"
+                    . "<tr>"
+                    . "<th>Query Label</th>"
+                    . "<th>Target</th>"
+                    . "<th>% Identity</th>"
+                    . "<th>Alignment Length</th>"
+                    . "<th>Mismatches</th>"
+                    . "<th>Gap opens</th>"
+                    . "<th>Start Position (query)</th>"
+                    . "<th>End Position (query)</th>"
+                    . "<th>Start Position (target)</th>"
+                    . "<th>End Position (target)</th>"
+                    . "<th>E-value</th>"
+                    . "<th>Bit score</th>"
+                    . "</tr><tr>";
+
+            foreach($jobResults as $resultLine)
             {
-                echo "<td>$resultData</td>";                   
+                //Possible pumpkin
+                $resultLineE = explode("\t", $resultLine);
+                foreach ($resultLineE as $resultData)
+                {
+                    echo "<td>$resultData</td>";                   
+                }
+                echo "</tr><tr>";
             }
-            echo "</tr><tr>";
+            echo "</tr></table>";
+            echo "Click <a href=\"download/$job_id\">here</a> to download";
+            echo "<hr />";
         }
-        echo "</tr></table>";
-        echo "Click <a href=\"download/$job_id\">here</a> to download";
-        echo "<hr />";
+        //Output file exists but is empty
+        else
+        {
+            $empty += 1;
+        }
+        //Display any errors if STDERR has data
+        if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
+        {
+                   echo "The following errors were reported: ";
+                   readfile($outputPath.$job_id.'/STDERR.txt'); 
+        }
+        //Error file exists but is empty
+        else
+        {
+            $empty += 1;
+        }
     }
-    if ( (file_exists($outputPath.$job_id.'/STDOUT.txt')) && (filesize($outputPath.$job_id.'/STDOUT.txt') > 0) )
-    {
-               echo "The following errors were reported: ";
-               readfile($outputPath.$job_id.'/STDERR.txt'); 
-    }
+    //The files do not exist (possibly due to job error or incorrectly specified job_id
     else
     {
         echo "The results of that job can not be found. Be aware that results for Diamond jobs expire after 60 days";
