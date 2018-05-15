@@ -51,52 +51,46 @@ if ($status == 'Completed')
 {   
     //echo "OUT: ".filesize($outputPath.$job_id.'/STDOUT.txt');
     //echo "ERR: ".filesize($outputPath.$job_id.'/STDERR.txt');
-    if (file_exists($outputPath.$job_id.'/STDOUT.txt'))
+    if ( (file_exists($outputPath.$job_id.'/STDOUT.txt')) && (filesize($outputPath.$job_id.'/STDOUT.txt') > 0) )
     {
-        if (filesize($outputPath.$job_id.'/STDOUT.txt') > 0)
+        echo "Your job results: <br /><br />";
+        $jobResults = file($outputPath.$job_id.'/STDOUT.txt');
+        //$jobResults2 = explode("\t", $jobResults[0]);
+        //Table header
+        echo "<table>"
+                . "<tr>"
+                . "<th>Query Label</th>"
+                . "<th>Target</th>"
+                . "<th>% Identity</th>"
+                . "<th>Alignment Length</th>"
+                . "<th>Mismatches</th>"
+                . "<th>Gap opens</th>"
+                . "<th>Start Position (query)</th>"
+                . "<th>End Position (query)</th>"
+                . "<th>Start Position (target)</th>"
+                . "<th>End Position (target)</th>"
+                . "<th>E-value</th>"
+                . "<th>Bit score</th>"
+                . "</tr><tr>";
+
+        foreach($jobResults as $resultLine)
         {
-           echo "Your job results: <br /><br />";
-           $jobResults = file($outputPath.$job_id.'/STDOUT.txt');
-           //$jobResults2 = explode("\t", $jobResults[0]);
-           //Table header
-           echo "<table>"
-                   . "<tr>"
-                   . "<th>Query Label</th>"
-                   . "<th>Target</th>"
-                   . "<th>% Identity</th>"
-                   . "<th>Alignment Length</th>"
-                   . "<th>Mismatches</th>"
-                   . "<th>Gap opens</th>"
-                   . "<th>Start Position (query)</th>"
-                   . "<th>End Position (query)</th>"
-                   . "<th>Start Position (target)</th>"
-                   . "<th>End Position (target)</th>"
-                   . "<th>E-value</th>"
-                   . "<th>Bit score</th>"
-                   . "</tr><tr>";
-           
-           foreach($jobResults as $resultLine)
-           {
-               //Possible pumpkin
-               $resultLineE = explode("\t", $resultLine);
-               foreach ($resultLineE as $resultData)
-               {
-                   echo "<td>$resultData</td>";                   
-               }
-               echo "</tr><tr>";
-           }
-           echo "</tr></table>";
-           echo "Click <a href=\"download/$job_id\">here</a> to download";
+            //Possible pumpkin
+            $resultLineE = explode("\t", $resultLine);
+            foreach ($resultLineE as $resultData)
+            {
+                echo "<td>$resultData</td>";                   
+            }
+            echo "</tr><tr>";
         }
+        echo "</tr></table>";
+        echo "Click <a href=\"download/$job_id\">here</a> to download";
         echo "<hr />";
     }
-    elseif (file_exists($outputPath.$job_id.'/STDERR.txt'))
+    if ( (file_exists($outputPath.$job_id.'/STDOUT.txt')) && (filesize($outputPath.$job_id.'/STDOUT.txt') > 0) )
     {
-        if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
-            {
-               echo "Looks like your job failed: ";
+               echo "The following errors were reported: ";
                readfile($outputPath.$job_id.'/STDERR.txt'); 
-            }
     }
     else
     {
