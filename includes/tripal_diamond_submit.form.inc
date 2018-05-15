@@ -43,7 +43,7 @@ function tripal_diamond_submit_form($form, &$form_state)
 
     $form['QueryType'] = array (
         '#type'         => 'radios',
-        '#title'        => t('Select sequence search type:'),
+        //'#title'        => t('Select sequence search type:'),
         //'#description'  => t('Choose the type of query'),
         '#options'      => array(
             'Protein'   => t('Protein'),
@@ -65,7 +65,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['BlastEquivNuc'] = array(
         '#type'         => 'select',
         '#title'        => t('Database Search Type'),
-        '#description'  => t('Select what type of Search you would like to run:'),
+        //'#description'  => t('Select what type of Search you would like to run:'),
         '#options'      => array(//'blastn' => t('BLASTn (for use with a Nucleotide Database)'), //Diamond doesn't do this yet
             #'blastx' => t('BLASTx (for use with a Protein target database, uses Diamond)'),
             #'blastn'  => t('BLASTn (for use with a Nucleotide target database)'),
@@ -149,7 +149,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         //'#description'  => t('Select which database to run against.'),
         '#options'      => $databaseList_toShowProtein,
         //'#field_prefix' => '<h3>TreeGenes Proteins</h3>',
-        '#prefix' => 'Choose one of the following',
+        //'#prefix' => 'Choose one of the following',
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
@@ -268,7 +268,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['Target']['OtherTarget'] = array(
       '#type'           => 'fieldset',
-      '#title'          => 'Other Target upload options',
+      '#title'          => 'Upload your own database/target',
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
       '#prefix'         => '<br />',
@@ -285,6 +285,20 @@ function tripal_diamond_submit_form($form, &$form_state)
             'paste' => t('Type or paste manually'),
             ),
     );
+
+    $form['Target']['OtherTarget']['TargetPaste'] = array(
+        '#type'         => 'textarea',
+        '#title'        => t('Raw target data'),
+        //'#description'  => t('Paste or type your target data into the box above'),
+        '#required'     => false,
+        '#states' => array(
+            'visible' => array(
+                ':input[name="TargetDataType"]' => array('value' => 'paste'),
+            ),
+        ),
+        // Last ditch attempt at a solution using JS
+        //'#suffix' => '<a onclick="resetTargetDataType()">Reset</a>',
+    );
     
     $form['Target']['OtherTarget']['TargetFile'] = array(
         '#type'         => 'managed_file',
@@ -300,27 +314,13 @@ function tripal_diamond_submit_form($form, &$form_state)
             ),
         ),
     );
-
-    $form['Target']['OtherTarget']['TargetPaste'] = array(
-        '#type'         => 'textarea',
-        '#title'        => t('Raw target data'),
-        //'#description'  => t('Paste or type your target data into the box above'),
-        '#required'     => false,
-        '#states' => array(
-            'visible' => array(
-                ':input[name="TargetDataType"]' => array('value' => 'paste'),
-            ),
-        ),
-        // Last ditch attempt at a solution using JS
-        //'#suffix' => '<a onclick="resetTargetDataType()">Reset</a>',
-    );
     /*
      *  Query Input Section
      */
     
     $form['Query'] = array(
       '#type'           => 'container',
-      '#prefix'         => '<h2>Query Sequence</h2>',
+      '#prefix'         => '<h2>Provide/load Query Sequence</h2>',
     );
     //We don't need this anymore since we're always showing everything
     /*$form['QueryDataType'] = array(
@@ -333,49 +333,19 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#prefix'   =>  '<h2>Query</h2>',
     );*/
     
-    $form['Query']['QueryFile'] = array(
-        '#type'         => 'managed_file',
-        '#title'        => t('Query File'),
-        //'#description'  => t('Don\'t forget to hit \'upload\''),
-        '#process'      => array('fix_ajax_upload'),
-        '#upload_location' => 'public://',
-        /*'#states' => array(
-            'visible' => array(
-                ':input[name="QueryDataType"]' => array('value' => 'upload'),
-            ),
-        ),*/
-    );
-
-    
     $form['Query']['QueryPaste'] = array(
         '#type'         => 'textarea',
         '#title'        => t('Raw query data'),
-        //'#description'  => t('Paste or type your query data into the box above'),
         '#required'     => false,
         '#prefix'       => '<b>OR</b>',
-        /*'#states' => array(
-            'invisible' => array(
-                ':input[name="QueryDataType"]' => array('value' => 'upload'),
-            ),
-        ),*/
     );
     
-    /*
-     * Provides the user with an example of what the form is expecting
-     * Should be query data that actually works
-     */
-    /*$form['QueryPasteDemo'] = array(
-        '#type'         => 'checkbox',
-        '#title'        => 'Show an example single sequence',
-       // //'#description'  => 'Example Description',
-        '#states' => array(
-            'visible' => array(
-                ':input[name="QueryDataType"]' => array('value' => 'paste'),
-            ),
-        ),
-        '#suffix' => '<div class="block"><h3></h3></div>',
-    );*/
-    
+    $form['Query']['QueryFile'] = array(
+        '#type'         => 'managed_file',
+        '#title'        => t('Query File'),
+        '#process'      => array('fix_ajax_upload'),
+        '#upload_location' => 'public://',
+    );
     
     /*
      * Forms for simple command line options 
