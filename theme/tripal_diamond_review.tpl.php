@@ -76,8 +76,9 @@ if ($status == 'Completed')
                     . "<th>End Position (target)</th>"
                     . "<th>E-value</th>"
                     . "<th>Bit score</th>"
-                    . "</tr><tr>";
-
+                    //Begin the data rows. Make it fixed width, for science!
+                    . "<span></tr><tr style=\"font-family:'Courier new', Courier, monospace;\">";
+            
             foreach($jobResults as $resultLine)
             {
                 //Possible pumpkin
@@ -107,6 +108,12 @@ if ($status == 'Completed')
         else
         {
             $empty += 1;
+        }
+        
+        //Files exist but are empty
+        if ($empty == 2)
+        {
+            echo "The requested job has no results. Perhaps there was an error";
         }
     }
     //The files do not exist (possibly due to job error or incorrectly specified job_id
