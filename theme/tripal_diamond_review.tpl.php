@@ -87,7 +87,7 @@ if ($status == 'Completed')
                 {
                     echo "<td>$resultData</td>";                   
                 }
-                echo "</tr><tr>";
+                echo "</tr><tr style=\"font-family:'Courier new', Courier, monospace;\">";
             }
             echo "</tr></table>";
             echo "Click <a href=\"download/$job_id\">here</a> to download";
