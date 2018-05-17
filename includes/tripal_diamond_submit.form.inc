@@ -103,8 +103,8 @@ function tripal_diamond_submit_form($form, &$form_state)
     $databaseListProtein =  DiamondDatabases::getDatabasesFiltered(array('Protein'), array('type'));
     $databaseListGene =     DiamondDatabases::getDatabasesFiltered(array('Gene'), array('type'));
     $databaseListGenome =   DiamondDatabases::getDatabasesFiltered(array('Genome'), array('type'));
-    $databaseListUnigenePro =  DiamondDatabases::getDatabasesFiltered(array('Unigene','Protein'), array('name','Type'));
-    $databaseListUnigeneNuc =  DiamondDatabases::getDatabasesFiltered(array('Unigene','Gen'), array('name','Type'));
+    $databaseListUnigenePro =  DiamondDatabases::getDatabasesFiltered(array('UniGene','Protein'), array('name','Type'));
+    $databaseListUnigeneNuc =  DiamondDatabases::getDatabasesFiltered(array('UniGene','Gen'), array('name','Type'));
     $databaseList_toShow = array();
     $databaseList_toShowProtein['default'] = t('--');
     $databaseList_toShowGene['default'] = t('--');
