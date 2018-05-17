@@ -50,7 +50,7 @@ function tripal_diamond_submit_form($form, &$form_state)
             'Genomic'      => t('Genomic (coding or non-coding)'),
             #'Genome'    => t('Genome'),
         ),
-        '#prefix'           => '<h2>Type</h2>',
+        '#prefix'           => '<h2>Sequence Query Type</h2>',
         //'#field_prefix'       => 'To get started, choose your search type:',
     );
     
@@ -345,14 +345,13 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $form['Query']['QueryPaste'] = array(
         '#type'         => 'textarea',
-        '#title'        => t('Raw query data'),
+        //'#title'        => t('Raw query data'),
         '#required'     => false,
-        '#prefix'       => '<b>OR</b>',
     );
     
     $form['Query']['QueryFile'] = array(
         '#type'         => 'managed_file',
-        '#title'        => t('Query File'),
+        //'#title'        => t('Query File'),
         '#process'      => array('fix_ajax_upload'),
         '#upload_location' => 'public://',
     );
