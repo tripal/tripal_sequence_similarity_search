@@ -100,11 +100,21 @@ function tripal_diamond_submit_form($form, &$form_state)
     /*
      * Get the available databases
      */
-    $databaseListProtein =  DiamondDatabases::getDatabasesFiltered(array('Protein'), array('type'));
+    /*$databaseListProtein =  DiamondDatabases::getDatabasesFiltered(array('Protein'), array('type'));
     $databaseListGene =     DiamondDatabases::getDatabasesFiltered(array('Gene'), array('type'));
     $databaseListGenome =   DiamondDatabases::getDatabasesFiltered(array('Genome'), array('type'));
     $databaseListUnigenePro =  DiamondDatabases::getDatabasesFiltered(array('UniGene','Protein'), array('name','Type'));
     $databaseListUnigeneNuc =  DiamondDatabases::getDatabasesFiltered(array('UniGene','Gen'), array('name','Type'));
+     * 
+     */
+    //Simply get the databases
+    $databaseListProtein =      DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type like '%Protein%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
+    $databaseListGene =         DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type like '%Gene%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
+    $databaseListGenome =       DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type like '%Genome%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
+    $databaseListUnigenePro =   DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type='Protein' and name like '%UniGene%' ORDER BY name ASC, version DESC");
+    $databaseListUnigeneNuc =   DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type='Gen' and name like '%UniGene%' ORDER BY name ASC, version DESC");
+    
+    
     $databaseList_toShow = array();
     $databaseList_toShowProtein['default'] = t('--');
     $databaseList_toShowGene['default'] = t('--');

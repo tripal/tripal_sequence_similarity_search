@@ -52,6 +52,20 @@ class DiamondDatabases
         return $databases;
     }
     
+    public static function getDatabasesSpecific($query)
+    {
+        $results = db_query($query);
+        $databases = array();
+        
+        //Iterate through the returned database 
+        for($i = 0; $i< $results->rowCount();$i++)
+        {
+          $databases[$i] = $results->fetchAssoc();
+        }
+        
+        return $databases;
+    }
+    
     public static function getDatabases($type)
     {
         $query = "SELECT * FROM diamond_db_existing_locations WHERE type LIKE '$type' ORDER BY name ASC, version DESC";  
