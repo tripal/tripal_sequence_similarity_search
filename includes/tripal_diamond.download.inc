@@ -12,7 +12,8 @@
 
 function tripal_diamond_download($job_id)
 {
-    $file = "/var/www/html/Drupal/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
+    //Pumpkin MAKE DYNAMIC
+    $file = "/var/www/Drupal/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
     
     if (file_exists($file))
     {

@@ -817,7 +817,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
             // If we're running standard BLAST (tblastn or blastn)
             else
             {
-                $command_to_run = $blastEquiv." -num_threads 1 -db ".$targetFile." -query ".$queryFileNoPath." -max_target_seqs ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
+                $command_to_run = $blastEquiv." -num_threads 1 -db ".$targetFile." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
             }
             
             if($debug){drupal_set_message("Will run command: ".$command_to_run);}
@@ -834,7 +834,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
             // If we're running standard BLAST (tblastn or blastn)
             else
             {
-                $command_to_run = $blastEquiv." -num_threads 1 -db ".$targetFileNoPath." -query ".$queryFileNoPath." -max_target_seqs ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
+                $command_to_run = $blastEquiv." -num_threads 1 -db ".$targetFileNoPath." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
             }
             
             if($debug)drupal_set_message("Will run command: ".$command_to_run);
