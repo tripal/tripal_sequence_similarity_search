@@ -66,7 +66,7 @@ if ($status == 'Completed')
             $resultsFound = TRUE;
             foreach($jobResults as $resultLine)
             {
-                if ($resultLine == "***** No hits found ***** ")
+                if ($resultLine == "***** No hits found *****")
                 {
                     $resultsFound = FALSE;
                 }
