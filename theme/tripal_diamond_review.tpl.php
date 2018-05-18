@@ -61,37 +61,53 @@ if ($status == 'Completed')
             echo "Your job results: <br /><br />";
             $jobResults = file($outputPath.$job_id.'/STDOUT.txt');
             //$jobResults2 = explode("\t", $jobResults[0]);
-            //Table header
-            echo "<table>"
-                    . "<tr>"
-                    . "<th>Query Label</th>"
-                    . "<th>Target</th>"
-                    . "<th>% Identity</th>"
-                    . "<th>Alignment Length</th>"
-                    . "<th>Mismatches</th>"
-                    . "<th>Gap opens</th>"
-                    . "<th>Start Position (query)</th>"
-                    . "<th>End Position (query)</th>"
-                    . "<th>Start Position (target)</th>"
-                    . "<th>End Position (target)</th>"
-                    . "<th>E-value</th>"
-                    . "<th>Bit score</th>"
-                    //Begin the data rows. Make it fixed width, for science!
-                    . "<span></tr><tr style=\"font-family:'Courier new', Courier, monospace;\">";
-            
+            //
+            // Check for no hits found
+            $resultsFound = TRUE;
             foreach($jobResults as $resultLine)
             {
-                //Possible pumpkin
-                $resultLineE = explode("\t", $resultLine);
-                foreach ($resultLineE as $resultData)
+                if ($resultLine == "***** No hits found ***** ")
                 {
-                    echo "<td>$resultData</td>";                   
+                    $resultsFound = FALSE;
                 }
-                echo "</tr><tr style=\"font-family:'Courier new', Courier, monospace;\">";
             }
-            echo "</tr></table>";
-            echo "Click <a href=\"download/$job_id\">here</a> to download";
-            echo "<hr />";
+            if ($resultsFound)
+            {
+                //Table header
+                echo "<table>"
+                        . "<tr>"
+                        . "<th>Query Label</th>"
+                        . "<th>Target</th>"
+                        . "<th>% Identity</th>"
+                        . "<th>Alignment Length</th>"
+                        . "<th>Mismatches</th>"
+                        . "<th>Gap opens</th>"
+                        . "<th>Start Position (query)</th>"
+                        . "<th>End Position (query)</th>"
+                        . "<th>Start Position (target)</th>"
+                        . "<th>End Position (target)</th>"
+                        . "<th>E-value</th>"
+                        . "<th>Bit score</th>"
+                        //Begin the data rows. Make it fixed width, for science!
+                        . "<span></tr><tr style=\"font-family:'Courier new', Courier, monospace;\">";
+
+                foreach($jobResults as $resultLine)
+                {
+                    //Possible pumpkin
+                    $resultLineE = explode("\t", $resultLine);
+                    foreach ($resultLineE as $resultData)
+                    {
+                        echo "<td>$resultData</td>";                   
+                    }
+                    echo "</tr><tr style=\"font-family:'Courier new', Courier, monospace;\">";
+                }
+                echo "</tr></table>";
+                echo "Click <a href=\"download/$job_id\">here</a> to download";
+                echo "<hr />";
+            }
+            else {
+                echo "No hits were found";
+            }
         }
         //Output file exists but is empty
         else
