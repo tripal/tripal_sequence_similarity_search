@@ -628,7 +628,7 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
 
 function tripal_diamond_submit_form_submit($form, &$form_state)
 {
-    $debug = FALSE;         //Debug Mode
+    $debug = TRUE;         //Debug Mode
     $prepError = FALSE;     //Errors with preparing the job (checked prior
                             //to launching job
     /*
@@ -759,22 +759,22 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     {
         if ($form_state['values']['BlastEquivPro'] == "blastp")
         {
-            $blastEquiv = "diamond blastp";
+            $blastEquiv = "blastp";     //run diamond blastp
         }
         elseif ($form_state['values']['BlastEquivPro'] == "tblastn")
         {
-            $blastEquiv = "tblastn";
+            $blastEquiv = "tblastn";        //run tblastn
         }
     }
     elseif ($form_state['values']['QueryType'] == "Genomic")
     {
         if ($form_state['values']['BlastEquivNuc'] == "blastx")
         {
-            $blastEquiv = "diamond blastx";
+            $blastEquiv = "blastx";  //run diamond blastx
         }
         elseif ($form_state['values']['BlastEquivNuc'] == "blastn")
         {
-            $blastEquiv = "blastn";
+            $blastEquiv = "blastn";          //run blastn
         }
     }
     
@@ -805,23 +805,43 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     // Check if there were preperation errors
     if (!$prepError)
     {
-    $remote_diamond_job_id = -1;
-    if ($form_state['values']['TargetDataType'] == 'database')
-    {
-        $command_to_run = $blastEquiv." --threads 1 --db ".$targetFile." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
-        //$command_to_run = $command_to_run." & echo $! > PID"; //Get PID so we can check up on the job
-        if($debug){drupal_set_message("Will run command: ".$command_to_run);}
-        if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($queryFile),FALSE);}
-    }
-    else
-    {
-        $command_to_run = $blastEquiv." --threads 1 --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
-        //$command_to_run = $command_to_run." & echo $! > PID"; //Get PID so we can check up on the job
-        if($debug)drupal_set_message("Will run command: ".$command_to_run);
-        if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),FALSE);}
-    }
-    $baseP = base_path();
-    drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
+        $remote_diamond_job_id = -1;
+        if ($form_state['values']['TargetDataType'] == 'database')
+        {
+            //$command_to_run = $blastEquiv." ".$threadsString." 1 --db ".$targetFile." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+            // If we're running with Diamond
+            if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx')
+            {
+                $command_to_run = "diamond ".$blastEquiv." --threads 1 --db ".$targetFile." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+            }
+            // If we're running standard BLAST (tblastn or blastn)
+            else
+            {
+                $command_to_run = $blastEquiv." -num_threads 1 -db ".$targetFile." -query ".$queryFileNoPath." -max_hsps ".$maxAlignments." -evalue ".$eValue;
+            }
+            
+            if($debug){drupal_set_message("Will run command: ".$command_to_run);}
+            if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($queryFile),FALSE);}
+        }
+        else
+        {
+            //$command_to_run = $blastEquiv." ".$threadsString." 1 --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+            
+            if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx')
+            {
+                $command_to_run = "diamond ".$blastEquiv." --threads 1 --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+            }
+            // If we're running standard BLAST (tblastn or blastn)
+            else
+            {
+                $command_to_run = $blastEquiv." -num_threads 1 -db ".$targetFileNoPath." -query ".$queryFileNoPath." -max_hsps ".$maxAlignments." -evalue ".$eValue;
+            }
+            
+            if($debug)drupal_set_message("Will run command: ".$command_to_run);
+            if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),FALSE);}
+        }
+        $baseP = base_path();
+        drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
     }
     else
     {
