@@ -55,10 +55,16 @@ function tripal_diamond_submit_form($form, &$form_state)
     );
     
     /*  Query		Target		Program
-        Nucleotide	Nucleotide	blastn  (BLAST)
         Nucleotide	Protein		blastx	(Diamond)
+        Protein		Protein		blastp	(Diamond)
+        Nucleotide	Nucleotide	blastn  (BLAST)
         Protein		Nucleotide	tblastn (BLAST)
-        Protein		Protein		blastp	(Diamond)  
+      
+        Target           Query           Program
+        Protein          Nucleotide      blastx  (Diamond)
+        Protein          Protein         blastp  (Diamond)
+        Nucleotide       Nucleotide      blastn  (BLAST)
+        Nucleotide       Protein         tblastn (BLAST)          
      */
     
     
@@ -69,8 +75,8 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(//'blastn' => t('BLASTn (for use with a Nucleotide Database)'), //Diamond doesn't do this yet
             #'blastx' => t('BLASTx (for use with a Protein target database, uses Diamond)'),
             #'blastn'  => t('BLASTn (for use with a Nucleotide target database)'),
-            'blastx' => t('BLASTx (Translated nucleotide versus protein)'),
-            'blastn'  => t('BLASTn (Nucleotide versus nucleotide)'),
+            'blastx' => t('BLASTx (Translated nucleotide query versus protein database)'),
+            'blastn'  => t('BLASTn (Nucleotide query versus nucleotide database)'),
             ),
         '#states' => array(
             'visible' => array(
@@ -87,8 +93,8 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#options'      => array(//'tblastn' => t('tBLASTn (for use with a Nucleotide Database)'), //Diamond doesn't do this yet
             #'blastp' => t('BLASTp (for use with a Protein target database, uses Diamond)'),
             #'tblastn' => t('tBLASTn (for use with a Nucleotide target database)'),
-            'blastp' => t('BLASTp (Protein versus protein)'),
-            'tblastn' => t('tBLASTn (Protein versus translated nucleotide)'),
+            'blastp' => t('BLASTp (Protein query versus protein database)'),
+            'tblastn' => t('tBLASTn (Protein query versus translated nucleotide database)'),
             ),
         '#states' => array(
             'visible' => array(
@@ -163,7 +169,23 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
-                ':input[name="QueryType"]' => array('value' => 'Protein'),
+                   /* array(                        
+                        array(':input[name="QueryType"]' => array('value' => 'Protein')),
+                        array(':input[name="BlastEquivPro"]' => array('value' => 'blastp')),
+                    ),
+                    array(              
+                        array(':input[name="QueryType"]' => array('value' => 'Genomic')),
+                        array(':input[name="BlastEquivNuc"]' => array('value' => 'blastx')),                     
+                    )*/
+                
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Protein'),
+                    ':input[name="BlastEquivPro"]' => array('value' => 'blastp'),
+                ),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                    ':input[name="BlastEquivNuc"]' => array('value' => 'blastx'),
+                ),
             ),
             'disabled' => array(
                 array(
@@ -187,7 +209,14 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
-                ':input[name="QueryType"]' => array('value' => 'Protein'),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Protein'),
+                    ':input[name="BlastEquivPro"]' => array('value' => 'blastp'),
+                ),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                    ':input[name="BlastEquivNuc"]' => array('value' => 'blastx'),
+                ),
             ),
             'disabled' => array(
                 array(
@@ -214,7 +243,15 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
-                ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                //':input[name="QueryType"]' => array('value' => 'Genomic'),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Protein'),
+                    ':input[name="BlastEquivPro"]' => array('value' => 'tblastn'),
+                ),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                    ':input[name="BlastEquivNuc"]' => array('value' => 'blastn'),
+                ),
             ),
             'disabled' => array(
                 array(
@@ -239,7 +276,15 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
-                ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                //':input[name="QueryType"]' => array('value' => 'Genomic'),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Protein'),
+                    ':input[name="BlastEquivPro"]' => array('value' => 'tblastn'),
+                ),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                    ':input[name="BlastEquivNuc"]' => array('value' => 'blastn'),
+                ),
             ),
             'disabled' => array(
                 array(
@@ -264,7 +309,15 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#states' => array(
             'visible' => array(
                 //':input[name="TargetDataType"]' => array('value' => 'database'),
-                ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                //':input[name="QueryType"]' => array('value' => 'Genomic'),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Protein'),
+                    ':input[name="BlastEquivPro"]' => array('value' => 'tblastn'),
+                ),
+                array(
+                    ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                    ':input[name="BlastEquivNuc"]' => array('value' => 'blastn'),
+                ),
             ),
             'disabled' => array(
                 array(
