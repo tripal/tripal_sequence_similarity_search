@@ -10,7 +10,7 @@ function tripal_diamond_config_page_build($page)
     /*
      * The table of currently stored databases
      */
-    $headers = array('','Name','Version','Type','Location (remote)',/*'Accessible',*/ 'Actions');
+    $headers = array('','Name','Version','Type','Category','Location (remote)',/*'Accessible',*/ 'Actions');
     $rows = array();
     /*
      * Getting details from the database
@@ -76,7 +76,7 @@ function tripal_diamond_config_page_build($page)
             //$readable = (string)is_readable($db[$i]['location']);
             //$readable = $readable ? "Yes":"No";
             //$readable = tripal_remote_check_files($db);   //Not implemented
-            $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['location'],/*$accessible[$i],*/$edit.' | '.$delete);
+            $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['category'],$db[$i]['location'],/*$accessible[$i],*/$edit.' | '.$delete);
         }
     }
     
@@ -166,13 +166,22 @@ function tripal_diamond_database_add_form($form, &$form_state)
             'Genome'    => t('Genome'),
             'Gene'      => t('Gene'),
         ),
+        '#required'     => true,
+    );
+    
+    $form['Category'] = array(
+        '#type'         => 'textfield',
+        '#title'        => 'Category',
+        '#size'         => '50',
+        '#description'  => 'The category of the database (e.g. UniGene)',
+        '#required'     => false,
     );
     
     $form['Version'] = array(
         '#type'         => 'textfield',
         '#title'        => 'Version',
         '#size'         => '7',
-        '#description'  => 'The version of the target database',
+        '#description'  => 'The version of the added database',
         '#required'     => true,
     );
     
@@ -180,7 +189,7 @@ function tripal_diamond_database_add_form($form, &$form_state)
         '#type'         => 'textfield',
         '#title'        => 'File location',
         '#size'         => '120',
-        '#description'  => 'The path to the database on disk',
+        '#description'  => 'The path to the database on disk (accessible on the remote server)',
         '#required'     => true,
     );
     
