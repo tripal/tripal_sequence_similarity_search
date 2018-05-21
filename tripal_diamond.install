@@ -237,7 +237,7 @@ function tripal_diamond_schema() {
                 'not NULL' => true, 
             ),
             'database_file_type' => array(
-                'description' => 'How the database was provided (existing, paste, upload)',
+                'description' => 'How the database was provided (database, paste, upload)',
                 'type' => 'varchar',
                 'length' => 31,
                 'not NULL' => true, 
