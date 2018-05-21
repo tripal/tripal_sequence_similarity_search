@@ -316,7 +316,7 @@ function tripal_diamond_schema() {
                 'type'          => int,
             ),
             'blast_exe_location' => array(
-                'description'   => t('Location on remote machine where the BLAST executables can be found')
+                'description'   => t('Location on remote machine where the BLAST executables can be found'),
                 'type'          => 'varchar',
                 'length'        => 255,
             ),
