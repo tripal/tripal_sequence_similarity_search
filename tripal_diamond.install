@@ -304,6 +304,35 @@ function tripal_diamond_schema() {
         ),
     );
     
+    $schema['diamond_settings'] = array(
+        'description' => t('Administrator settings for Tripal Sequence Similarity Search module'),
+        'fields' => array(
+            'num_threads' => array(
+                'description' => t('The number of threads a job is allowed to use on the remote machine.'),
+                'type'          => int,
+            ),
+            'file_expire_time' => array(
+                'description'   => t('The number of days to keep files related to a job'),
+                'type'          => int,
+            ),
+            'blast_exe_location' => array(
+                'description'   => t('Location on remote machine where the BLAST executables can be found')
+                'type'          => 'varchar',
+                'length'        => 255,
+            ),
+            'diamond_exe_location' => array(
+                'description'   => t('Location on remote machine where the Diamond executables can be found'),
+                'type'          => 'varchar',
+                'length'        => 255,
+            ),
+            'preferred_remote_resource' => array(
+                'description'   => t('ID of the remote resource to use, as specified in the Tripal Remote Resource module'),
+                'type'          => 'int',
+                'length'        => 7,
+            ),
+        ),
+    );
+    
    return $schema;         
 }
 
