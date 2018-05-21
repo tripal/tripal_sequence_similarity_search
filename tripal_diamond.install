@@ -204,7 +204,7 @@ function tripal_diamond_schema() {
             'tripal_job_id' => array(
                 'description' => t('Tied to Tripal Job ID'),
                 'type' => 'int',
-                'unsigned' => true,
+                'unsigned' => false,
                 'not null' => true,
             ),
             'user_id' => array(
