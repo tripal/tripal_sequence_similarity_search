@@ -698,10 +698,11 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     /*
      * Deal with the Query
      */
-   //Get any pasted data and save as a file to send
+    //Get any pasted data and save as a file to send
     //Pasted Query:
     if(!empty($form_state['values']['QueryPaste']))
     {
+        $queryFileType = 'paste';
         $queryFile = "/tmp/".date('YMd_His').'.fasta';
         $queryFileWrite = file_put_contents($queryFile, $form_state['values']['QueryPaste']);
         if ($queryFileWrite === FALSE){$prepError = TRUE;}
@@ -712,6 +713,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     //Query Upload
     if(!empty($form_state['values']['QueryFile']))
     {
+        $queryFileType = 'upload';
         $queryFile = file_load($form_state['values']['QueryFile']);
         if (is_object($queryFile))
         {
@@ -730,6 +732,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     //Pasted Target
     if($form_state['values']['TargetDataType'] == 'paste')
     {
+        $targetFileType = 'paste';
         $targetFile = "/tmp/".date('YMd_His').'.dmnd';
         $targetFileWrite = file_put_contents($targetFile, $form_state['values']['TargetPaste']);
         if ($targetFileWrite === FALSE){$prepError = TRUE;}
@@ -738,6 +741,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     //Target Upload
     if($form_state['values']['TargetDataType'] == 'upload')
     {
+        $targetFileType = 'upload';
         $targetFile = file_load($form_state['values']['TargetFile']);
         if (is_object($targetFile))
         {
@@ -753,6 +757,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     //Target DB
     if($form_state['values']['TargetDataType'] == "database")
     {
+        $targetFileType = 'database';
         if($form_state['values']['QueryType'] == "Protein")
         {
             if (($form_state['values']['TargetDBProtein']) != 'default')
@@ -900,6 +905,57 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     {
         drupal_set_message("There seems to have been errors generating the requested job.");
     }
+    
+    /*
+     *  Add this requested job to the diamond_job_information table
+     *      tseq_job_id             (this is type='serial' so it automatically increments)
+     *      tripal_job_id           $remote_diamond_job_id
+     *      user_id                     gathered below
+     *      submit_time             time();
+     *      sequence_query_type     $form_state['values']['QueryType']
+     *      database_search_type        generated below
+     *      sequence_file_type      $queryFileType
+     *      database_file_type      $targetFileType
+     *      sequence_file           $queryFile
+     *      database_file           $targetFile
+     *      command                 $command_to_run
+     */
+    
+    //ID of User:
+        global $user;
+        $user_id = $user->uid;
+    //Database Search Type
+        switch($blastEquiv) {
+            case "blastp":
+                $database_search_type = 'protein';
+                break;
+            case "blastx":
+                $database_search_type = 'protein';
+                break;
+            case "tblastn":
+                $database_search_type = 'nucleotide';
+                break;
+            case "blastn":
+                $database_search_type = 'nucleotide';
+        }
+    //Submit time
+        $submit_time = time();
+        
+    $new_job = array(
+        'tripal_job_id'         => $remote_diamond_job_id,
+        'user_id'               => $user_id,
+        'submit_time'           => $submit_time,
+        'sequence_query_type'   => strtolower($form_state['values']['QueryType']),
+        'database_search_type'  => $database_search_type,
+        'sequence_file_type'    => $queryFileType,
+        'database_file_type'    => $targetFileType,
+        'sequence_file'         => $queryFile,
+        'database_file'         => $targetFile,
+        'command'               => $command_to_run,
+    );
+    
+    drupal_write_record('diamond_job_information', $new_job);
+    
     
     //$form_state['redirect'] = 'Diamond/results/'.$remote_diamond_job_id;
  
