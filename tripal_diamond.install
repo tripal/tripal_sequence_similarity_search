@@ -8,7 +8,7 @@ function tripal_diamond_install() {
      */
     $t = get_t();
     
-    $content_type = array(
+    /*$content_type = array(
         'type'          =>  'diamond_database',
         'name'          =>  $t('DiamondDatabase'),
         'description'   =>  $t('Diamond Database for use with the Tripal Sequence Similarity Search module'),
@@ -97,6 +97,8 @@ function tripal_diamond_install() {
         
         field_create_instance($typeField);
     }
+     * 
+     */
 }
 
     /*
@@ -193,7 +195,7 @@ function tripal_diamond_schema() {
     $schema['diamond_job_information'] = array(
         'description' => t('Tripal Diamond Job Information'),
         'fields' => array(
-            'jid' => array(
+            'tseq_job_id' => array(
                 'description' => t('Primary key'),
                 'type' => 'serial',
                 'unsigned' => true,
@@ -205,30 +207,59 @@ function tripal_diamond_schema() {
                 'unsigned' => true,
                 'not null' => true,
             ),
-            'name' => array(
-                'description' => t('name of job'),
-                'type' => 'serial',
+            'user_id' => array(
+                'description' => t('User ID of the submitting user'),
+                'type' => 'int',
                 'unsigned' => true,
                 'not null' => true,
             ),
+            'submit_time' => array(
+                'description' => 'Date and time submitted (UNIX time)',
+                'type' => 'int',
+                'not NULL' => true,
+            ),
+            'sequence_query_type' => array(
+                'description' => 'Type of Query (Protein, Nucleotide)',
+                'type' => 'varchar',
+                'length' => 31,
+                'not NULL' => true,
+            ),
+            'database_search_type' => array(
+                'description' => 'Type of Target for search (Protein, Nucleotide)',
+                'type' => 'varchar',
+                'length' => 31,
+                'not NULL' => true,
+            ),
+            'sequence_file_type' => array(
+                'description' => 'How the sequence was provided (paste, upload)',
+                'type' => 'varchar',
+                'length' => 31,
+                'not NULL' => true, 
+            ),
+            'database_file_type' => array(
+                'description' => 'How the database was provided (existing, paste, upload)',
+                'type' => 'varchar',
+                'length' => 31,
+                'not NULL' => true, 
+            ),
+            'sequence_file' => array(
+                'description' => 'filename of the provided sequence (without path)',
+                'type' => 'varchar',
+                'length' => 255,
+                'not NULL' => true,
+            ),
+            'database_file' => array(
+                'description' => 'filename of the provided database (without path)',
+                'type' => 'varchar',
+                'length' => 255,
+                'not NULL' => true,
+            ),
             'command' => array(
-                'description' => t('the command that was assembled to run remotely'),
+                'description' => 'The assembled command to run on the remote machine',
                 'type' => 'varchar',
-                'length' => 255,
-                'not null' => true,
-            ),
-            'files' => array(
-                'description' => t('files to be included in running the job'),
-                'type' => 'varchar',
-                'length' => 255,
-                'not null' => true,
-            ),
-            'included_db' => array(
-                'description' => t('pre-existing database (if used)'),
-                'type' => 'varchar',
-                'length' => 255,
-                'not null' => false,
-            ),
+                'length' => 511,
+                'not NULL' => true,
+            )
         ),
     );
     
@@ -263,6 +294,13 @@ function tripal_diamond_schema() {
                 'length' => 512,
                 'not null' => true,
             ),
+            //Perhaps present this (category) as a list of options, defined by the admin 
+            'category' => array(
+                'description' => t('Define a category for this database; e.g. TSA, UniGene'),
+                'type' => 'varchar',
+                'length' => 512,
+                'not null' => false,
+            )
         ),
     );
     
