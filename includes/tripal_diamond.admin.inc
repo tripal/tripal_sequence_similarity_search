@@ -642,7 +642,7 @@ function tripal_diamond_configuration_form($form, &$form_state)
         '#required'     =>  false,
         '#default_value'      =>  t($current_settings['blast_exe_location']),
         '#field_prefix' => 'Location on the remote resource where the BLAST executable files can be found',
-        '#description'  => 'If not specified, will try to use BLAST from the default $PATH',
+        '#description'  => 'If not specified, will try to use BLAST from the default $PATH. The trailing slash is not required.',
     );
     
     $form['settings']['diamond_exe_location'] = array(
@@ -652,7 +652,7 @@ function tripal_diamond_configuration_form($form, &$form_state)
         '#required'     =>  false,
         '#default_value'      =>  t($current_settings['diamond_exe_location']),
         '#field_prefix' => 'Location on the remote resource where the Diamond executable files can be found',
-        '#description'  => 'If not specified, will try to use Diamond from the default $PATH',
+        '#description'  => 'If not specified, will try to use Diamond from the default $PATH. The trailing slash is not required.',
     ); 
     
     $form['submit_button'] = array(
@@ -663,7 +663,7 @@ function tripal_diamond_configuration_form($form, &$form_state)
 }
 function tripal_diamond_configuration_form_validate($form, &$form_state)
 {  
-    
+    //Todo
 }
 function tripal_diamond_configuration_form_submit($form, &$form_state)
 {
