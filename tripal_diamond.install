@@ -3,12 +3,29 @@
  *  create database tables and columns
  */
 function tripal_diamond_install() {
+    
+    /*
+     *  Populate the diamond_settings table with a default row.
+     */
+    $tseq_settings = array(
+        'settings_id'               => '0',
+        'num_threads'               => '1',
+        'file_expire_time'          => '30',
+        'blast_exe_location'        => '',
+        'diamond_exe_location'      => '',
+        'preferred_remote_resource' => '',        
+    );
+    
+    drupal_write_record('diamond_settings', $tseq_settings);
+    
     /*Create the content type in which will store the information for the
      *existing Diamond databases
      */
+    /*
+ 
     $t = get_t();
     
-    /*$content_type = array(
+    $content_type = array(
         'type'          =>  'diamond_database',
         'name'          =>  $t('DiamondDatabase'),
         'description'   =>  $t('Diamond Database for use with the Tripal Sequence Similarity Search module'),
@@ -307,13 +324,20 @@ function tripal_diamond_schema() {
     $schema['diamond_settings'] = array(
         'description' => t('Administrator settings for Tripal Sequence Similarity Search module'),
         'fields' => array(
+            'settings_id' => array(
+                'description'   => t('Primary key for drupal_write_record purposes'),
+                'type'          => 'int',
+                'length'        => 7,
+            ),
             'num_threads' => array(
                 'description' => t('The number of threads a job is allowed to use on the remote machine.'),
-                'type'          => int,
+                'type'          => 'int',
+                'length'        => 7,
             ),
             'file_expire_time' => array(
                 'description'   => t('The number of days to keep files related to a job'),
-                'type'          => int,
+                'type'          => 'int',
+                'length'        => 7,
             ),
             'blast_exe_location' => array(
                 'description'   => t('Location on remote machine where the BLAST executables can be found'),
