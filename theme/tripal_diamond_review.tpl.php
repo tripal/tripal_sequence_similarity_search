@@ -19,21 +19,6 @@ Drupal.behaviors.diamondSetTimeout = {
 drupal_set_title('Status of Job #'.$job_id);
 $outputPath = '/var/www/html/Drupal/sites/default/files/tripal/jobs/';
 
-// Not necessary to let the user know about
-/*
-if(file_exists($outputPath.$job_id.'/PID'))
-{
-    $remotePID = file_get_contents($outputPath.$job_id.'/PID');
-    echo "Pid: ".$remotePID;
-}
-else
-{
-    echo $outputPath.$job_id.'/PID file does not exist';
-}
- * 
- */
-
-//pumpkin echo tripal_remote_job_SSH_check();
 
 
 ?>
@@ -47,7 +32,11 @@ Current status of your job in the Tripal Job System: <?php echo $status; ?>
 <!-- Show results if job was successful -->
 <?php
 $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
-if ($status == 'Completed')
+if ($status == 'debug')
+{
+    echo "This was a debugging run. The job was not submitted. There are no results and there will never be any.";
+}
+else if ($status == 'Completed')
 {   
     //echo "OUT: ".filesize($outputPath.$job_id.'/STDOUT.txt');
     //echo "ERR: ".filesize($outputPath.$job_id.'/STDERR.txt');
@@ -73,35 +62,33 @@ if ($status == 'Completed')
             }
             if ($resultsFound)
             {
-                //Table header
-                echo "<table>"
-                        . "<tr>"
-                        . "<th>Query Label</th>"
-                        . "<th>Target</th>"
-                        . "<th>% Identity</th>"
-                        . "<th>Alignment Length</th>"
-                        . "<th>Mismatches</th>"
-                        . "<th>Gap opens</th>"
-                        . "<th>Start Position (query)</th>"
-                        . "<th>End Position (query)</th>"
-                        . "<th>Start Position (target)</th>"
-                        . "<th>End Position (target)</th>"
-                        . "<th>E-value</th>"
-                        . "<th>Bit score</th>"
-                        //Begin the data rows. Make it fixed width, for science!
-                        . "<span></tr><tr style=\"font-family:'Courier new', Courier, monospace;\">";
-
-                foreach($jobResults as $resultLine)
+                $headers = array('Query Label',
+                    'Target',
+                    '% Identity',
+                    'Alignment Length',
+                    'Mismatches',
+                    'Gap opens',
+                    'Start position (query)',
+                    'End position (query)',
+                    'Start position (database)',
+                    'End position (database)',
+                    'E-value',
+                    'Bit score');
+                $rows = array();
+                
+                foreach($jobResults as $key => $resultLine)
                 {
                     //Possible pumpkin
-                    $resultLineE = explode("\t", $resultLine);
-                    foreach ($resultLineE as $resultData)
-                    {
-                        echo "<td>$resultData</td>";                   
-                    }
-                    echo "</tr><tr style=\"font-family:'Courier new', Courier, monospace;\">";
+                    $rows[$key] = explode("\t", $resultLine);
                 }
-                echo "</tr></table>";
+                //$rows[0] = array('turdget','ident','align length','mismath','gap','start q','end q','start t','end t','ev','bit');
+                $table_vars = array(
+                    'header'      => $headers, 
+                    'rows'        => $rows
+                );
+                
+                echo theme('table', $table_vars);
+                
                 echo "Click <a href=\"download/$job_id\">here</a> to download";
                 echo "<hr />";
             }
