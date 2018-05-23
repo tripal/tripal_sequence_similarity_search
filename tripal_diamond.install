@@ -13,10 +13,22 @@ function tripal_diamond_install() {
         'file_expire_time'          => '30',
         'blast_exe_location'        => '',
         'diamond_exe_location'      => '',
-        'preferred_remote_resource' => '',        
+        'preferred_remote_resource' => '',       
     );
     
-    drupal_write_record('diamond_settings', $tseq_settings);
+    drupal_write_record('tseq_settings', $tseq_settings);
+    
+    /*
+     *  Populate the diamond_categories table with default categories.
+     *      Protein, Gene, and Genome (all enabled by default)
+     */
+    
+    $tseq_category_standard = array(
+        'category_title'            =>'Standard',
+        'enabled'                   => '1'
+    );
+    drupal_write_record('tseq_categories', $tseq_category_standard);
+    
     
     /*Create the content type in which will store the information for the
      *existing Diamond databases
@@ -149,8 +161,8 @@ function tripal_diamond_uninstall() {
 }
 
 function tripal_diamond_schema() {
-    $schema['diamond_jobs'] = array(
-        'description' => t('Tripal Diamond Jobs'),
+    $schema['tseq_jobs'] = array(
+        'description' => t('TSeq Jobs'),
         'fields' => array(
             'job_id' => array(
                 'description' => t('Primary key'),
@@ -209,8 +221,8 @@ function tripal_diamond_schema() {
         ),
     );
             
-    $schema['diamond_job_information'] = array(
-        'description' => t('Tripal Diamond Job Information'),
+    $schema['tseq_job_information'] = array(
+        'description' => t('TSeq Job Information'),
         'fields' => array(
             'tseq_job_id' => array(
                 'description' => t('Primary key'),
@@ -280,8 +292,8 @@ function tripal_diamond_schema() {
         ),
     );
     
-    $schema['diamond_db_existing_locations'] = array(
-        'description' => t('Tripal Diamond Database Locations for Pre-existing databases'),
+    $schema['tseq_db_existing_locations'] = array(
+        'description' => t('TSeq Database Locations for Pre-existing databases'),
         'fields' => array(
             'db_id' => array(
                 'description' => t('ID of the database (autoincrement)'),
@@ -321,7 +333,7 @@ function tripal_diamond_schema() {
         ),
     );
     
-    $schema['diamond_settings'] = array(
+    $schema['tseq_settings'] = array(
         'description' => t('Administrator settings for Tripal Sequence Similarity Search module'),
         'fields' => array(
             'settings_id' => array(
@@ -353,6 +365,27 @@ function tripal_diamond_schema() {
                 'description'   => t('ID of the remote resource to use, as specified in the Tripal Remote Resource module'),
                 'type'          => 'int',
                 'length'        => 7,
+            ),
+        ),
+    );
+    
+    $schema['tseq_categories'] = array(
+        'description' => t('Maintain a list of available categories for Database files'),
+        'fields' => array(
+            'category_id' => array(
+                'description'   => t('Category ID'),
+                'type'          => 'serial',
+                'length'        => 7
+            ),
+            'category_title' => array(
+                'description'   => t('Title of the category'),
+                'type'          => 'varchar',
+                'length'        => 127,
+            ),
+            'enabled'       => array(
+                'description'   => t('Is this category enabled on the Submit Job page?'),
+                'type'          => 'int',
+                'length'        => 1,
             ),
         ),
     );
