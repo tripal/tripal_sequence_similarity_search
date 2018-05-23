@@ -15,8 +15,12 @@ A module to allow Tripal to run Diamond Searches.
 - admin/tripal/extension/diamond    Diamond Module Administration
 
 ## Status
-- [x] Form
+- [x] Submit Form
 - [x] Admin
-- [ ] Add/Delete/Modify Target Database List
+- [x] Add/Delete/Modify Target Database List
 - [x] Permissions
+- [x] Basic Results Page
+- [x] Advanced Results Page
+- [x] Database categorization
 - [ ] Check if existing database files are readable (for purposes of running against)
+- [ ] Email user when job has finished
