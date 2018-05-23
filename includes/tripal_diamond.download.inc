@@ -13,8 +13,9 @@
 function tripal_diamond_download($job_id)
 {
     //Pumpkin MAKE DYNAMIC
-    $file = "/var/www/Drupal/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
-    
+    //$file = "/var/www/Drupal/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
+    $file = DRUPAL_ROOT.base_path()."/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
+            
     if (file_exists($file))
     {
         header('Content-Description: File Transfer');
@@ -26,6 +27,10 @@ function tripal_diamond_download($job_id)
         header('Content-Length: ' . filesize($file));
         readfile($file);
         exit;
+    }
+    else
+    {
+        echo "That file no longer exists or could not be found";
     }
     
 }
