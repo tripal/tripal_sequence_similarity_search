@@ -29,7 +29,7 @@ class DiamondDatabases
      * @param $filter
      *  The value to filter databases by
      * @param $filterBy
-     *  The column to filter the databases by (must be existing column in diamond_db_existing_locations table
+     *  The column to filter the databases by (must be existing column in tseq_existing_locations table
      */
     public static function getDatabasesFiltered($filters, $filterBys)
     {
@@ -39,7 +39,7 @@ class DiamondDatabases
         {
             $queryFilter .= "AND $filterBys[$i] LIKE '%$filters[$i]%'";
         }
-        $query = "SELECT * FROM diamond_db_existing_locations WHERE $queryFilter ORDER BY name ASC, version DESC";
+        $query = "SELECT * FROM tseq_db_existing_locations WHERE $queryFilter ORDER BY name ASC, version DESC";
         $results = db_query($query);
         $databases = array();
         
@@ -66,9 +66,25 @@ class DiamondDatabases
         return $databases;
     }
     
+    public static function getDatabasesByTypeCategory($type, $category)
+    {
+        $query = "SELECT * FROM tseq_db_existing_locations WHERE type LIKE '$type' and category LIKE '$category' ORDER BY name ASC, version DESC";  
+               
+        $results = db_query($query);
+        $databases = array();
+        
+        //Iterate through the returned database 
+        for($i = 0; $i< $results->rowCount();$i++)
+        {
+          $databases[$i] = $results->fetchAssoc();
+        }
+        
+        return $databases;
+    }
+    
     public static function getDatabases($type)
     {
-        $query = "SELECT * FROM diamond_db_existing_locations WHERE type LIKE '$type' ORDER BY name ASC, version DESC";  
+        $query = "SELECT * FROM tseq_db_existing_locations WHERE type LIKE '$type' ORDER BY name ASC, version DESC";  
                
         $results = db_query($query);
         $databases = array();
@@ -85,7 +101,7 @@ class DiamondDatabases
     // Return the specified database database info
     public static function getDBInfo($db_id, $field)
     {
-        $query = "SELECT $field from diamond_db_existing_locations where db_id = '$db_id'";
+        $query = "SELECT $field from tseq_db_existing_locations where db_id = '$db_id'";
         $results = db_query($query);
         return $results->fetchField(0);
     }
@@ -94,7 +110,7 @@ class DiamondDatabases
     public static function insertDB()
     {
         /* What not to do:
-        $query = 'insert into diamond_db_existing_locations (type,name,version,location) values (\'$type\',\'$name\',\'$version\',\'$location\')';
+        $query = 'insert into tseq_existing_locations (type,name,version,location) values (\'$type\',\'$name\',\'$version\',\'$location\')';
         db_query($query);
          */
         
