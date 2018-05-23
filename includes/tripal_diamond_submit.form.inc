@@ -2,17 +2,16 @@
 error_reporting(E_ALL);
 
 //Don't break the form by uploading a file
-    function fix_ajax_upload($element, &$form_state, $form) {
+    function fix_ajax_upload($element, &$form_state, $form)
+    {
+        // process $element as normal
+        $element = file_managed_file_process($element, $form_state, $form);
 
-    // process $element as normal
-    $element = file_managed_file_process($element, $form_state, $form);
+        // remove path, add callback
+        unset($element['upload_button']['#ajax']['path']);
+        $element['upload_button']['#ajax']['callback'] = 'file_ajax_upload_callback';
 
-    // remove path, add callback
-    unset($element['upload_button']['#ajax']['path']);
-    $element['upload_button']['#ajax']['callback'] = 'file_ajax_upload_callback';
-
-     return $element;
-
+        return $element;
     }
 
 function tripal_diamond_submit_form($form, &$form_state)
@@ -28,7 +27,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#type'         => 'fieldset',
         '#title'        => 'Similarity Search Overview',
         '#collapsible'  => TRUE,
-        '#collapsed'    => FALSE,
+        '#collapsed'    => TRUE,
         //'#description'  => t('DIAMOND is a BLAST-compatible local aligner for mapping translated DNA query sequences against a protein reference database ( BLASTX alignment mode). The speedup over BLAST many times faster on short reads at a typical sensitivity of 90 - 99% relative to BLAST depending on the data and settings. <br/ >Use the following form to submit a new Diamond job to TreeGenes')
         '#description'  => t('Sequence similarity search is supported in TreeGenes against genes, '
                 . 'TreeGenes UniGenes, proteins, and full genomes.  Nucleotide searches are executed '
@@ -103,25 +102,191 @@ function tripal_diamond_submit_form($form, &$form_state)
         ),
     );
     
+    
+    $form['Target'] = array(
+      '#type'           => 'container',
+      '#prefix'         => '<h2>Target/Database Selection</h2><div id="targetContainer" style="padding-left:15px;">',
+      '#suffix'         => '</div>',
+    );
     /*
-     * Get the available databases
+     * Prepare the categories to show for each type (Protein/Nucleotide)
      */
-    /*$databaseListProtein =  DiamondDatabases::getDatabasesFiltered(array('Protein'), array('type'));
-    $databaseListGene =     DiamondDatabases::getDatabasesFiltered(array('Gene'), array('type'));
-    $databaseListGenome =   DiamondDatabases::getDatabasesFiltered(array('Genome'), array('type'));
-    $databaseListUnigenePro =  DiamondDatabases::getDatabasesFiltered(array('UniGene','Protein'), array('name','Type'));
-    $databaseListUnigeneNuc =  DiamondDatabases::getDatabasesFiltered(array('UniGene','Gen'), array('name','Type'));
+    //Get Enabled Categories
+    $query = "select category_title from tseq_categories where enabled=1";
+    $results = db_query($query);
+    
+    $categories = array();
+    $types = array();
+    
+    
+       
+    //Iterate through the returned database 
+    for($i = 0; $i< $results->rowCount();$i++)
+    {
+      $categories[$i] = $results->fetchAssoc();
+    }
+    
+    //Get distinct types of available databases (should be any combination of Gene, Genome, and Protein)
+    $query = "select distinct(type) from tseq_db_existing_locations";
+    $results = db_query($query);
+    $types = array();
+    for($j = 0; $j < $results->rowCount(); $j++)
+    {
+        $types[$j] = $results->fetchAssoc();
+    }
+    
+    
+    
+    $databaseListToShow = array();
+    $databaseCount = array();
+    $listsToVerify = array();
+    
+    foreach($categories as $category)
+    {
+        foreach($types as $type)
+        {
+            // Get the count of distinct databases that fit these criteria. Reject if there are none
+            $query = "select count(db_id) from tseq_db_existing_locations where type='".$type['type']."' and category='".$category['category_title']."'";
+            $results = db_query($query);
+            $databaseCount[$type['type']][$category['category_title']] = $results->fetchAssoc();
+                       
+        }
+    }
+    
+    foreach($categories as $category)
+    {
+        foreach($types as $type)
+        {
+            //Only do it for pairs that exist
+            if ($databaseCount[$type['type']][$category['category_title']]['count'] > 0)
+            {
+                //echo $type['type'].", ".$category['category_title'].": ".$databaseCount[$type['type']][$category['category_title']]['count']."<br />"; 
+                //Get databases belonging to the category and type
+                $databaseListToShow[$type['type']][$category['category_title']] = DiamondDatabases::getDatabasesByTypeCategory($type['type'], $category['category_title']);
+                
+                //Prepare them nicely
+                unset($databaseSelect); //Flush the list
+                $databaseSelect['default'] = t('--');
+                foreach($databaseListToShow[$type['type']][$category['category_title']] as $dbList)
+                {
+                    $databaseSelect[$dbList['db_id']] = $dbList['name'].', version '.$dbList['version'];
+                }
+                
+                //Create the form element to display them
+                if ($category['category_title'] == 'Standard')
+                {
+                    $listTitle = $type['type'];
+                }
+                else
+                {
+                    $listTitle = $type['type']." (".$category['category_title'].")";
+                }
+                $listName = $type['type']."_".$category['category_title'];
+                array_push($listsToVerify, $listName);
+                if ($type['type'] == 'Protein')
+                {
+                    $form['Target'][$listName] = array(
+                        '#type'     => 'select',
+                        '#title'    => t($listTitle),
+                        '#options'      => $databaseSelect,
+                        '#states' => array(
+                            'visible' => array(
+                                array(
+                                    ':input[name="QueryType"]' => array('value' => 'Protein'),
+                                    ':input[name="BlastEquivPro"]' => array('value' => 'blastp'),
+                                ),
+                                array(
+                                    ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                                    ':input[name="BlastEquivNuc"]' => array('value' => 'blastx'),
+                                ),
+                            ),
+                            'disabled' => array(
+                                array(
+                                    array(':input[name="TargetDataType"]' => array('value' => 'upload')),
+                                    'or',
+                                    array(':input[name="TargetDataType"]' => array('value' => 'paste')),
+                                ),
+                            ),
+                        ),
+                    );
+                }
+                else
+                {
+                    $form['Target'][$listName] = array(
+                        '#type'     => 'select',
+                        '#title'    => t($listTitle),
+                        '#options'      => $databaseSelect,
+                        '#states' => array(
+                            'visible' => array(
+                                //':input[name="TargetDataType"]' => array('value' => 'database'),
+                                //':input[name="QueryType"]' => array('value' => 'Genomic'),
+                                array(
+                                    ':input[name="QueryType"]' => array('value' => 'Protein'),
+                                    ':input[name="BlastEquivPro"]' => array('value' => 'tblastn'),
+                                ),
+                                array(
+                                    ':input[name="QueryType"]' => array('value' => 'Genomic'),
+                                    ':input[name="BlastEquivNuc"]' => array('value' => 'blastn'),
+                                ),
+                            ),
+                            'disabled' => array(
+                                array(
+                                    array(':input[name="TargetDataType"]' => array('value' => 'upload')),
+                                    'or',
+                                    array(':input[name="TargetDataType"]' => array('value' => 'paste')),
+                                ),
+                            ),
+                        ),
+                    );
+                }
+                    
+                 
+                 
+            }
+            //dpm($form['Target'][$listName]);
+            //dpm($databaseCount[$type['type']][$category['category_title']]);
+        }
+    }
+    
+    //Save a list of forms to check in _verification and _submit stage
+    $form['Target']['TargetList'] = array(
+        '#type'         =>  'value',
+        '#value'        =>  $listsToVerify,
+    );
+    //Test adding database lists dynamically (it works)
+    /*
+    $testArray = array();
+    $testArray[0] = "First";
+    $testArray[1] = "Second";
+    $testArray[2] = "Fourth";
+    
+    foreach($testArray as $test)
+    {
+        $form['Target'][$test] = array(
+            '#type'     => 'radios',
+            '#title'    => t($test),
+            '#options'      => array(
+                'Protein'   => t('Protein'),
+                'Genomic'      => t('Genomic (coding or non-coding)'),
+            ),
+        );
+    }
      * 
      */
-    //Simply get the databases
-    $databaseListProtein =      DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type like '%Protein%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
-    $databaseListGene =         DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type like '%Gene%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
-    $databaseListGenome =       DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type like '%Genome%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
-    $databaseListUnigenePro =   DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type='Protein' and name like '%UniGene%' ORDER BY name ASC, version DESC");
-    $databaseListUnigeneNuc =   DiamondDatabases::getDatabasesSpecific("SELECT * FROM diamond_db_existing_locations WHERE type like '%Gen%' and name like '%UniGene%' ORDER BY name ASC, version DESC");
+    
+    //dpm($databaseListToShow);
+    
+    //Simply get the databases DEPRECATED
+    /*
+    $databaseListProtein =      DiamondDatabases::getDatabasesSpecific("SELECT * FROM tseq_db_existing_locations WHERE type like '%Protein%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
+    $databaseListGene =         DiamondDatabases::getDatabasesSpecific("SELECT * FROM tseq_db_existing_locations WHERE type like '%Gene%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
+    $databaseListGenome =       DiamondDatabases::getDatabasesSpecific("SELECT * FROM tseq_db_existing_locations WHERE type like '%Genome%' and name not like '%UniGene%' ORDER BY name ASC, version DESC");
+    $databaseListUnigenePro =   DiamondDatabases::getDatabasesSpecific("SELECT * FROM tseq_db_existing_locations WHERE type='Protein' and name like '%UniGene%' ORDER BY name ASC, version DESC");
+    $databaseListUnigeneNuc =   DiamondDatabases::getDatabasesSpecific("SELECT * FROM tseq_db_existing_locations WHERE type like '%Gen%' and name like '%UniGene%' ORDER BY name ASC, version DESC");
     
     
-    $databaseList_toShow = array();
+    
+    
     $databaseList_toShowProtein['default'] = t('--');
     $databaseList_toShowGene['default'] = t('--');
     $databaseList_toShowGenome['default'] = t('--');
@@ -149,16 +314,20 @@ function tripal_diamond_submit_form($form, &$form_state)
         $databaseList_toShowUnigeneNuc[$dbList['db_id']] = $dbList['name'].', version '.$dbList['version'];
     }
     
-    $form['Target'] = array(
-      '#type'           => 'container',
-      '#prefix'         => '<h2>Target/Database Selection</h2><div id="targetContainer" style="padding-left:15px;">',
-      '#suffix'         => '</div>',
-    );
+    
+    
+    
+     
+    
+    
     
     /*
      * Target Type: Protein
      * Target Name: TreeGenes Protein
      */
+    
+    
+    /*
     $form['Target']['TargetDBProtein'] = array(
         '#type'         => 'select',
         '#title'        => t('TreeGenes Proteins'),
@@ -168,16 +337,6 @@ function tripal_diamond_submit_form($form, &$form_state)
         //'#prefix' => 'Choose one of the following',
         '#states' => array(
             'visible' => array(
-                //':input[name="TargetDataType"]' => array('value' => 'database'),
-                   /* array(                        
-                        array(':input[name="QueryType"]' => array('value' => 'Protein')),
-                        array(':input[name="BlastEquivPro"]' => array('value' => 'blastp')),
-                    ),
-                    array(              
-                        array(':input[name="QueryType"]' => array('value' => 'Genomic')),
-                        array(':input[name="BlastEquivNuc"]' => array('value' => 'blastx')),                     
-                    )*/
-                
                 array(
                     ':input[name="QueryType"]' => array('value' => 'Protein'),
                     ':input[name="BlastEquivPro"]' => array('value' => 'blastp'),
@@ -196,10 +355,13 @@ function tripal_diamond_submit_form($form, &$form_state)
             ),
         ),
     );
+     * */
+    
     /*
      * Target Type: Protein
      * Target Name: UniGenes Protein
      */
+    /*
     $form['Target']['TargetDBUnigenePro'] = array(
         '#type'         => 'select',
         '#title'        => t('TreeGenes UniGenes Protein'),
@@ -229,11 +391,13 @@ function tripal_diamond_submit_form($form, &$form_state)
         //Move field over a little '#prefix' => '<div style="padding-left:50px">',
         //Move field over a little '#suffix' => '</div>',
     );
+    */
     
     /*
      * Target Type: Genomic
      * Target Name: TreeGenes Genes
      */
+    /*
     $form['Target']['TargetDBGene'] = array(
         '#type'         => 'select',
         '#title'        => t('TreeGenes Genes'),
@@ -262,11 +426,12 @@ function tripal_diamond_submit_form($form, &$form_state)
             ),
         ),
     );
-    
+    */
     /*
      * Target Type: Genomic
      * Target Name: TreeGenes Genomes
      */
+    /*
     $form['Target']['TargetDBGenome'] = array(
         '#type'         => 'select',
         '#title'        => t('TreeGenes Genomes'),
@@ -295,11 +460,13 @@ function tripal_diamond_submit_form($form, &$form_state)
             ),
         ),
     );
+    */
     
     /*
      * Target Type: Genomic
      * Target Name: TreeGenes UniGenes Nucleotide
      */
+    /*
     $form['Target']['TargetDBUnigeneNuc'] = array(
         '#type'         => 'select',
         '#title'        => t('TreeGenes Unigenes Nucleotide'),
@@ -328,6 +495,7 @@ function tripal_diamond_submit_form($form, &$form_state)
             ),
         ),
     );
+    */
     
     $form['Target']['OtherTarget'] = array(
       '#type'           => 'fieldset',
@@ -494,6 +662,8 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
      *       Turn instructional lines red somehow when user can't into form
      */
     
+    
+    
     /*
      * QueryType
      */
@@ -502,35 +672,57 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
         form_set_error('QueryType',t("Please choose a Query Type."));
     }
     
+    /*
+     * Determine the Target type (Protein vs Nucleotide) (for convenience later in validation)
+     */
+    if ($form_state['values']['QueryType'] == 'Protein')
+    {
+        if ($form_state['values']['BlastEquivPro'] == 'blastp')
+        {
+            $targetType = 'Protein';
+        }
+        else
+        {
+            $targetType = 'Nucleotide';
+        }
+    }
+    else
+    {
+        if ($form_state['values']['BlastEquivNuc'] == 'blastx')
+        {
+            $targetType = 'Protein';
+        }
+        else
+        {
+            $targetType = 'Nucleotide';
+        }
+    }
+    
     $targetsProvidedPro = 0;
     $targetsProvidedNuc = 0;
-    //Check each target selection to see if they have stuff
+    //Check each target selection to see if they have an option selected,
+    //  making sure that only 1 is selected 
     //Proteins
-    if ($form_state['values']['TargetDBProtein'] != 'default')
+    $targetList = $form_state['values']['TargetList'];
+    foreach($targetList as $target)
     {
-        $targetsProvidedPro = $targetsProvidedPro + 1;
-    }
-    if ($form_state['values']['TargetDBUnigenePro'] != 'default')
-    {
-        $targetsProvidedPro = $targetsProvidedPro + 1;
-    }
-    //Genomic
-    if ($form_state['values']['TargetDBGene'] != 'default')
-    {
-        $targetsProvidedNuc = $targetsProvidedNuc + 1;
-    }
-    if ($form_state['values']['TargetDBGenome'] != 'default')
-    {
-        $targetsProvidedNuc = $targetsProvidedNuc + 1;
-    }
-    if ($form_state['values']['TargetDBUnigeneNuc'] != 'default')
-    {
-        $targetsProvidedNuc = $targetsProvidedNuc + 1;
+        if ($form_state['values'][$target] != 'default')
+        {
+            $type = explode('_',$target);
+            if ($type[0] == 'Protein')
+            {
+                $targetsProvidedPro = $targetsProvidedPro + 1;
+            }
+            else
+            {
+                $targetsProvidedNuc = $targetsProvidedNuc + 1;
+            }
+        }
     }
     
     
     //Handle if there are more than 1 targets selected
-    if ($form_state['values']['QueryType'] == 'Protein' && $form_state['values']['TargetDataType'] == 'database')
+    if ($targetType == 'Protein' && $form_state['values']['TargetDataType'] == 'database')
     {
         if ($targetsProvidedPro > 1)
         {
@@ -546,10 +738,10 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
         }
         else if ($targetsProvidedPro < 1)
         {
-            form_set_error('Target',t("Please choose a target"));
+            form_set_error('Target',t("Please choose a protein target database"));
         }
     }
-    else if ($form_state['values']['QueryType'] == 'Genomic' && $form_state['values']['TargetDataType'] == 'database')
+    else if ($targetType == 'Nucleotide' && $form_state['values']['TargetDataType'] == 'database')
     {
         if ($targetsProvidedNuc > 1)
         {
@@ -569,9 +761,10 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
         }
         else if ($targetsProvidedNuc < 1)
         {
-            form_set_error('Target',t("Please choose a target"));
+            form_set_error('Target',t("Please choose a nucleotide target database"));
         }
     }
+        
     /*
      * BlastEquivNuc (Requires QueryType = Nucleotide)
      * Not strictly necessary: this is a 'select' which already has a default
@@ -681,14 +874,15 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
 
 function tripal_diamond_submit_form_submit($form, &$form_state)
 {
-    $debug = FALSE;         //Debug Mode
+    $debug = FALSE;         //Debug Mode (does everything except submit a job)
     $prepError = FALSE;     //Errors with preparing the job (checked prior
                             //to launching job
     /*
      * Build the command
      */
     //Example command: diamond blast* --threads # --db xxxx --(q)uery query.data
-
+//drupal_set_message("First: ".$form_state['values']['First']);
+    
     //Get the advanced settings    
     $eValue = $form_state['values']['eValue'];
     $targetCoverage = $form_state['values']['targetCoverage'];
@@ -758,34 +952,22 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     if($form_state['values']['TargetDataType'] == "database")
     {
         $targetFileType = 'database';
-        if($form_state['values']['QueryType'] == "Protein")
-        {
-            if (($form_state['values']['TargetDBProtein']) != 'default')
+            $targetList = $form_state['values']['TargetList'];
+            foreach($targetList as $target)
             {
-                echo "TargetDBProtein was selected";
-                $targetDB = $form_state['values']['TargetDBProtein'];
-            }
-            if (($form_state['values']['TargetDBUnigenePro']) != 'default')
-            {
-                echo "TargetDBUnigenePro was selected";
-                $targetDB = $form_state['values']['TargetDBUnigenePro'];
-            }            
-        }
-        if($form_state['values']['QueryType'] == "Genomic")
-        {
-            if (($form_state['values']['TargetDBGene']) != 'default')
-            {
-                $targetDB = $form_state['values']['TargetDBGene'];
-            }
-            if (($form_state['values']['TargetDBGenome']) != 'default')
-            {
-                $targetDB = $form_state['values']['TargetDBGenome'];
-            }
-            if (($form_state['values']['TargetDBUnigeneNuc']) != 'default')
-            {
-                $targetDB = $form_state['values']['TargetDBUnigeneNuc'];
-            }
-        }
+                if ($form_state['values'][$target] != 'default')
+                {
+                    $type = explode('_',$target);
+                    if ($type[0] == 'Protein')
+                    {
+                        $targetDB = $form_state['values'][$target];
+                    }
+                    else
+                    {
+                        $targetDB = $form_state['values'][$target];
+                    }
+                }
+            }      
         
         $targetDBU = strtoupper($targetDB);
         //$targetDBPath = "/linuxshare/projects/treegenes/tgwebprod_store/FTP/Genomes/".$targetDB."/index/".$targetDBU."_dmndBlast/".$targetDBU."_diamond/";
@@ -954,7 +1136,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         'command'               => $command_to_run,
     );
     
-    drupal_write_record('diamond_job_information', $new_job);
+    drupal_write_record('tseq_job_information', $new_job);
     
     
     //$form_state['redirect'] = 'Diamond/results/'.$remote_diamond_job_id;
