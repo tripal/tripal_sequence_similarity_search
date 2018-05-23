@@ -8,12 +8,16 @@
  */
 function tripal_diamond_review($jobID)
 {
-    
-    $jobInfo = tripal_get_job($jobID);
+  if ($jobID == -1)
+  {
+      return theme('tripal_diamond_results', array('status' => 'debug','job_id' => '-1'));
+  }
+  
+  $jobInfo = tripal_get_job($jobID);
     //print_r($jobInfo);
     // 1) Job is in the Queue
   //if ($jobInfo->start_time === NULL AND $jobInfo->end_time == NULL)
-    if ($jobInfo->status == 'Waiting')
+  if ($jobInfo->status == 'Waiting')
   {
     return theme('tripal_diamond_results', array('status_code' => 0, 'status' => 'Pending. It may take up to 20 seconds to process', 'job_id' => $jobID));
   }
