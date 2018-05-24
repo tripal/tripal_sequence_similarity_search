@@ -14,7 +14,7 @@ function tripal_diamond_download($job_id)
 {
     //Pumpkin MAKE DYNAMIC
     //$file = "/var/www/Drupal/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
-    $file = DRUPAL_ROOT.base_path()."/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
+    $file = drupal_realpath('public://')."/tripal/jobs/$job_id/STDOUT.txt";
             
     if (file_exists($file))
     {
