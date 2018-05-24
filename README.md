@@ -4,6 +4,8 @@ A module to allow Tripal to run Diamond Searches.
 ## Requirements
 - [Tripal Remote Job](https://gitlab.com/TreeGenes/tripal-remote-job) 
 - [Tripal 3](http://tripal.info/)
+- diamond version 0.9.9 (https://github.com/bbuchfink/diamond)
+- NCBI Blast version 2.7.1+ (ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/)
 
 ## Installation / Useful Pages & Info
 1. Visit /admin/config/diamond to set up databases and other options
