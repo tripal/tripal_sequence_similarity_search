@@ -209,7 +209,6 @@ function tripal_diamond_menu()
         'title' => 'TSeq Analysis',
         'description' => 'Show results of Diamond or BLAST jobs belonging to the user',
         'page callback' => 'tripal_diamond_user_analysis_page',
-        'access arguments' => array ('administer galaxy'),
         'page arguments' => array(1),
         'type' => MENU_LOCAL_TASK,
         'file' => 'includes/tripal_diamond.user.inc',
