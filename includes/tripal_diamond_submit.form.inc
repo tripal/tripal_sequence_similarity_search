@@ -1061,7 +1061,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
             }
             
             if($debug){drupal_set_message("Will run command: ".$command_to_run);}
-            if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($queryFile),TRUE);}
+            if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($queryFile),FALSE);}
         }
         else
         {
@@ -1078,7 +1078,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
             }
             
             if($debug)drupal_set_message("Will run command: ".$command_to_run);
-            if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),TRUE);}
+            if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),FALSE);}
         }
         $baseP = base_path();
         drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
