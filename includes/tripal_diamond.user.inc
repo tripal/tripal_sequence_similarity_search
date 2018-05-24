@@ -7,7 +7,8 @@ function tripal_diamond_user_analysis_page($uid) {
      */
     global $user;
         $user_id = $user->uid;
-    $query = "select * from tseq_job_information where user_id=$user_id";
+    //$query = "select * from tseq_job_information where user_id=$user_id";
+    $query = "select d.tseq_job_id, d.submit_time, d.user_id, d.tripal_job_id, t.status from tseq_job_information d join tripal_jobs t on d.tripal_job_id=t.job_id where user_id=$user_id order by d.tseq_job_id";
     $results = db_query($query);
     
     $job_list = array();
@@ -17,12 +18,12 @@ function tripal_diamond_user_analysis_page($uid) {
         }
     $rows = array();
     foreach ($job_list as $job)
-    {
+    {        
         $rows[] = array(
             $job['tseq_job_id'],
             format_date($job['submit_time'], 'short'),
             l('Your results', '/Diamond/results/'.$job['tripal_job_id']),
-            'Coming soon!',
+            $job['status'],
             );
     }
     $header = array('System Job ID', 'Date Submitted', 'Link', 'Status');
