@@ -79,7 +79,10 @@ else if ($status == 'Completed')
                 foreach($jobResults as $key => $resultLine)
                 {
                     //Possible pumpkin
-                    $rows[$key] = explode("\t", $resultLine);
+                    if ($key < 10)
+                    {
+                        $rows[$key] = explode("\t", $resultLine);
+                    }
                 }
                 //$rows[0] = array('turdget','ident','align length','mismath','gap','start q','end q','start t','end t','ev','bit');
                 $table_vars = array(
