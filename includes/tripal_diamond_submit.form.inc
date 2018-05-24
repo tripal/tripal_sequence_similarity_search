@@ -49,7 +49,7 @@ function tripal_diamond_submit_form($form, &$form_state)
             'Genomic'      => t('Genomic (coding or non-coding)'),
             #'Genome'    => t('Genome'),
         ),
-        '#prefix'           => '<h2>Sequence Query Type</h2>',
+        '#prefix'           => '<hr><h2>Sequence Query Type</h2>',
         //'#field_prefix'       => 'To get started, choose your search type:',
     );
     
