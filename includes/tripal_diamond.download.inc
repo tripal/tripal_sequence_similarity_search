@@ -30,7 +30,7 @@ function tripal_diamond_download($job_id)
     }
     else
     {
-        echo "That file no longer exists or could not be found";
+        echo "The file ".$file." no longer exists or could not be found";
     }
     
 }
