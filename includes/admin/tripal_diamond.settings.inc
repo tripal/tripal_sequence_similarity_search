@@ -99,7 +99,7 @@ function tripal_diamond_configuration_settings_form($form, &$form_state)
     
     $form['submit_button'] = array(
         '#type' => 'submit',
-        '#value' => t('Submit'),
+        '#value' => t('Save'),
     );
     return $form;
 }
