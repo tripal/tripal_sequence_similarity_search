@@ -131,7 +131,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#type'         => 'managed_file',
         //'#title'        => t('Query File'),
         '#upload_validators' => array(
-            'file_validate_extensions' => array('txt dmnd gz fasta'),
+            'file_validate_extensions' => array('txt dmnd gz fasta FASTA faa fnn'),
         ),
         '#process'      => array('fix_ajax_upload'),
         '#upload_location' => 'public://',
@@ -331,7 +331,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#title'        => t('Target File'),
         //'#description'  => t('Don\'t forget to hit \'Upload\''),
         '#upload_validators' => array(
-            'file_validate_extensions' => array('txt dmnd gz'),
+            'file_validate_extensions' => array('txt dmnd gz fasta FASTA faa fnn'),
         ),
         '#upload_location' => 'public://',
         '#states' => array(
