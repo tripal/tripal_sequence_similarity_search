@@ -130,6 +130,9 @@ function tripal_diamond_submit_form($form, &$form_state)
     $form['Query']['QueryFile'] = array(
         '#type'         => 'managed_file',
         //'#title'        => t('Query File'),
+        '#upload_validators' => array(
+            'file_validate_extensions' => array('txt dmnd gz fasta'),
+        ),
         '#process'      => array('fix_ajax_upload'),
         '#upload_location' => 'public://',
     );
