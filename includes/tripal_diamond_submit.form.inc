@@ -636,14 +636,12 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
 
 function tripal_diamond_submit_form_submit($form, &$form_state)
 {
-    $debug = FALSE;         //Debug Mode (does everything except submit a job)
+    $debug = TRUE;         //Debug Mode (does everything except submit a job)
     $prepError = FALSE;     //Errors with preparing the job (checked prior
                             //to launching job
     /*
      * Build the command
      */
-    //Example command: diamond blast* --threads # --db xxxx --(q)uery query.data
-//drupal_set_message("First: ".$form_state['values']['First']);
     
     //Get the advanced settings    
     $eValue = $form_state['values']['eValue'];
@@ -780,29 +778,21 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         }
     }
     
-    
     /*
-    if (($form_state['values']['QueryType'] == "Protein") && ($form_state['values']['BlastEquivPro'] == "blastx"))
-    {
-        $command_to_run = "diamond ";
-        $blastEquiv = "blastx";
-    }
-    elseif (($form_state['values']['QueryType'] == "Genomic") && ($form_state['values']['BlastEquivNuc'] == "blastp"))
-    {
-        $command_to_run = "diamond ";
-        $blastEquiv = "blastp";
-    }
-    elseif (($form_state['values']['QueryType'] == "Protein") && ($form_state['values']['BlastEquivPro'] == "tblastn"))
-    {
-        $command_to_run = " ";
-        $blastEquiv = "tblastn";
-    }
-    elseif (($form_state['values']['QueryType'] == "Genomic") && ($form_state['values']['BlastEquivNuc'] == "blastn"))
-    {
-        $command_to_run = " ";
-        $blastEquiv = "blastn";
-    }
-    */
+     *  Get other parameters for the build
+     *  -Threads (set via admin)
+     *  -Executable locations (BLAST+, Diamond)
+     */
+    $query = "select num_threads,blast_exe_location, diamond_exe_location from tseq_settings";
+    $results = db_query($query);
+    
+    $jobSettings = array();
+    for($i = 0; $i < $results->rowCount(); $i++)
+        {
+          $jobSettings[$i] = $results->fetchAssoc();
+        }
+    dpm($jobSettings);
+    
      
     // Check if there were preperation errors
     if (!$prepError)
@@ -814,12 +804,12 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
             // If we're running with Diamond
             if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx')
             {
-                $command_to_run = "diamond ".$blastEquiv." --threads 1 --db ".$targetFile." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+                $command_to_run = "diamond ".$blastEquiv." --threads ".$jobSettings[0]['num_threads']." --db ".$targetFile." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
             {
-                $command_to_run = $blastEquiv." -num_threads 1 -db ".$targetFile." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
+                $command_to_run = $blastEquiv." -num_threads ".$jobSettings[0]['num_threads']." -db ".$targetFile." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
             }
             
             if($debug){drupal_set_message("Will run command: ".$command_to_run);}
@@ -831,19 +821,20 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
             
             if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx')
             {
-                $command_to_run = "diamond ".$blastEquiv." --threads 1 --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+                $command_to_run = "diamond ".$blastEquiv." --threads ".$jobSettings[0]['num_threads']." --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
             {
-                $command_to_run = $blastEquiv." -num_threads 1 -db ".$targetFileNoPath." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
+                $command_to_run = $blastEquiv." -num_threads ".$jobSettings[0]['num_threads']." -db ".$targetFileNoPath." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
             }
             
             if($debug)drupal_set_message("Will run command: ".$command_to_run);
             if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),FALSE);}
         }
         $baseP = base_path();
-        drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
+        //drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
+        drupal_set_message("Thank you for submitting. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
     }
     else
     {
@@ -851,7 +842,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     }
     
     /*
-     *  Add this requested job to the diamond_job_information table
+     *  Add this requested job to the tseq_job_information table
      *      tseq_job_id             (this is type='serial' so it automatically increments)
      *      tripal_job_id           $remote_diamond_job_id
      *      user_id                     gathered below
