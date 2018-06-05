@@ -794,7 +794,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         {
           $jobSettings[$i] = $results->fetchAssoc();
         }
-    dpm($jobSettings);
+    if($debug){dpm($jobSettings);}
     
      
     // Check if there were preperation errors
