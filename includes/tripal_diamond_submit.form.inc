@@ -639,7 +639,7 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
 
 function tripal_diamond_submit_form_submit($form, &$form_state)
 {
-    $debug = TRUE;         //Debug Mode (does everything except submit a job)
+    $debug = FALSE;         //Debug Mode (does everything except submit a job)
     $prepError = FALSE;     //Errors with preparing the job (checked prior
                             //to launching job
     /*
