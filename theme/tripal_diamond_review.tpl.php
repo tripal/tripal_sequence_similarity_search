@@ -128,6 +128,18 @@ else if ($status == 'Completed')
         echo "The results of that job can not be found. Be aware that results for Diamond jobs expire after 60 days";
     }
 }
+else
+{
+  // Job evidently not completed. Keep checking
+  $meta = array(
+    '#tag' => 'meta',
+    '#attributes' => array(
+      'http-equiv' => 'refresh',
+      'content' =>  '10',
+    )
+  );
+  drupal_add_html_head($meta, 'tripal_job_status_page');
+}
 
 //echo "On the remote server, your job is: ".TripalRemoteSSH::isJobRunning(tripal_get_job($job_id));
         //TripalRemoteSSH::isJobRunning(tripal_get_job($job_id));;
