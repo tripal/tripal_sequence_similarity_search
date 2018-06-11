@@ -88,6 +88,7 @@ function tripal_diamond_menu()
         'access arguments' => array('administer diamond'),
     );
     
+    // Configuration: Database list, first page
     $items['admin/tripal/extension/diamond/config/dblist'] = array(
         'title' => 'Existing Database List',
         'description' => 'Tripal Diamond Admin Configuration page',
@@ -100,7 +101,7 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
         );
     
-    // Configuration page (w/ Specified page #)
+    // Configuration: Database list, specified page
     $items['admin/tripal/extension/diamond/config/dblist/%'] = array(
         'title' => 'Tripal Diamond Configuration',
         'description' => 'Tripal Diamond Admin Configuration page',
@@ -113,6 +114,7 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
         );
     
+    // Configuration: Settings
     $items['admin/tripal/extension/diamond/config/settings'] = array(
         'title' => 'Settings',
         'type'  => MENU_LOCAL_TASK,
@@ -126,6 +128,7 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
     );
     
+    //Configuration: Categories
     $items['admin/tripal/extension/diamond/config/categories'] = array(
         'title' => 'Categories',
         'type'  => MENU_LOCAL_TASK,
