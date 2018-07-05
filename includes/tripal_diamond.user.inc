@@ -28,7 +28,7 @@ function tripal_diamond_user_analysis_page($uid) {
             $job['status'],
             );
     }
-    $header = array('System Job ID', 'Date Submitted', 'Query type','Database type', 'Link', 'Status');
+    $header = array('TSeq Job ID', 'Date Submitted', 'Query type','Database type', 'Link', 'Status');
     
     
     //Loop through returned jobs from database, create rows out of them
