@@ -66,10 +66,10 @@ function tripal_diamond_menu()
         );
     
     // Diamond Download page
-    $items['Diamond/results/download/%'] = array(
+    $items['Diamond/results/download/%/%'] = array(
         'title' => 'Diamond Job Results Download',
         'page callback' => 'tripal_diamond_download',
-        'page arguments' => array(3),
+        'page arguments' => array(3,4),
         'access callback' => TRUE,
         'access arguments' => array('access content'),
         'type' => MENU_CALLBACK
@@ -77,7 +77,7 @@ function tripal_diamond_menu()
         
     // Configuration page
     $items['admin/tripal/extension/diamond/config'] = array(
-        'title' =>  'Diamond Configuration',
+        'title' =>  'TSeq Configuration',
         'description'   =>  'Configuration for the Tripal Diamond module',
         'page callback' => 'tripal_diamond_config_page_build',
         'page arguments'=>  array('1','tripal_diamond_config_page'),
@@ -208,11 +208,12 @@ function tripal_diamond_menu()
         );
     
     //Test for Analyses Page
-    $items['user/%/tseq-analysis'] = array (
+    $items['user/%/tseq_analysis'] = array (
         'title' => 'TSeq Analysis',
         'description' => 'Show results of Diamond or BLAST jobs belonging to the user',
         'page callback' => 'tripal_diamond_user_analysis_page',
         'page arguments' => array(1),
+        'access callback' => TRUE,
         'type' => MENU_LOCAL_TASK,
         'file' => 'includes/tripal_diamond.user.inc',
         'file path' => drupal_get_path('module', 'tripal_diamond'),
@@ -259,4 +260,43 @@ function tripal_diamond_theme()
     'path' => "$path/theme",
   );
  return $items;
+}
+
+
+/*
+ *  Email to users
+ */
+
+function tripal_diamond_mail($key, &$message, $params) {
+  $site_name = variable_get('site_name', "");
+  
+  /*
+  * Get information from the job (tseq_job_information)
+  */
+  
+  switch ($key) {
+    case 'job-complete':
+      #if (!"test_for_error")
+      
+      /*$job     = $params['job'];
+      $user    = $params['user'];
+      $message['subject'] = t("Your $site_name job: " . $job->getJobName());
+      $message['body'][] = "Your job titled \"" . $job->getJobName() . "\", has completed.";
+      $message['body'][] = "Please return to $site_name site to view the results for this job.";
+      break;
+      */
+    case 'job-started':
+        /*
+      $job  = $params['job'];
+      $user = $params['user'];
+      $message['subject'] = t("Your $site_name job has started: " . $job->getJobName());
+      $message['body'][] = "Your job titled \"" . $job->getJobName() . "\" " .
+      $message['body'][] = "You will receive an email once the job has completed.";
+      break;
+      */
+    case 'job-error':
+      $message['subject'] = t("This is a test");
+      $message['body'][] = "This has been a test.";
+      break;
+  }
 }
