@@ -213,6 +213,14 @@ function tripal_diamond_database_add_form($form, &$form_state)
         '#required'     => true,
     );
     
+    $form['WebLocation'] = array(
+        '#type'         => 'textfield',
+        '#title'        => 'Web Location (Optional)',
+        '#size'         => '120',
+        '#description'  => 'If the original sequence is publicly available for download, set the URL here (FTP, HTTP)',
+        '#required'     => false,
+    );
+    
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Add'),
@@ -249,11 +257,12 @@ function tripal_diamond_database_add_form_submit($form, &$form_state)
      */
     
     $newDB = array(
-        'name' => $form_state['values']['Name'],
-        'type' => $form_state['values']['Type'],
-        'version' => $form_state['values']['Version'],
-        'location' => $form_state['values']['Location'],
-        'category' => $form_state['values']['Category'],
+        'name'          => $form_state['values']['Name'],
+        'type'          => $form_state['values']['Type'],
+        'version'       => $form_state['values']['Version'],
+        'location'      => $form_state['values']['Location'],
+        'category'      => $form_state['values']['Category'],
+        'web_location'  => $form_state['values']['WebLocation'],
     );
     
     drupal_write_record('tseq_db_existing_locations', $newDB);
@@ -324,6 +333,15 @@ function tripal_diamond_database_edit_form($form, &$form_state,$db_id)
         '#default_value'      =>  t($rowToUpdate['location']),
     );
     
+    $form['WebLocation'] = array(
+        '#type'         =>  'textfield',
+        '#title'        =>  'Web Location (Optional)',
+        '#size'         =>  '120',
+        '#description'  =>  'If the original sequence is publicly available for download, set the URL here (FTP, HTTP)',
+        '#required'     =>  false,
+        '#default_value'      =>  t($rowToUpdate['web_location']),
+    );
+    
     $form['db_id'] = array(
         '#type'         =>  'value',
         '#value'        =>  $db_id,
@@ -365,11 +383,12 @@ function tripal_diamond_database_edit_form_validate($form, &$form_state)
 function tripal_diamond_database_edit_form_submit($form, &$form_state)
 {    
     $updatedFields = array(
-        'db_id'     => $form_state['values']['db_id'],
-        'name'      => $form_state['values']['Name'],
-        'type'      => $form_state['values']['Type'],
-        'version'   => $form_state['values']['Version'],
-        'location'  => $form_state['values']['Location'],
+        'db_id'         => $form_state['values']['db_id'],
+        'name'          => $form_state['values']['Name'],
+        'type'          => $form_state['values']['Type'],
+        'version'       => $form_state['values']['Version'],
+        'location'      => $form_state['values']['Location'],
+        'web_location'  => $form_state['values']['WebLocation'],
     );
     
     drupal_write_record('tseq_db_existing_locations', $updatedFields, 'db_id');
