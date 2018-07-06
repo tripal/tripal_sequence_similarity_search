@@ -329,6 +329,12 @@ function tripal_diamond_schema() {
                 'type' => 'varchar',
                 'length' => 512,
                 'not null' => false,
+            ),
+            'web_location' => array(
+                'description'   => 'Web URL of original sequence if available (optional)',
+                'type'          => 'varchar',
+                'length'        => 512,
+                'not null'      => FALSE,
             )
         ),
     );
@@ -391,5 +397,19 @@ function tripal_diamond_schema() {
     );
     
    return $schema;         
+}
+
+function tripal_diamond_update_5000()
+{
+    db_add_field(
+        'tseq_db_existing_locations',
+        'web_location',
+        array(
+            'description'   => 'Web URL of original sequence if available (optional)',
+            'type'          => 'varchar',
+            'length'        => 512,
+            'not null'      => FALSE,
+        )
+    );
 }
 
