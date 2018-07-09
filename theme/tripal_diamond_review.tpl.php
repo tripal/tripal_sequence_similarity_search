@@ -38,9 +38,25 @@ if ($status == 'debug')
 }
 else if ($status == 'Completed')
 {   
+    //Get the details from this job (from database: tseq_job_information)
+    $job_details = tseq_get_job_information($job_id);
+    
     //echo "OUT: ".filesize($outputPath.$job_id.'/STDOUT.txt');
     //echo "ERR: ".filesize($outputPath.$job_id.'/STDERR.txt');
     $empty = 0;
+    
+    
+    // Summary Information
+    // Count sequences in query
+    $query_file_no_path = explode('/',$job_details['sequence_file']);
+    $query_file = $outputPath.$job_id.'/'.$query_file_no_path[count($query_file_no_path)-1];
+    drupal_set_message("Sequence count: ".tseq_get_query_sequence_count($query_file));
+    
+    // Matches found
+    $output_file = $outputPath.$job_id.'/STDOUT.txt';
+    $matches_found = tseq_get_matches_count($output_file);
+    drupal_set_message("Matches found: ".$matches_found);
+    
     // If both output files are present
     if (file_exists($outputPath.$job_id.'/STDOUT.txt') && file_exists($outputPath.$job_id.'/STDERR.txt'))
     {   
@@ -92,8 +108,35 @@ else if ($status == 'Completed')
                 
                 echo theme('table', $table_vars);
                 
-                echo "Click <a href=\"download/$job_id\">here</a> to download";
-                echo "<hr />";
+                /*
+                 *  Download section
+                 *   Some of these are dynamic and will only be available if certain conditions are met
+                 */
+                echo "<ul>";
+                // Do we need to link to the original sequence file?
+                // 1. Did the user use one of the system sequence databases? (database_file_type == 'database')
+                if ($job_details['database_file_type'] == 'database')
+                {
+                    // 2. Do we have a web_location in order to serve the file?
+                    $db_id = tseq_get_db_id_by_location($job_details['database_file']);
+                    $db_details = tseq_get_db_info($db_id);
+                    
+                    if ($db_details['web_location'] != '')
+                    {
+                        echo "<li>Click <a href=\"".$db_details['web_location']."\">here</a> to download the original sequence file</li>";
+                    }
+                }
+                
+                
+                echo "<li>Click <a href=\"download/$job_id/results\">here</a> to download these results</li>";
+                echo "<li>Click <a href=\"download/$job_id/query\">here</a> to download your original query</li>";
+                // Only show a link for download if the user uploaded/pasted 
+                // their target database (in which case it'll exist locally on the webserver)
+                if ($job_details['database_file_type'] != 'database')
+                {
+                    echo "<li>Click <a href=\"download/$job_id/target\">here</a> to download your selected target database (index)</li>";
+                }
+                echo "<ul><hr />";
             }
             else {
                 echo "No hits were found";
