@@ -30,3 +30,21 @@ function tseq_get_db_info($db_id)
     $details = $results->fetchAssoc();
     return $details;
 }
+
+// Retrieve the number of sequences in the user's query
+function tseq_get_query_sequence_count($query_file)
+{
+    $cmd = "grep '>' $query_file | wc -l";
+    exec($cmd, $output);
+    
+    return $output[0];
+}
+
+// Retrieve the number of matches in the output file
+function tseq_get_matches_count($output_file)
+{
+    $cmd = "wc -l $output_file";
+    exec($cmd, $output);
+    $line_count = explode(' ', $output[0]);
+    return $line_count[0];
+}
