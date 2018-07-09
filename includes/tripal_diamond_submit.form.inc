@@ -14,6 +14,49 @@ error_reporting(E_ALL);
         return $element;
     }
 
+    function my_own_test($element, &$form_state, $form)
+    {
+        dpm($element);
+        return $element;
+    }
+    
+    // Validate the user's sequences
+    // Returns true on valid sequence
+    function validate_sequence($type, $sequence)
+    {
+        // Are we dealing with a nucleotide or a protein?
+        if ($type == 'Genomic')
+        {
+            $fastaIdRegEx = '/^>.*(\\n|\\r)/';
+            $fastaSeqRegEx = '/[^ATCGNUKMBVSWDYRHatcgnukmbvswdyrh\n\r]/'; //Includes IUPAC codes.
+            if ( preg_match($fastaSeqRegEx,$sequence) && !(preg_match($fastaIdRegEx,$sequence)) )
+            {
+                return FALSE;
+            }
+            else
+            {
+                return TRUE;
+            }
+        }
+        else if ($type == 'Protein')
+        {
+            $fastaIdRegEx = '/^>.*(\\n|\\r)/';
+            $fastaSeqRegEx = '/[^ABCDEFGHIKLMNPQRSTUVWYZXabcdefghiklmnpqrstuvwyzx\*\-\n\r]/';
+            if ( preg_match($fastaSeqRegEx,$sequence) && !(preg_match($fastaIdRegEx,$sequence)) )
+            {
+                return FALSE;
+            }
+            else
+            {
+                return TRUE;
+            }
+        }
+        else
+        {
+            return "error";
+        }
+    }
+
 function tripal_diamond_submit_form($form, &$form_state)
 {
     global $user;
@@ -45,8 +88,8 @@ function tripal_diamond_submit_form($form, &$form_state)
         //'#title'        => t('Select sequence search type:'),
         //'#description'  => t('Choose the type of query'),
         '#options'      => array(
-            'Protein'   => t('Protein'),
-            'Genomic'      => t('Genomic (coding or non-coding)'),
+            'Protein'       => t('Protein'),
+            'Genomic'       => t('Genomic (coding or non-coding)'),
             #'Genome'    => t('Genome'),
         ),
         '#prefix'           => '<hr><h2>Sequence Query Type</h2>',
@@ -131,9 +174,12 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#type'         => 'managed_file',
         //'#title'        => t('Query File'),
         '#upload_validators' => array(
-            'file_validate_extensions' => array('txt dmnd gz fasta FASTA faa fnn'),
+            'file_validate_extensions' => array('txt dmnd gz FA FAA FNN FASTA fa faa fnn fasta'),
+            'test_the_file',
         ),
-        '#process'      => array('fix_ajax_upload'),
+        #'#process'      => array('fix_ajax_upload'),
+        #'#process'      => array('my_own_test'),
+        #'#progress_indicator'   => array('bar'),
         '#upload_location' => 'public://',
     );
     
@@ -155,8 +201,6 @@ function tripal_diamond_submit_form($form, &$form_state)
     
     $categories = array();
     $types = array();
-    
-    
        
     //Iterate through the returned database 
     for($i = 0; $i< $results->rowCount();$i++)
@@ -174,8 +218,8 @@ function tripal_diamond_submit_form($form, &$form_state)
     }
     
     
-    
-    $databaseListToShow = array();
+     
+   $databaseListToShow = array();
     $databaseCount = array();
     $listsToVerify = array();
     
@@ -550,17 +594,21 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
     //Query 
     
     $querysProvided = 0;
+    $queryType = '';
     if(!empty($form_state['values']['QueryFile']))
     {
-        $querysProvided = $querysProvided + 1;
+        $querysProvided = $querysProvided + 1;  // Keep track of # of queries provided
+        $queryType = 'upload';
     }
     if(!empty($form_state['values']['QueryPaste']))
     {
         $querysProvided = $querysProvided + 1;
+        $queryType = 'paste';
     }
     if ($querysProvided > 1)
     {
         form_set_error('Query',t("Please only provide one sequence."));
+        $queryType = NULL;
     }
     else if ($querysProvided < 1)
     {
@@ -568,72 +616,45 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
         form_set_error('QueryFile');
         form_set_error('QueryPaste');
     }
-    /*
-     * QueryDataType
-     
-    if (empty($form_state['values']['QueryDataType']))
-    {
-        form_set_error('QueryDataType',t("Please choose a Query Data Type."));
-    }*/
     
-    /*
-     * QueryFile, QueryPaste
-     
-    if (!empty($form_state['values']['QueryDataType']))
+    // Validate the user's query
+    // Query uploaded as file:
+    if ($queryType == 'upload')
     {
-        if($form_state['values']['QueryDataType'] == "upload")
+        // open the file
+        $queryFile = file_load($form_state['values']['QueryFile']);
+        $queryFileURI = drupal_realpath($queryFile->uri);
+        if ($queryFileHandle = fopen($queryFileURI, 'r'))
         {
-            if(empty($form_state['values']['QueryFile']))
+            $querySequence = fread($queryFileHandle, filesize($queryFileURI));
+            // pass its contents through validation
+            if(!validate_sequence($form_state['values']['QueryType'],$querySequence))
             {
-                form_set_error('QueryFile',t("Please upload a Query Sequence File"));
+                form_set_error('QueryFile','The file you uploaded has invalid '
+                        . 'syntax. Please check your file and reupload.');
             }
+                    
         }
-        if($form_state['values']['QueryDataType'] == "paste")
+        else
         {
-            if(empty($form_state['values']['QueryPaste']))
-            {
-                form_set_error('QueryPaste',t("Please paste a Query Sequence"));
-            }
-        }        
+            drupal_set_message("Could not open the submitted file. Please contact an administrator",'error');
+        }
+        
     }
-     * 
-     */
     
-    /*
-     * TargetDataType 
-    
-    if (empty($form_state['values']['TargetDataType']))
+    // Query uploaded as pasted text:
+    else if ($queryType == 'paste')
     {
-        form_set_error('TargetDataType',t("Please choose a Target Data Type."));
-    } */   
-    
-    /*
-     * QueryTargetDB, QueryTargetFile, QueryTargetPaste
-     */    
-    /*
-    if (!empty($form_state['values']['TargetDataType']))
-    {
-        if($form_state['values']['TargetDataType'] == "database")
-        {
-            
-        }
-        if($form_state['values']['TargetDataType'] == "upload")
-        {
-            if (empty($form_state['values']['QueryTargetFile']))
+        // get the text
+        $querySequence = $form_state['values']['QueryPaste'];
+        // pass it through validation
+        if(!validate_sequence($form_state['values']['QueryType'],$querySequence))
             {
-                form_set_error('QueryTargetFile',t("Please upload a Target Database File."));
-            }     
-        }
-        if($form_state['values']['TargetDataType'] == "paste")
-        {
-            if (empty($form_state['values']['QueryTargetPaste']))
-            {
-                form_set_error('QueryTargetPaste',t("Please paste Target Database raw text."));
+                form_set_error('QueryPaste','The file you uploaded has invalid '
+                        . 'syntax. Please check your file and reupload.');
             }
-        }
-            
     }
-    */
+        
     
 }
 
