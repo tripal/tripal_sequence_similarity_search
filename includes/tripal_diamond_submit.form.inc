@@ -633,6 +633,8 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
                 form_set_error('QueryFile','The file you uploaded has invalid '
                         . 'syntax. Please check your file and reupload.');
             }
+            // Close the file
+            fclose($queryFileHandle);
                     
         }
         else
