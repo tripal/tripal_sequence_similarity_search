@@ -27,6 +27,15 @@ $outputPath = '/var/www/html/Drupal/sites/default/files/tripal/jobs/';
 Current status of your job in the Tripal Job System: <?php echo $status; ?>
 <br />
 <!-- Current status of your job on the Remote Server: <?php //echo $remote_status; ?> -->
+<div id="tseq_test">Dingo</div>
+<script type="text/javascript">
+    loady();
+    function loady()
+    {
+        var dingo = document.getElementById("tseq_test");
+        dingo.innerHTML = tseq_test();
+    }
+</script>
 
 
 <!-- Show results if job was successful -->
@@ -46,16 +55,52 @@ else if ($status == 'Completed')
     $empty = 0;
     
     
-    // Summary Information
-    // Count sequences in query
+    
+    // Summary Information (# of sequences in the query)
     $query_file_no_path = explode('/',$job_details['sequence_file']);
     $query_file = $outputPath.$job_id.'/'.$query_file_no_path[count($query_file_no_path)-1];
-    drupal_set_message("Sequence count: ".tseq_get_query_sequence_count($query_file));
+    //drupal_set_message("Sequence count: ".tseq_get_query_sequence_count($query_file));
+    $summary_sequence_count = tseq_get_query_sequence_count($query_file);
     
-    // Matches found
+    // Summary Information: Matches found
     $output_file = $outputPath.$job_id.'/STDOUT.txt';
     $matches_found = tseq_get_matches_count($output_file);
-    drupal_set_message("Matches found: ".$matches_found);
+    //drupal_set_message("Matches found: ".$matches_found);
+    $summary_matches_found = $matches_found;
+    
+    // Summary Information: What database was used (if we know)
+    // Was the database one of the system databases?
+    if ($job_details['database_file_type'] == 'database')
+    {
+        // Make some spaghetti getting this information because the sequence database name isn't stored in the tseq db
+        $tseq_db_id = tseq_get_db_id_by_location($job_details['database_file']);
+        $db_info = tseq_get_db_info($tseq_db_id);        
+        //drupal_set_message("Database used: ".$db_info['name'].", version ".$db_info['version']." (".$db_info['category'].")");
+        $summary_database_used = $db_info['name'].", version ".$db_info['version']." (".$db_info['type']." - ".$db_info['category'].")";
+        // Supply a download link
+        // Pumpkin - do we really want to have this here? 
+       if ($db_info['web_location'] != '')
+        {
+            $summary_database_used = $summary_database_used."<a href=\"".$db_info['web_location']."\"> Download</a>";
+        }
+    }
+    else
+        $summary_database_used = '';
+    
+    echo "<h4>Summary of your job:</h4>";
+    $summary_headers = array('Summary','Info');
+    $summary_rows = array();
+    $summary_rows[0] = array('Sequences submitted',$summary_sequence_count);
+    $summary_rows[1] = array('Matches found',$summary_matches_found);
+    if ($summary_database_used)
+    {
+        $summary_rows[2] = array('Database searched against',$summary_database_used);
+    }
+    $summary_table_vars = array(
+        'header' => $summary_headers,
+        'rows'   => $summary_rows
+    );
+    echo theme('table',$summary_table_vars);
     
     // If both output files are present
     if (file_exists($outputPath.$job_id.'/STDOUT.txt') && file_exists($outputPath.$job_id.'/STDERR.txt'))
@@ -99,8 +144,27 @@ else if ($status == 'Completed')
                     {
                         $rows[$key] = explode("\t", $resultLine);
                     }
+                    // Generate the rest of the rows with a special class to hide them
+                    else
+                    {   $cells = explode("\t",$resultLine);
+                        $thisRow=array();
+                        // Generate the cells for this row
+                        foreach($cells as $cellKey => $cell)
+                        {
+                            $thisRow[$cellKey] = array(
+                                'data' => $cell,
+                                'class' => 'hiddenCells',
+                            );
+                        }
+                        // Generate the row with the cells from above
+                        $rows[$key] = array(
+                                'data' => $thisRow,
+                                'no_striping' => FALSE,
+                                'class' => array('hiddenRows'),
+                        );
+                    }
                 }
-                //$rows[0] = array('turdget','ident','align length','mismath','gap','start q','end q','start t','end t','ev','bit');
+                
                 $table_vars = array(
                     'header'      => $headers, 
                     'rows'        => $rows
@@ -125,9 +189,7 @@ else if ($status == 'Completed')
                     {
                         echo "<li>Click <a href=\"".$db_details['web_location']."\">here</a> to download the original sequence file</li>";
                     }
-                }
-                
-                
+                }                
                 echo "<li>Click <a href=\"download/$job_id/results\">here</a> to download these results</li>";
                 echo "<li>Click <a href=\"download/$job_id/query\">here</a> to download your original query</li>";
                 // Only show a link for download if the user uploaded/pasted 
@@ -150,8 +212,8 @@ else if ($status == 'Completed')
         //Display any errors if STDERR has data
         if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
         {
-                   echo "The following errors were reported: ";
-                   readfile($outputPath.$job_id.'/STDERR.txt'); 
+                   echo "The following errors were reported: "; 
+                  readfile($outputPath.$job_id.'/STDERR.txt'); 
         }
         //Error file exists but is empty
         else
