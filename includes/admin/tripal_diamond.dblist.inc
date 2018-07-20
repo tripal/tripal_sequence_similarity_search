@@ -1,60 +1,13 @@
 <?php
 
 function tripal_diamond_config_page_build($page)
-{
-    /*
-     * Search/Filter the table of databases below (todo)
-     */
-    //pumpkin
-    
-    /*
-     * The table of currently stored databases
-     */
-    $headers = array('','Name','Version','Type','Category','Location (remote)',/*'Accessible',*/ 'Actions');
-    $rows = array();
-    /*
-     * Getting details from the database
-     * @todo
-     *  Handle database errors
-     */
-    $db = DiamondDatabases::getDatabases('%');
-    $returnedDBs = array();
-    $filesToCheck = array();
-    //Collect list of files to check for "accessibility"
-    /*for ($k = 0; $k < count($db);$k++)
-    {
-        $filesToCheck[$k] = $db[$k]['location'];
-    }
-    if (module_exists('tripal_remote_job')) { 
-        $accessible = array();
-        $accessible = tripal_remote_check_files($filesToCheck,NULL);
-    }*/
-        
-    // Deal with bad numbers 
-    if ($page == 'tripal_diamond_config_page' || $page <= 0)
-    {
-        $page = 1;
-    }
-    
-        //Breadcrumb
+{   
+    // Build the breadcrumb
     $breadcrumb = array();
     $breadcrumb[] = l('Diamond', '<front>');
     $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
     $breadcrumb[] = l('Database list, page '.$page, 'admin/tripal/extension/diamond/config/dblist/'.$page);
     drupal_set_breadcrumb($breadcrumb);
-    
-    /*
-     * Check to see if the listed resource (Diamond file) is accessible
-     * @todo
-     *  this
-     */
-    /*foreach ($databaseList as $db)
-    {
-        $edit = l('Edit','admin/tripal/extension/diamond/edit_db/' . $db['db_id']);
-        
-        $accessible[] = array($i,$db['name'],$db['version'],$db['type'],$db['location'],$edit.' | '.$delete);
-        $i++;
-    }*/
     
     // Generate link to add another database
     $contents['addLink'] = array(
@@ -62,76 +15,50 @@ function tripal_diamond_config_page_build($page)
         '#weight'   => '1',
     );
     
-    $j = $page * 10;
-    $i = $j - 10;
-    for($i; $i < $j; $i++)
-    {
-        if ($i < count($db))
-        {
-            $edit   = l('Edit','admin/tripal/extension/diamond/edit_db/' .
-                    $db[$i]['db_id']);       
-            $delete = l('Delete','admin/tripal/extension/diamond/delete_db/' .
-                    $db[$i]['db_id']);
-            
-            //$readable = (string)is_readable($db[$i]['location']);
-            //$readable = $readable ? "Yes":"No";
-            //$readable = tripal_remote_check_files($db);   //Not implemented
-            $returnedDBs[] = array($i+1,$db[$i]['name'],$db[$i]['version'],$db[$i]['type'],$db[$i]['category'],$db[$i]['location'],/*$accessible[$i],*/$edit.' | '.$delete);
-        }
-    }
-    
-    //Check to see if there are databases
-    $emptyCase = '';
-    if (count($db) == 0)
-    {
-        $emptyCase = t('No databases have been added yet.');
-    }
-    else if (($page * 10) % count($db) < 10)
-    {
-        $emptyCase = l('There aren\'t that many databases yet. Click here to go back to the list','admin/tripal/extension/diamond');
-    }
-    
-    $table_vars = array(
-        'header'      => $headers, 
-        'rows'        => $returnedDBs,
-        'attributes'  => array(),
-        'sticky'      => TRUE,
-        'colgroups'   => array(),
-        'empty'       => $emptyCase,
+    // Build the table variables
+    $database_header = array(
+        array('data' => '',        'sort' => 'ASC'),
+        array('data' => 'Name',     'field' => 'name'),
+        array('data' => 'Version',  'field' => 'version'),
+        array('data' => 'Type',     'field' => 'type'),
+        array('data' => 'Category', 'field' => 'category'),
+        array('data' => 'Location (Remote)',    'field' => 'location'),
+        array('data' => 'Actions'),            
     );
     
-    $contents['resource_list'] = array(
-        '#markup'   => theme('table', $table_vars),
+    // Generate the database query (with sorting and pagination)
+    $select = db_select('tseq_db_existing_locations','db')
+            ->extend('PagerDefault')
+            ->extend('TableSort');
+    
+    $select->fields('db',array('db_id','name','version','type','category','location'))
+           ->limit(15)
+           ->orderByHeader($database_header);
+    $databases = $select->execute();
+    $database_list = array();
+    foreach($databases as $key => $database)
+    {
+        $edit = l('Edit','admin/tripal/extension/diamond/edit_db/'.$database->db_id);
+        $delete = l('Delete','admin/tripal/extension/diamond/delete_db/'.$database->db_id);
+        
+        $database_list[] = array(
+            $key+1,
+            $database->name,
+            $database->version,
+            $database->type,
+            $database->category,
+            $database->location,
+            $edit.' | '.$delete,
+        );
+    }
+    
+    $output = theme('table', array('header' => $database_header, 'rows' => $database_list));
+    
+    $output .= theme('pager');
+    
+    $contents['database_list'] = array(
+        '#markup'   => $output,
         '#weight'   => '4',
-    );
-    
-    /*
-     * Import/Export links. currently disabled
-     * @todo
-     *  implement this properly using Drupal (or Tripal?) content types
-     */
-    /*$contents['EI_links'] = array(
-        '#markup'   => t('<a href="'.base_path().'admin/tripal/extension/diamond/export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="'.base_path().'admin/tripal/extension/diamond/import">Import a list (CSV, Excel)</a>'),
-        '#weight'    => '3',
-    );*/
-    
-    // Generate the pagination links
-    $pageLinks = '';
-    if (count($db) > 10)
-    {
-        $pageLinks = 'Nagivate to a page: ';
-        $modulePath = base_path().'admin/tripal/extension/diamond/config/dblist/';
-        $pageLinks = $pageLinks.'<a href="'.$modulePath.'1">1</a>';
-        $numPages = ceil(count($db) / 10);
-        for ($i = 2; $i <= $numPages; $i++)
-        {
-            $pageLinks = $pageLinks.' | <a href="'.$modulePath.$i.'">'.$i.'</a>';
-        }
-    }
-    
-    $contents['pagination'] = array(
-        '#markup'   => $pageLinks,
-        '#weight'   => '10',
     );
     
     return $contents;
