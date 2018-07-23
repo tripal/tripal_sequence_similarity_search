@@ -48,3 +48,15 @@ function tseq_get_matches_count($output_file)
     $line_count = explode(' ', $output[0]);
     return $line_count[0];
 }
+
+/*
+ *  Are the results for the requested job in the table yet?
+ */
+function tseq_results_exist($tripal_job_id)
+{
+    $query = "SELECT count(tripal_job_id) from tseq_results where tripal_job_id = $tripal_job_id";
+    $results = db_query($query);
+    
+    $count = $results->fetchAssoc();
+    return $count['count'];
+}
