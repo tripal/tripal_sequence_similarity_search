@@ -8,7 +8,6 @@ drupal_set_title('Status of Job #'.$job_id);
 //$outputPath = '/var/www/html/Drupal/sites/default/files/tripal/jobs/';
 
 ?>
-<hr />
 <?php
     $status_error = explode(' ', $status);
     if ($status_error[0] == 'Error:')
@@ -281,6 +280,10 @@ else if ($status == 'Completed')
     }
 }
 else if ($status == 'Error')
+{
+    
+}
+else if ($status == 'Cancelled')
 {
     
 }
