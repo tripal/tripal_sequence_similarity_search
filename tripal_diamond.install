@@ -2,7 +2,8 @@
 /*
  *  create database tables and columns
  */
-function tripal_diamond_install() {
+function tripal_diamond_install()
+{
     
     /*
      *  Populate the diamond_settings table with a default row.
@@ -36,7 +37,8 @@ function tripal_diamond_install() {
      * Is it possible to remove the content type but keep nodes in place
      * in the event of a reinstall/accidental uninstall?
      */
-function tripal_diamond_uninstall() {
+function tripal_diamond_uninstall()
+{
     $query = 'SELECT nid FROM {node} WHERE {node}.type = :type ';
     
     $result = db_query($query, array(':type'   => 'diamond_database'));
@@ -60,7 +62,8 @@ function tripal_diamond_uninstall() {
     field_purge_batch(1000);
 }
 
-function tripal_diamond_schema() {
+function tripal_diamond_schema()
+{
     $schema['tseq_jobs'] = array(
         'description' => t('TSeq Jobs'),
         'fields' => array(
@@ -296,9 +299,160 @@ function tripal_diamond_schema() {
         ),
     );
     
+    $schema['tseq_results'] = array(
+        'description' => t('Status and data from TSeq jobs'),
+        'fields' => array(
+            'tripal_job_id' => array(
+                'description' => t('Tied to Tripal Job ID'),
+                'type' => 'int',
+                'unsigned' => false,
+                'not null' => true,
+            ),
+            'user_id'       => array(
+                'description' => t('User ID of the submitting user'),
+                'type' => 'int',
+                'unsigned' => true,
+                'not null' => true,
+            ),
+            'tseq_db_id'    => array(
+                'description' => t('The database associated with this job (if exist)'),
+                'type'        => 'int',
+                'unsigned'    => true,
+                'not null'    => false,
+            ),
+            'data'          => array(
+                'description'   => t('Miscellaneous data about the job (not actual results data'),
+                'type'          => 'varchar',
+                'not null'      => 'false',
+            ),
+            'summary'        => array(
+                'description'   => t('Status of the job (success, failure, empty'),
+                'type'          => 'varchar',
+                'length'        => 31,
+                'not null'      => true,
+            ),
+            'result_type'   => array(
+                'description'   => t('What format are the results in (ex BLAST XML, TSEQ_INFO)'),
+                'type'          => 'varchar',
+                'length'        => 31,
+                'not null'      => true,
+            ),
+            'sequence_count'    =>  array(
+                'description'   => t('How many sequences were provided to search for'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => true,
+            ),
+            'matches'       => array(
+                'description'   => t('The number of matches that were found and can be expected in the table'),
+                'type'          => 'int',
+                'length'        => 31,
+                'not null'      => false,
+            ),
+            'database_used' => array(
+                'description'   => t('The database that was used (if provided by site)'),
+                'type'          => 'varchar',
+                'length'        => 255,
+                'not null'      => false,
+            ),
+        ),
+    );
+    
+    $schema['tseq_results_data'] = array(
+        'description'   => t('Data from the TSeq job, in BLAST XML format (12 columns)'),
+        'fields'        => array(
+            'tripal_job_id' => array(
+                'description'   => t('Tied to Tripal Job ID'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => true,
+            ),
+            'match_id'  => array(
+                'description'   => t('Which row of results is this'),
+                'type'          =>  'int',
+                'unsigned'      =>  false,
+                'not null'      =>  true,
+            ),
+            'query_label'   => array(
+                'description'   => t('Query Label'),
+                'type'          => 'varchar',
+                'length'        => 255,
+                'not null'      => false,
+            ),
+            'target'    => array(
+                'description'   => t('Target'),
+                'type'          => 'varchar',
+                'length'        => 255,
+                'not null'      => false,
+            ),
+            'percent_identity'  => array(
+                'description'   => t('Percent Identity'),
+                'type'          => 'varchar',
+                'length'        => 7,
+                'not null'      => false,
+            ),
+            'alignment_length'  => array(
+                'description'   => t('Alignment Length'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => false,
+            ),
+            'mismatches'    => array(
+                'description'   => t('Mismatches'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => false,
+            ),
+            'gap_opens' => array(
+                'description'   => t('Gap Opens'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => false,
+            ),
+            'start_position_query'  => array(
+                'description'   => t('Start Position (Query)'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => false,
+            ),
+            'end_position_query'    => array(
+                'description'   => t('End Postion (Query)'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => false,
+            ),
+            'start_position_database'   => array(
+                'description'   => t('Start Position (Database)'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => false,
+            ),
+            'end_position_database' => array(
+                'description'   => t('End Position (Database)'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => false,
+            ),
+            'e_value'   => array(
+                'description'   => t('e-value'),
+                'type'          => 'varchar',
+                'length'        => 255,
+                'not null'      => false,
+            ),
+            'bit_score' => array(
+                'description'   => t('Target'),
+                'type'          => 'varchar',
+                'length'        => 255,
+                'not null'      => false,
+            ),
+        )
+    );
+    
    return $schema;         
 }
-
+/**
+ * This should be update 7001: add web_location field to tseq_db_existing_locations table
+ */
 function tripal_diamond_update_5000()
 {
     db_add_field(
@@ -313,3 +467,169 @@ function tripal_diamond_update_5000()
     );
 }
 
+/**
+ * Add tseq_results table, keep track of results within the database
+ */
+function tripal_diamond_update_7002()
+{
+    db_create_table(
+        'tseq_results',
+        array(
+            'description' => t('Status and data from TSeq jobs'),
+            'fields' => array(
+                'tripal_job_id' => array(
+                    'description' => t('Tied to Tripal Job ID'),
+                    'type' => 'int',
+                    'unsigned' => false,
+                    'not null' => true,
+                ),
+                'user_id'       => array(
+                    'description' => t('User ID of the submitting user'),
+                    'type' => 'int',
+                    'unsigned' => true,
+                    'not null' => true,
+                ),
+                'tseq_db_id'    => array(
+                    'description' => t('The database associated with this job (if exist)'),
+                    'type'        => 'int',
+                    'unsigned'    => true,
+                    'not null'    => false,
+                ),
+                'data'          => array(
+                    'description'   => t('Miscellaneous data about the job (not actual results data'),
+                    'type'          => 'varchar',
+                    'not null'      => 'false',
+                ),
+                'summary'        => array(
+                    'description'   => t('Status of the job (success, failure, empty'),
+                    'type'          => 'varchar',
+                    'length'        => 31,
+                    'not null'      => true,
+                ),
+                'result_type'   => array(
+                    'description'   => t('What format are the results in (ex BLAST XML, TSEQ_INFO)'),
+                    'type'          => 'varchar',
+                    'length'        => 31,
+                    'not null'      => true,
+                ),
+                'sequence_count'    =>  array(
+                    'description'   => t('How many sequences were provided to search for'),
+                    'type'          => 'int',
+                    'unsigned'      => false,
+                    'not null'      => true,
+                ),
+                'matches'       => array(
+                    'description'   => t('The number of matches that were found and can be expected in the table'),
+                    'type'          => 'int',
+                    'length'        => 31,
+                    'not null'      => false,
+                ),
+                'database_used' => array(
+                    'description'   => t('The database that was used (if provided by site)'),
+                    'type'          => 'varchar',
+                    'length'        => 255,
+                    'not null'      => false,
+                ),
+            ),
+        )
+    );
+}
+
+/**
+ * Add tseq_results_data table to handle data from successful jobs
+ */
+function tripal_diamond_update_7003()
+{
+    db_create_table(
+        'tseq_results_data',
+        array(
+            'description'   => t('Data from the TSeq job, in BLAST XML format (12 columns)'),
+            'fields'        => array(
+                'tripal_job_id' => array(
+                'description'   => t('Tied to Tripal Job ID'),
+                'type'          => 'int',
+                'unsigned'      => false,
+                'not null'      => true,
+                ),
+                'match_id'  => array(
+                    'description'   => t('Which row of results is this'),
+                    'type'          =>  'int',
+                    'unsigned'      =>  false,
+                    'not null'      =>  true,
+                ),
+                'query_label'   => array(
+                    'description'   => t('Query Label'),
+                    'type'          => 'varchar',
+                    'length'        => 255,
+                    'not null'      => false,
+                ),
+                'target'    => array(
+                    'description'   => t('Target'),
+                    'type'          => 'varchar',
+                    'length'        => 255,
+                    'not null'      => false,
+                ),
+                'percent_identity'  => array(
+                    'description'   => t('Percent Identity'),
+                    'type'          => 'varchar',
+                    'length'        => 7,
+                    'not null'      => false,
+                ),
+                'alignment_length'  => array(
+                    'description'   => t('Alignment Length'),
+                    'type'          => 'int',
+                    'unsigned'      => false,
+                    'not null'      => false,
+                ),
+                'mismatches'    => array(
+                    'description'   => t('Mismatches'),
+                    'type'          => 'int',
+                    'unsigned'      => false,
+                    'not null'      => false,
+                ),
+                'gap_opens' => array(
+                    'description'   => t('Gap Opens'),
+                    'type'          => 'int',
+                    'unsigned'      => false,
+                    'not null'      => false,
+                ),
+                'start_position_query'  => array(
+                    'description'   => t('Start Position (Query)'),
+                    'type'          => 'int',
+                    'unsigned'      => false,
+                    'not null'      => false,
+                ),
+                'end_position_query'    => array(
+                    'description'   => t('End Postion (Query)'),
+                    'type'          => 'int',
+                    'unsigned'      => false,
+                    'not null'      => false,
+                ),
+                'start_position_database'   => array(
+                    'description'   => t('Start Position (Database)'),
+                    'type'          => 'int',
+                    'unsigned'      => false,
+                    'not null'      => false,
+                ),
+                'end_position_database' => array(
+                    'description'   => t('End Position (Database)'),
+                    'type'          => 'int',
+                    'unsigned'      => false,
+                    'not null'      => false,
+                ),
+                'e_value'   => array(
+                    'description'   => t('e-value'),
+                    'type'          => 'varchar',
+                    'length'        => 255,
+                    'not null'      => false,
+                ),
+                'bit_score' => array(
+                    'description'   => t('Target'),
+                    'type'          => 'varchar',
+                    'length'        => 255,
+                    'not null'      => false,
+                ),
+            ),
+        )
+    );
+}
