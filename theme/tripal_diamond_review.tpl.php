@@ -280,7 +280,7 @@ else if ($status == 'Completed')
         echo "<li>Click <a href=\"download/$job_id/target\">here</a> to download your original target database</li>";
     }
 }
-else if ($statusError == 'Error')
+else if ($status == 'Error')
 {
     
 }
