@@ -114,7 +114,7 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
         );
     
-    // Configuration: Settings
+    // Configuration: Settings Tab
     $items['admin/tripal/extension/diamond/config/settings'] = array(
         'title' => 'Settings',
         'type'  => MENU_LOCAL_TASK,
@@ -128,17 +128,31 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
     );
     
-    //Configuration: Categories
+    //Configuration: Categories Tab
     $items['admin/tripal/extension/diamond/config/categories'] = array(
         'title' => 'Categories',
         'type'  => MENU_LOCAL_TASK,
-        'weight' => 1,
-        'priority' => 1,
+        'weight' => 2,
+        'priority' => 2,
         'page callback' =>  'tripal_diamond_config_categories_page_build',
         'page arguments'=>  array('1', 'tripal_diamond_config_categories_page'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'file' => 'includes/admin/tripal_diamond.categories.inc',
+        'file path' => drupal_get_path ('module', 'tripal_diamond')
+    );
+    
+    //Admin: Genome Browser Link Scheme Tab
+    $items['admin/tripal/extension/diamond/config/browseLink'] = array(
+        'title' => 'Genome Browser Link',
+        'type'  => MENU_LOCAL_TASK,
+        'weight' => 3,
+        'priority' => 3,
+        'page callback' =>  'tseq_config_browseLink_page_build',
+        'page arguments'=>  array('1', 'tseq_config_browseLink_page'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'file' => 'includes/admin/tseq.browseLink.inc',
         'file path' => drupal_get_path ('module', 'tripal_diamond')
     );
     
@@ -207,6 +221,41 @@ function tripal_diamond_menu()
         'type' => MENU_CALLBACK
         );
     
+    /*
+    // Admin: add a new Genome Browser Link Scheme
+    $items['admin/tripal/extension/diamond/add_browseLink'] = array(
+        'title' => 'TSeq Genome Browser Link Scheme Add',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tseq_browseLink_add_form',5),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_CALLBACK,
+        );
+    
+    // Admin: edit an existing Genome Browser Link Scheme
+    $items['admin/tripal/extension/diamond/edit_browseLink/%'] = array(
+        'title' => 'TSeq Genome Browser Link Scheme Edit',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tseq_browseLink_edit_form',5),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_CALLBACK
+        );
+    // Admin: delete an existing Genome Browser Link Scheme
+    $items['admin/tripal/extension/diamond/delete_browseLink/%'] = array(
+        'title' => 'TSeq Genome Browser Link Scheme Delete',
+        'description' => 'Tripal Diamond Admin Configuration page',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tseq_browseLink_delete_form', 5),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_CALLBACK
+        );
+    
+     * 
+     */
     //Test for Analyses Page
     $items['user/%/tseq_analysis'] = array (
         'title' => 'TSeq Analysis',
