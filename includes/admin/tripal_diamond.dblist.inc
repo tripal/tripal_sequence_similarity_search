@@ -136,7 +136,7 @@ function tripal_diamond_database_add_form($form, &$form_state)
         '#type'         => 'textfield',
         '#title'        => 'File location',
         '#size'         => '120',
-        '#description'  => 'The path to the database on disk (accessible on the remote server)',
+        '#description'  => 'The path to the indexed database on disk (accessible on the remote server)',
         '#required'     => true,
     );
     
@@ -144,7 +144,7 @@ function tripal_diamond_database_add_form($form, &$form_state)
         '#type'         => 'textfield',
         '#title'        => 'Web Location (Optional)',
         '#size'         => '120',
-        '#description'  => 'If the original sequence is publicly available for download, set the URL here (FTP, HTTP)',
+        '#description'  => 'If the original sequence (non-indexed) is publicly available for download, set the URL here (FTP, HTTP)',
         '#required'     => false,
     );
     
@@ -225,7 +225,7 @@ function tripal_diamond_database_edit_form($form, &$form_state,$db_id)
         '#type'         =>  'textfield',
         '#title'        =>  'Name',
         '#size'         =>  '50',
-        '#description'  =>  'The Name of the target database (.dmnd) file.',
+        '#description'  =>  'The Name of the target database.',
         '#required'     =>  true,
         '#default_value'      =>  t($rowToUpdate['name']),
         '#prefix'       => '<h2>Current values</h2>'
@@ -255,7 +255,7 @@ function tripal_diamond_database_edit_form($form, &$form_state,$db_id)
         '#type'         =>  'textfield',
         '#title'        =>  'Location',
         '#size'         =>  '120',
-        '#description'  =>  'The path to the database on disk',
+        '#description'  =>  'The path to the indexed database on disk (accessible on the remote server)',
         '#required'     =>  true,
         '#default_value'      =>  t($rowToUpdate['location']),
     );
@@ -264,7 +264,7 @@ function tripal_diamond_database_edit_form($form, &$form_state,$db_id)
         '#type'         =>  'textfield',
         '#title'        =>  'Web Location (Optional)',
         '#size'         =>  '120',
-        '#description'  =>  'If the original sequence is publicly available for download, set the URL here (FTP, HTTP)',
+        '#description'  =>  'If the original sequence (non-indexed) is publicly available for download, set the URL here (FTP, HTTP)',
         '#required'     =>  false,
         '#default_value'      =>  t($rowToUpdate['web_location']),
     );
