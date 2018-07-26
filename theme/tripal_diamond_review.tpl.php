@@ -207,9 +207,16 @@ else if ($status == 'Completed')
     {
         $summary_rows[3] = array('Error',$results_details['data']);
     }
+    $summary_attributes = array(
+        'class' => array(
+            'summaryTable',
+        ),
+    );
+    
     $summary_table_vars = array(
         'header' => $summary_headers,
-        'rows'   => $summary_rows
+        'rows'   => $summary_rows,
+        'attributes'    => $summary_attributes
     );
     echo theme('table',$summary_table_vars);
     
@@ -259,9 +266,17 @@ else if ($status == 'Completed')
                 $row->bit_score,
             );
         }
-
-        $output = theme('table',array('header' => $results_data_header,
-                                      'rows'   => $results_data_rows));
+        $results_attributes = array(
+            'class' => array(
+                'resultsTable',
+            ),
+        );
+        $results_table_vars = array(
+            'header' => $results_data_header,
+            'rows'   => $results_data_rows,
+            'attributes'    => $results_attributes
+        );
+        $output = theme('table',$results_table_vars);
 
         $output .= theme('pager');
         echo $output;
