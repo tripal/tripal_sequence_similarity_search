@@ -14,7 +14,12 @@ function tripal_diamond_install()
         'file_expire_time'          => '30',
         'blast_exe_location'        => '',
         'diamond_exe_location'      => '',
-        'preferred_remote_resource' => '',       
+        'preferred_remote_resource' => '',
+        'defaults_e_value'          => '0.003',
+        'defaults_target_coverage'  => '50',
+        'defaults_query_coverage'   => '50',
+        'defaults_max_alignments_list'  => '5, 10 25, 50, 100, 250, 500, 750, 1000',
+        'defaults_max_alignments_selected'  => '10',
     );
     
     drupal_write_record('tseq_settings', $tseq_settings);
@@ -274,6 +279,31 @@ function tripal_diamond_schema()
                 'description'   => t('ID of the remote resource to use, as specified in the Tripal Remote Resource module'),
                 'type'          => 'int',
                 'length'        => 7,
+            ),
+            'defaults_e_value'  => array(
+                'description'   => t('Default Submission Settings: e-value'),
+                'type'          => 'varchar',
+                'length'        => 15,
+            ),
+            'defaults_target_coverage'  => array(
+                'description'   => t('Default Submission Settings: target coverage'),
+                'type'          => 'varchar',
+                'length'        => 7,
+            ),
+            'defaults_query_coverage'   => array(
+                'description'   => t('Default Submission Settings: query coverage'),
+                'type'          => 'varchar',
+                'length'        => 7,
+            ),
+            'defaults_max_alignments_list'  => array(
+                'description'   => t('Default Submission Settings: Available Max Alignments'),
+                'type'          => 'varchar',
+                'length'        => 255,
+            ),
+            'defaults_max_alignments_selected'  => array(
+                'description'   => t('Default Submission Settings: Max Alignment Selected/Default'),
+                'type'          => 'int',
+                'length'        => 15,
             ),
         ),
     );
@@ -632,4 +662,51 @@ function tripal_diamond_update_7003()
             ),
         )
     );
+}
+/**
+ * Add additional fields to the settings table to handle "default advanced configuration parameters"
+ */
+function tripal_diamond_update_7004()
+{
+    db_add_field(
+        'tseq_settings',
+        'defaults_e_value',
+            array(
+                'description'   => t('Default Submission Settings: e-value'),
+                'type'          => 'varchar',
+                'length'        => 15,
+            )
+        );
+    db_add_field('tseq_settings',
+        'defaults_target_coverage',
+            array(
+                'description'   => t('Default Submission Settings: target coverage'),
+                'type'          => 'varchar',
+                'length'        => 7,
+            )
+        );
+    db_add_field('tseq_settings',
+        'defaults_query_coverage',
+            array(
+                'description'   => t('Default Submission Settings: query coverage'),
+                'type'          => 'varchar',
+                'length'        => 7,
+            )
+        );
+    db_add_field('tseq_settings',
+        'defaults_max_alignments_list',
+            array(
+                'description'   => t('Default Submission Settings: Available Max Alignments'),
+                'type'          => 'varchar',
+                'length'        => 255,
+            )
+        );
+    db_add_field('tseq_settings',
+        'defaults_max_alignments_selected',
+            array(
+                'description'   => t('Default Submission Settings: Max Alignment Selected/Default'),
+                'type'          => 'int',
+                'length'        => 15,
+            )
+        );
 }
