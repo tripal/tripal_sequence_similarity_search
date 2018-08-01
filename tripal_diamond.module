@@ -128,12 +128,26 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
     );
     
+    // Configuration: Defaults Tab
+    $items['admin/tripal/extension/diamond/config/defaults'] = array(
+        'title' => 'Advanced Options - Defaults',
+        'type'  => MENU_LOCAL_TASK,
+        'weight' => 2,
+        'priority' => 2,
+        'page callback' =>  'drupal_get_form',
+        'page arguments'=>  array('tseq_configuration_defaults_form'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'file' => 'includes/admin/tseq.defaults.inc',
+        'file path' => drupal_get_path ('module', 'tripal_diamond')
+    );
+    
     //Configuration: Categories Tab
     $items['admin/tripal/extension/diamond/config/categories'] = array(
         'title' => 'Categories',
         'type'  => MENU_LOCAL_TASK,
-        'weight' => 2,
-        'priority' => 2,
+        'weight' => 3,
+        'priority' => 3,
         'page callback' =>  'tripal_diamond_config_categories_page_build',
         'page arguments'=>  array('1', 'tripal_diamond_config_categories_page'),
         'access callback' => TRUE,
@@ -146,8 +160,8 @@ function tripal_diamond_menu()
     $items['admin/tripal/extension/diamond/config/browseLink'] = array(
         'title' => 'Genome Browser Link',
         'type'  => MENU_LOCAL_TASK,
-        'weight' => 3,
-        'priority' => 3,
+        'weight' => 4,
+        'priority' => 4,
         'page callback' =>  'tseq_config_browseLink_page_build',
         'page arguments'=>  array('1', 'tseq_config_browseLink_page'),
         'access callback' => TRUE,
