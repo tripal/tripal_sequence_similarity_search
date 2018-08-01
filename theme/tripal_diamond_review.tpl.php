@@ -73,12 +73,7 @@ else if ($status == 'Completed')
             $db_info = tseq_get_db_info($tseq_db_id);        
             //drupal_set_message("Database used: ".$db_info['name'].", version ".$db_info['version']." (".$db_info['category'].")");
             $database_used = $db_info['name'].", version ".$db_info['version']." (".$db_info['type']." - ".$db_info['category'].")";
-            // Supply a download link
-            // Pumpkin - do we really want to have this here? 
-            if ($db_info['web_location'] != '')
-            {
-                $database_used = $database_used." <a href=\"".$db_info['web_location']."\">Download</a>";
-            }
+            
         }
         else
         {
@@ -194,14 +189,14 @@ else if ($status == 'Completed')
     
     // Display this data (from db) into some nice tables
     // Results Details Table
-    echo "<h3>Summary of your job:</h3>";
+    echo "<h3>Your TSeq Search Results</h3>";
     $summary_headers = array('Summary','Info');
     $summary_rows = array();
     $summary_rows[0] = array('Sequences submitted',$results_details['sequence_count']==-1 ? 'N/A':$results_details['sequence_count']);
     $summary_rows[1] = array('Matches found',$results_details['matches']);
     if ($results_details['database_used'])
     {
-        $summary_rows[2] = array('Database searched against',$results_details['database_used']);
+        $summary_rows[2] = array('Target Database',$results_details['database_used']);
     }
     if ($results_details['summary'] == 'error')
     {
@@ -225,9 +220,9 @@ else if ($status == 'Completed')
     // Results Data Table
     if($results_details['summary'] != 'error')
     {
-        echo "<h3>Job Results:</h3>";
+        echo "<h3>Search Results</h3>";
         $results_data_header = array(
-            array('data' => 'Query Label',              'field' => 'query_label',        'sort' => 'ASC'), // Only set default sort order for 1 field
+            array('data' => 'Query Sequence',              'field' => 'query_label'), 
             array('data' => 'Target',                   'field' => 'target'),
             array('data' => '% Identity',               'field' => 'percent_identity'),
             array('data' => 'Alignment Length',         'field' => 'alignment_length'),
@@ -237,7 +232,7 @@ else if ($status == 'Completed')
             array('data' => 'End Position (Query)',     'field' => 'end_position_query'),
             array('data' => 'Start Position (Database)','field' => 'start_position_database'),
             array('data' => 'End Position (Database)',  'field' => 'end_position_database'),
-            array('data' => 'E-Value',                  'field' => 'e_value'),
+            array('data' => 'E-Value',                  'field' => 'e_value',        'sort' => 'ASC'),  // Only set default sort order for 1 field
             array('data' => 'Bit Score',                'field' => 'bit_score'),
         );
         $select = db_select('tseq_results_data','t')
@@ -271,10 +266,14 @@ else if ($status == 'Completed')
                 'resultsTable',
             ),
         );
+        $results_caption = array(
+                'Sort columns by clicking on a header.',
+        );
         $results_table_vars = array(
             'header' => $results_data_header,
             'rows'   => $results_data_rows,
-            'attributes'    => $results_attributes
+            'attributes'    => $results_attributes,
+            'caption'       => t('Sort columns by clicking on a header'),
         );
         $output = theme('table',$results_table_vars);
 
@@ -283,7 +282,11 @@ else if ($status == 'Completed')
     }
     
     // Download section
-    echo "<h3>Downloads:</h3>";
+    // Get some relevent info
+    
+            $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
+            $db_info = tseq_get_db_info($tseq_db_id);
+    echo "<h3>File Downloads</h3>";
     if($results_details['summary'] != 'error')
     {
         echo "<li>Click <a href=\"download/$job_id/results\">here</a> to download these results</li>";
@@ -292,6 +295,10 @@ else if ($status == 'Completed')
     if ($job_information['database_file_type'] != 'database')
     {
         echo "<li>Click <a href=\"download/$job_id/target\">here</a> to download your original target database</li>";
+    }    
+    if ($db_info['web_location'] != '')
+    {
+        echo " <li>Click <a href=\"".$db_info['web_location']."\">here</a> to download the original sequence";
     }
 }
 else if ($status == 'Error')
