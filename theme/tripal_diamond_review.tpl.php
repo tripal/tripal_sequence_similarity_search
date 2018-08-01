@@ -222,7 +222,7 @@ else if ($status == 'Completed')
     {
         echo "<h3>Search Results</h3>";
         $results_data_header = array(
-            array('data' => 'Query Sequence',              'field' => 'query_label'), 
+            array('data' => 'Query Sequence',           'field' => 'query_label'), 
             array('data' => 'Target',                   'field' => 'target'),
             array('data' => '% Identity',               'field' => 'percent_identity'),
             array('data' => 'Alignment Length',         'field' => 'alignment_length'),
@@ -232,7 +232,7 @@ else if ($status == 'Completed')
             array('data' => 'End Position (Query)',     'field' => 'end_position_query'),
             array('data' => 'Start Position (Database)','field' => 'start_position_database'),
             array('data' => 'End Position (Database)',  'field' => 'end_position_database'),
-            array('data' => 'E-Value',                  'field' => 'e_value',        'sort' => 'asc'),  // Only set default sort order for 1 field
+            array('data' => 'E-Value',                  'field' => 'e_value',        'sort' => 'asc'),  // Only set default sort order for 1 field. Sort direction needs to be lowercase (asc, not ASC)
             array('data' => 'Bit Score',                'field' => 'bit_score'),
         );
         $select = db_select('tseq_results_data','t')
