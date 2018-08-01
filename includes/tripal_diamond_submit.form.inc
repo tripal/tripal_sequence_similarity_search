@@ -388,11 +388,17 @@ function tripal_diamond_submit_form($form, &$form_state)
     /*
      * Forms for simple command line options 
      */
+    
+    // Get the default values from the database
+    $query = 'select defaults_e_value, defaults_target_coverage, defaults_query_coverage, defaults_max_alignments_list, defaults_max_alignments_selected from tseq_settings';
+    $results = db_query($query);
+    $advanced_options = $results->fetchAssoc();
+    
     $form['Advanced'] = array(
       '#type'           => 'fieldset',
       '#title'          => 'Advanced Options',
       '#collapsible'    => TRUE,
-      '#collapsed'      => TRUE,
+      '#collapsed'      => FALSE,
       '#prefix'         => '<hr>',
     );
     
@@ -403,7 +409,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#size'         =>  '10',
         //'#description'  =>  'Expected number of chance matches in a random model. This number should be give in a decimal format.',
         '#required'     =>  true,
-        '#default_value'      =>  t('0.003'),
+        '#default_value'      =>  t($advanced_options['defaults_e_value']),
         //'#prefix'       => '<b>Advanced Options</b>',
         '#field_prefix' => 'Expected number of chance matches in a random model. This number should be give in a decimal format.<br />',
     );
@@ -414,7 +420,7 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#size'         =>  '10',
         '#field_prefix'  =>  'Report only alignments above the given percentage of subject cover.<br />',
         '#required'     =>  true,
-        '#default_value'      =>  t('50'),
+        '#default_value'      =>  t($advanced_options['defaults_target_coverage']),
     );
     
     $form['Advanced']['queryCoverage'] = array(
@@ -423,37 +429,50 @@ function tripal_diamond_submit_form($form, &$form_state)
         '#size'         =>  '10',
         '#field_prefix'  =>  'Report only alignments above the given percentage of query cover.<br />',
         '#required'     =>  true,
-        '#default_value'      =>  t('50'),
+        '#default_value'      =>  t($advanced_options['defaults_query_coverage']),
     );
     
+            // Get the list of default options for max alignments
+            $max_alignment_array = explode(',',$advanced_options['defaults_max_alignments_list']);
+            $max_alignments_to_show = array();
+            foreach($max_alignment_array as $entry)
+            {
+                $max_alignment_to_show[$entry] = array(trim($entry) => t(trim($entry)));
+            }
+            dpm($max_alignment_to_show);
+            drupal_set_message("Trying to set default: ".$advanced_options['defaults_max_alignments_selected']);
+            
     $form['Advanced']['maxAlignments'] = array(
         '#type'         =>  'select',
         '#title'        =>  'Max Alignments',
         '#field_prefix'  =>  'The maximum number of target sequences per query to report alignments for.<br />',
         '#required'     =>  false,
-        '#options'      => array(
-            '5'         => t('5'),
-            '10'        => t('10'),
-            '25'        => t('25'),
-            '50'        => t('50'),
-            '100'       => t('100'),
-            '250'       => t('250'),
-            '500'       => t('500'),
-            '750'       => t('750'),
-            '1000'      => t('1000'),            
-            ),
-        '#default_value' => '10',
+        '#options'      =>  $max_alignment_to_show,
+        '#default_value'      => $advanced_options['defaults_max_alignments_selected'],
     );
            
-
-    $form['submit_button'] = array(
+    if ($user->uid) {
+        $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Submit'),
         '#suffix' => t('<p>Upon Submission, your search will enter the '
                 . 'queue with either BLAST or Diamond as the engine. You will'
                 . ' be given a link to view the progress and results of the '
                 . 'job.</p>')
-    );
+        );
+    }
+    else
+    {
+        $form['submit_button'] = array(
+        '#type' => 'submit',
+        '#value' => t('Submit'),
+        '#disabled' => true,
+        '#suffix' => t('<p>Upon Submission, your search will enter the '
+                . 'queue with either BLAST or Diamond as the engine. You will'
+                . ' be given a link to view the progress and results of the '
+                . 'job.</p>')
+        );
+    }
     
     return $form;
     
@@ -906,10 +925,10 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         'tripal_job_id'         => $remote_diamond_job_id,
         'user_id'               => $user_id,
         'submit_time'           => $submit_time,
-        'sequence_query_type'   => strtolower($form_state['values']['QueryType']),
-        'database_search_type'  => $database_search_type,
-        'sequence_file_type'    => $queryFileType,
-        'database_file_type'    => $targetFileType,
+        'sequence_query_type'   => strtolower($form_state['values']['QueryType']),      // i.e. "protein"
+        'database_search_type'  => $database_search_type,                               // i.e. "protein"
+        'sequence_file_type'    => $queryFileType,                                      // i.e. "upload"
+        'database_file_type'    => $targetFileType,                                     // i.e. "database"
         'sequence_file'         => $queryFile,
         'database_file'         => $targetFile,
         'command'               => $command_to_run,
@@ -917,7 +936,23 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     
     drupal_write_record('tseq_job_information', $new_job);
     
+    //Do up a small table
     
+    $headerTest = array("One", "Two", "Three");
+    $rowsTest = array(
+        array("a","b","c"),
+        array("A","B","C"),
+        array("alpha","beta","charlie"),
+    );
+    
+    $testTableVars = array(
+        'header' => $headerTest,
+        'rows'   => $rowsTest,
+    );
+    
+    $output = theme('table',$testTableVars);
+    return $output;
+    echo "Hello";
     //$form_state['redirect'] = 'Diamond/results/'.$remote_diamond_job_id;
  
 }
