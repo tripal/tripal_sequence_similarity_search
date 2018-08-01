@@ -232,7 +232,7 @@ else if ($status == 'Completed')
             array('data' => 'End Position (Query)',     'field' => 'end_position_query'),
             array('data' => 'Start Position (Database)','field' => 'start_position_database'),
             array('data' => 'End Position (Database)',  'field' => 'end_position_database'),
-            array('data' => 'E-Value',                  'field' => 'e_value',        'sort' => 'ASC'),  // Only set default sort order for 1 field
+            array('data' => 'E-Value',                  'field' => 'e_value',        'sort' => 'asc'),  // Only set default sort order for 1 field
             array('data' => 'Bit Score',                'field' => 'bit_score'),
         );
         $select = db_select('tseq_results_data','t')
