@@ -398,7 +398,7 @@ function tripal_diamond_submit_form($form, &$form_state)
       '#type'           => 'fieldset',
       '#title'          => 'Advanced Options',
       '#collapsible'    => TRUE,
-      '#collapsed'      => FALSE,
+      '#collapsed'      => TRUE,
       '#prefix'         => '<hr>',
     );
     
