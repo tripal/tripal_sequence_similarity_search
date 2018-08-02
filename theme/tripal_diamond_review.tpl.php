@@ -284,8 +284,11 @@ else if ($status == 'Completed')
     // Download section
     // Get some relevent info
     
-            $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
-            $db_info = tseq_get_db_info($tseq_db_id);
+    $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
+    if($job_information['database_file_type'] == 'database')
+    {
+        $db_info = tseq_get_db_info($tseq_db_id);
+    }
     echo "<h3>File Downloads</h3>";
     if($results_details['summary'] != 'error')
     {
@@ -296,7 +299,7 @@ else if ($status == 'Completed')
     {
         echo "<li>Click <a href=\"download/$job_id/target\">here</a> to download your original target database</li>";
     }    
-    if ($db_info['web_location'] != '')
+    if( ($job_information['database_file_type'] == 'database') AND ($db_info['web_location'] != '') )
     {
         echo " <li>Click <a href=\"".$db_info['web_location']."\">here</a> to download the original sequence";
     }
