@@ -6,51 +6,67 @@ function tripal_diamond_user_analysis_page($uid) {
      * Get the jobs belonging to this user
      */
     global $user;
-        $user_id = $user->uid;
-    //$query = "select * from tseq_job_information where user_id=$user_id";
-    $query = "select d.tseq_job_id, d.submit_time, d.sequence_query_type, d.database_search_type, d.user_id, d.tripal_job_id, t.status from tseq_job_information d join tripal_jobs t on d.tripal_job_id=t.job_id where user_id=$user_id order by d.tseq_job_id";
-    $results = db_query($query);
+    $user_id = $user->uid;
+        
+    /*
+     *  Build the Table
+     */
+    
+    // Header
+    $header = array(
+        array('data' => 'Job ID',       'field' => 'd.tripal_job_id',           'sort' => 'asc'),
+        array('data' => 'Submit Time',  'field' => 'd.submit_time'),
+        array('data' => 'Query Type',   'field' => 'd.sequence_query_type'),
+        array('data' => 'Search Type',  'field' => 'd.database_search_type'),
+        array('data' => 'Link'),
+        array('data' => 'Status',       'field' => 't.status')
+    );
+    
+    // Query
+    $query = db_select('tseq_job_information','d');
+    
+    // Join tseq_job_information and tripal_job on tripal_job_id=job_id, respectively
+    $query->join('tripal_jobs','t','d.tripal_job_id=t.job_id');
+    
+    // Which fields are we interested in the database?
+    $query->fields('d', array('tripal_job_id','submit_time','sequence_query_type','database_search_type','user_id'))
+          ->fields('t', array('status'));
+    
+    // Extend the table with pagination and sorting, add other specifications
+    $query->extend('PagerDefault')
+          ->extend('TableSort')
+          ->limit(5)
+          ->orderByHeader($header);
+    
+    // Only return jobs belonging to the user
+    $query->condition('d.user_id',$user_id,'=');
+    
+    // Execute the query
+    $userJobs = $query->execute();
     
     $job_list = array();
-    for($i = 0; $i < $results->rowCount(); $i++)
-        {
-          $job_list[$i] = $results->fetchAssoc();
-        }
-    $rows = array();
-    foreach ($job_list as $job)
-    {        
-        $rows[] = array(
-            $job['tseq_job_id'],
-            format_date($job['submit_time'], 'short'),
-            ucwords($job['sequence_query_type']),
-            ucwords($job['database_search_type']),
-            l('Your results', '/Diamond/results/'.$job['tripal_job_id']),
-            $job['status'],
-            );
+    foreach($userJobs as $job)
+    {
+        $link = l('Your results','/Diamond/results/'.$job->tripal_job_id);
+        
+        $job_list[] = array(
+            $job->tripal_job_id,
+            format_date($job->submit_time, 'short'),
+            ucwords($job->sequence_query_type),
+            ucwords($job->database_search_type),
+            $link,
+            $job->status,
+        );
     }
-    $header = array('TSeq Job ID', 'Date Submitted', 'Query type','Database type', 'Link', 'Status');
+    
+    $content = theme('table',array('header' => $header, 'rows' => $job_list));
+    $content .= theme('pager');
+    /* Debug
+    dpm($user_id);
+    dpm($header);
+    dpm($userJobs);
+    */
     
     
-    //Loop through returned jobs from database, create rows out of them
-    
-    $resultsTable = theme('table', array('header' => $header, 'rows' => $rows));
-    
-    $content = array(
-    'page_title' => array(
-        '#type' => 'markup',
-        '#markup' => '<h2>Your Tripal Sequence Similarity Searches</h2>',
-    ),
-    'page_description' => array(
-        '#type' => 'markup',
-        '#markup' => '<p>' . t('Below you can find your previously submitted TSeq jobs') . '</p>',
-    ),
-    'results_table' => array(
-        '#type' => 'markup',
-        '#markup' => $resultsTable,
-    ),
-  );
-    
-    
-    
-  return $content;
+    return $content;
 }
