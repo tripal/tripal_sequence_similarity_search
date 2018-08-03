@@ -44,6 +44,7 @@ function tripal_diamond_user_analysis_page($uid) {
     // Execute the query
     $userJobs = $query->execute();
     
+    // Build the table rows from the returned database data
     $job_list = array();
     foreach($userJobs as $job)
     {
@@ -59,7 +60,25 @@ function tripal_diamond_user_analysis_page($uid) {
         );
     }
     
-    $content = theme('table',array('header' => $header, 'rows' => $job_list));
+    // Give the table a class if styling is desired 
+    $job_table_attributes = array(
+        'class' => array(
+            'jobTable',
+        ),
+    );
+    
+    // Let the users know they can sort the columns
+    $job_table_caption = 'Sort columns by clicking on a header';
+    
+    // Build the table variable array
+    $job_table_vars = array(
+            'header'        => $header,
+            'rows'          => $job_list,
+            'attributes'    => $job_table_attributes,
+            'caption'       => $job_table_caption
+        );
+    
+    $content = theme('table',$job_table_vars);
     $content .= theme('pager');
     /* Debug
     dpm($user_id);
