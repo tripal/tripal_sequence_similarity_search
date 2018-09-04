@@ -57,7 +57,7 @@ error_reporting(E_ALL);
         }
     }
 
-function tripal_diamond_submit_form($form, &$form_state)
+function tseq_submit_form($form, &$form_state)
 {
     global $user;
     if (!$user->uid) {
@@ -439,8 +439,6 @@ function tripal_diamond_submit_form($form, &$form_state)
             {
                 $max_alignment_to_show[$entry] = array(trim($entry) => t(trim($entry)));
             }
-            dpm($max_alignment_to_show);
-            drupal_set_message("Trying to set default: ".$advanced_options['defaults_max_alignments_selected']);
             
     $form['Advanced']['maxAlignments'] = array(
         '#type'         =>  'select',
@@ -478,7 +476,7 @@ function tripal_diamond_submit_form($form, &$form_state)
     
 }
 
-function tripal_diamond_submit_form_validate($form, &$form_state)
+function tseq_submit_form_validate($form, &$form_state)
 {
     /*
      * Currently very basic form validation
@@ -679,7 +677,7 @@ function tripal_diamond_submit_form_validate($form, &$form_state)
     
 }
 
-function tripal_diamond_submit_form_submit($form, &$form_state)
+function tseq_submit_form_submit($form, &$form_state)
 {
     $debug = FALSE;         //Debug Mode (does everything except submit a job)
     $prepError = FALSE;     //Errors with preparing the job (checked prior
@@ -841,7 +839,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
      
     // Check if there were preperation errors
     if (!$prepError)
-    {
+    {        
         $remote_diamond_job_id = -1;
         if ($form_state['values']['TargetDataType'] == 'database')
         {
@@ -875,19 +873,44 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
             }
             
             if($debug)drupal_set_message("Will run command: ".$command_to_run);
-            if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("Diamond",$command_to_run, array($targetFile,$queryFile),TRUE);}
+            if(!$debug){$remote_diamond_job_id = tripal_add_remote_job("TSeq",$command_to_run, array($targetFile,$queryFile),TRUE);}
         }
         $baseP = base_path();
+        
+        // Prepare some data for storing in the database (below) and for providing a link
+        //Submit time
+            $submit_time = time();
+        //tseq_unique_id    // Used for identifying this job absolutely and providing links
+            if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx') // We are dealing with diamond tool
+            {
+                $tool_type = 'diamond';
+            }
+            else
+            {
+                $tool_type = 'blast';
+            }
+            //Prepare the entire ID for the job.
+            // Get the # of sequences
+            $sequence_count = tseq_get_query_sequence_count($queryFile);
+            
+            $tseq_unique_id = "TUI_".$remote_diamond_job_id."_seqs".$sequence_count."_".$tool_type."_".format_date($submit_time, 'custom', 'Ymd_His');
+            drupal_set_message("New unique ID: ".$tseq_unique_id);
+        
         //drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
-        drupal_set_message("Thank you for submitting. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
+        drupal_set_message("Thank you for submitting. You will be able to see the results <a href=\"".$baseP."TSeq/results/$tseq_unique_id\"'>here</a>");
+        drupal_set_message("You can submit another job below.");
     }
     else
     {
         drupal_set_message("There seems to have been errors generating the requested job.");
     }
     
+    
     /*
      *  Add this requested job to the tseq_job_information table
+     */
+    
+    /*
      *      tseq_job_id             (this is type='serial' so it automatically increments)
      *      tripal_job_id           $remote_diamond_job_id
      *      user_id                     gathered below
@@ -899,6 +922,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
      *      sequence_file           $queryFile
      *      database_file           $targetFile
      *      command                 $command_to_run
+     *      tseq_unique_id              generated above
      */
     
     //ID of User:
@@ -918,9 +942,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
             case "blastn":
                 $database_search_type = 'nucleotide';
         }
-    //Submit time
-        $submit_time = time();
-        
+    
     $new_job = array(
         'tripal_job_id'         => $remote_diamond_job_id,
         'user_id'               => $user_id,
@@ -932,12 +954,14 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
         'sequence_file'         => $queryFile,
         'database_file'         => $targetFile,
         'command'               => $command_to_run,
+        'tseq_unique_id'        => $tseq_unique_id,
     );
     
     drupal_write_record('tseq_job_information', $new_job);
     
     //Do up a small table
-    
+    // What was this for?
+    /*
     $headerTest = array("One", "Two", "Three");
     $rowsTest = array(
         array("a","b","c"),
@@ -954,5 +978,7 @@ function tripal_diamond_submit_form_submit($form, &$form_state)
     return $output;
     echo "Hello";
     //$form_state['redirect'] = 'Diamond/results/'.$remote_diamond_job_id;
+     * 
+     */
  
 }
