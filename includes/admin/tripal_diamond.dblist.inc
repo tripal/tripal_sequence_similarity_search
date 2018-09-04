@@ -1,17 +1,17 @@
 <?php
 
-function tripal_diamond_config_page_build($page)
+function tseq_config_page_build($page)
 {   
     // Build the breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('Diamond', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
-    $breadcrumb[] = l('Database list, page '.$page, 'admin/tripal/extension/diamond/config/dblist/'.$page);
+    $breadcrumb[] = l('TSeq', '<front>');
+    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
+    $breadcrumb[] = l('Database list, page '.$page, 'admin/tripal/extension/tseq/config/dblist/'.$page);
     drupal_set_breadcrumb($breadcrumb);
     
     // Generate link to add another database
     $contents['addLink'] = array(
-        '#markup'   => l('Add an existing database','./admin/tripal/extension/diamond/add_db'),
+        '#markup'   => l('Add an existing database','./admin/tripal/extension/tseq/add_db'),
         '#weight'   => '1',
     );
     
@@ -38,8 +38,8 @@ function tripal_diamond_config_page_build($page)
     $database_list = array();
     foreach($databases as $key => $database)
     {
-        $edit = l('Edit','admin/tripal/extension/diamond/edit_db/'.$database->db_id);
-        $delete = l('Delete','admin/tripal/extension/diamond/delete_db/'.$database->db_id);
+        $edit = l('Edit','admin/tripal/extension/tseq/edit_db/'.$database->db_id);
+        $delete = l('Delete','admin/tripal/extension/tseq/delete_db/'.$database->db_id);
         
         $database_list[] = array(
             $key+1,
@@ -67,13 +67,13 @@ function tripal_diamond_config_page_build($page)
 /*
  * Add a database to the list (form)
  */
-function tripal_diamond_database_add_form($form, &$form_state)
+function tseq_database_add_form($form, &$form_state)
 {
     //Breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('Diamond', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
-    $breadcrumb[] = l('Add database', 'admin/tripal/extension/diamond/add');
+    $breadcrumb[] = l('TSeq', '<front>');
+    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
+    $breadcrumb[] = l('Add database', 'admin/tripal/extension/tseq/add');
     drupal_set_breadcrumb($breadcrumb);
     
     /*
@@ -156,7 +156,7 @@ function tripal_diamond_database_add_form($form, &$form_state)
     return $form;
 }
 
-function tripal_diamond_database_add_form_validate($form, &$form_state)
+function tseq_database_add_form_validate($form, &$form_state)
 {
     //
     if (empty($form_state['values']['Type']))
@@ -177,7 +177,7 @@ function tripal_diamond_database_add_form_validate($form, &$form_state)
     
 }
 
-function tripal_diamond_database_add_form_submit($form, &$form_state)
+function tseq_database_add_form_submit($form, &$form_state)
 {
     /*
      * Add the new database to the database
@@ -198,18 +198,18 @@ function tripal_diamond_database_add_form_submit($form, &$form_state)
      * another
      */ 
     drupal_set_message("This database was successfully added");
-    drupal_set_message(l('Return to Database list','admin/tripal/extension/diamond/config'));
+    drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
 /*
  * Edit a database in the list (form)
  */
-function tripal_diamond_database_edit_form($form, &$form_state,$db_id)
+function tseq_database_edit_form($form, &$form_state,$db_id)
 {
     //Breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('Diamond', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
-    $breadcrumb[] = l('Edit database', 'admin/tripal/extension/diamond/edit_db/'.$db_id);
+    $breadcrumb[] = l('TSeq', '<front>');
+    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
+    $breadcrumb[] = l('Edit database', 'admin/tripal/extension/tseq/edit_db/'.$db_id);
     drupal_set_breadcrumb($breadcrumb);
     
     $query = "SELECT * FROM tseq_db_existing_locations WHERE db_id='$db_id'";
@@ -282,7 +282,7 @@ function tripal_diamond_database_edit_form($form, &$form_state,$db_id)
     return $form;//$rowToUpdate['db_id'].': '.$rowToUpdate['name'].': '.$rowToUpdate['version'];;
 }
 
-function tripal_diamond_database_edit_form_validate($form, &$form_state)
+function tseq_database_edit_form_validate($form, &$form_state)
 {
    /*
     * Basic validation (form empty?)
@@ -307,7 +307,7 @@ function tripal_diamond_database_edit_form_validate($form, &$form_state)
     } 
 }
 
-function tripal_diamond_database_edit_form_submit($form, &$form_state)
+function tseq_database_edit_form_submit($form, &$form_state)
 {    
     $updatedFields = array(
         'db_id'         => $form_state['values']['db_id'],
@@ -325,12 +325,12 @@ function tripal_diamond_database_edit_form_submit($form, &$form_state)
     //Remove the $db_id variable from &drupal_static
     //drupal_static_reset();
     drupal_set_message("This database was successfully updated");
-    drupal_set_message(l('Return to Database list','admin/tripal/extension/diamond/config'));
+    drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
 /*
  * Delete a database in the list (form)
  */
-function tripal_diamond_database_delete_form($form, &$form_state,$db_id)
+function tseq_database_delete_form($form, &$form_state,$db_id)
 {
     $form['Instructions'] = array(
         '#type'         => 'fieldset',
@@ -352,21 +352,21 @@ function tripal_diamond_database_delete_form($form, &$form_state,$db_id)
     return $form;
 }
 
-function tripal_diamond_database_delete_form_validate($form, &$form_state)
+function tseq_database_delete_form_validate($form, &$form_state)
 {
     
 }
 
-function tripal_diamond_database_delete_form_submit($form, &$form_state)
+function tseq_database_delete_form_submit($form, &$form_state)
 {
     /*
      * Delete the offending database from the database
      */
     db_query('DELETE FROM tseq_db_existing_locations where db_id = '.$form_state['values']['db_id']);
-    drupal_goto('/admin/tripal/extension/diamond/config');
+    drupal_goto('/admin/tripal/extension/tseq/config');
 }
 
-function tripal_diamond_database_export_form($form, &$form_state)
+function tseq_database_export_form($form, &$form_state)
 {
     $form['Type'] = array(
         '#type'         => 'select',
@@ -387,14 +387,14 @@ function tripal_diamond_database_export_form($form, &$form_state)
     return $form;
 }
 
-function tripal_diamond_database_export_form_validate($form, &$form_state)
+function tseq_database_export_form_validate($form, &$form_state)
 {
     
 }
 
-function tripal_diamond_database_export_form_submit($form, &$form_state)
+function tseq_database_export_form_submit($form, &$form_state)
 {
-    $db = DiamondDatabases::getDatabases('%');
+    $db = TSeqDatabases::getDatabases('%');
     
     if (tripal_diamond_db_export($db, $form_state['values']['Type']))
     {
@@ -405,10 +405,10 @@ function tripal_diamond_database_export_form_submit($form, &$form_state)
         drupal_set_message("Database list failed to export.", 'error');
     }
     
-    //$form_state['redirect'] = 'admin/tripal/extension/diamond';
+    //$form_state['redirect'] = 'admin/tripal/extension/tseq';
 }
 
-function tripal_diamond_database_import_form($form, &$form_state)
+function tseq_database_import_form($form, &$form_state)
 {
     $form['FileSelect'] = array(
         '#type'         => 'managed_file',
@@ -459,7 +459,7 @@ function tripal_diamond_database_import_form($form, &$form_state)
     return $form;
 }
 
-function tripal_diamond_database_import_form_validate($form, &$form_state)
+function tseq_database_import_form_validate($form, &$form_state)
 {    
     $fid = $form_state['values']['FileSelect'];
     
@@ -501,7 +501,7 @@ function tripal_diamond_database_import_form_validate($form, &$form_state)
     }
 }
 
-function tripal_diamond_database_import_form_submit($form, &$form_state)
+function tseq_database_import_form_submit($form, &$form_state)
 {
     drupal_set_message("Pumpkin importation");
 }
