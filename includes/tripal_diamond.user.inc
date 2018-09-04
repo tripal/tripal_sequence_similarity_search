@@ -1,6 +1,6 @@
 <?php
 
-function tripal_diamond_user_analysis_page($uid) {
+function tseq_user_analysis_page($uid) {
   
     /*
      * Get the jobs belonging to this user
@@ -48,7 +48,7 @@ function tripal_diamond_user_analysis_page($uid) {
     $job_list = array();
     foreach($userJobs as $job)
     {
-        $link = l('Your results','/Diamond/results/'.$job->tripal_job_id);
+        $link = l('Your results','/TSeq/results/'.$job->tripal_job_id);
         
         $job_list[] = array(
             $job->tripal_job_id,
