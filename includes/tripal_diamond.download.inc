@@ -21,7 +21,7 @@
  * 
  */
 
-function tripal_diamond_download($job_id, $type)
+function tseq_download($job_id, $type)
 {
     //Pumpkin MAKE DYNAMIC
     //$file = "/var/www/Drupal/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
@@ -72,7 +72,7 @@ function tripal_diamond_download($job_id, $type)
     {
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="'.basename($file).'"');
+        header('Content-Disposition: attachment; filename="'.$job_details['tseq_unique_id'].'"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
