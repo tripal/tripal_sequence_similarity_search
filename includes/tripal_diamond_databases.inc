@@ -5,10 +5,10 @@
  //  actual (Drupal) database where information created by this module is stored.
 //   I'll try to be explicit
 
-class DiamondDatabases
+class TSeqDatabases
 {
     
-    // Declare the variables for DiamondDatabases
+    // Declare the variables for TSeqDatabases
     protected $db_id;       // Database ID
     protected $name;        // Name of the Database
     protected $type;        // Type of database (Protein, Nucleotide)
