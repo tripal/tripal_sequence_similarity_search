@@ -1,6 +1,6 @@
 <?php
 
-function tripal_diamond_configuration_settings_form($form, &$form_state)
+function tseq_configuration_settings_form($form, &$form_state)
 {
     /*
      * Get the currently saved settings (or substitute in defaults
@@ -103,11 +103,11 @@ function tripal_diamond_configuration_settings_form($form, &$form_state)
     );
     return $form;
 }
-function tripal_diamond_configuration_settings_form_validate($form, &$form_state)
+function tseq_configuration_settings_form_validate($form, &$form_state)
 {  
     //Todo
 }
-function tripal_diamond_configuration_settings_form_submit($form, &$form_state)
+function tseq_configuration_settings_form_submit($form, &$form_state)
 {
  $tseq_settings = array(
         'settings_id'               => '0',
