@@ -6,7 +6,7 @@
  * @return 
  *  Page displaying info (via theme $tripal_diamond_results)
  */
-function tripal_diamond_review($jobID)
+function tseq_review($jobID)
 {
   if ($jobID == -1)
   {
