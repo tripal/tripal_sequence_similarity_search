@@ -2,7 +2,7 @@
 /*
  *  Build the page to display current categories
  */
-function tripal_diamond_config_categories_page_build($page)
+function tseq_config_categories_page_build($page)
 {   
     /*
      * The table of currently stored databases
@@ -24,21 +24,21 @@ function tripal_diamond_config_categories_page_build($page)
     }
         
     // Deal with bad numbers 
-    if ($page == 'tripal_diamond_config_page' || $page <= 0)
+    if ($page == 'tseq_config_page' || $page <= 0)
     {
         $page = 1;
     }
     
         //Breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('Diamond', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
-    $breadcrumb[] = l('Category list, page '.$page, 'admin/tripal/extension/diamond/config/categories/'.$page);
+    $breadcrumb[] = l('TSeq', '<front>');
+    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
+    $breadcrumb[] = l('Category list, page '.$page, 'admin/tripal/extension/tseq/config/categories/'.$page);
     drupal_set_breadcrumb($breadcrumb);
 
     // Generate link to add another database
     $contents['addLink'] = array(
-        '#markup'   => l('Add an new category','./admin/tripal/extension/diamond/add_category'),
+        '#markup'   => l('Add an new category','./admin/tripal/extension/tseq/add_category'),
         '#weight'   => '1',
     );
     
@@ -49,9 +49,9 @@ function tripal_diamond_config_categories_page_build($page)
     {
         if ($i < count($categories))
         {
-            $edit   = l('Edit','admin/tripal/extension/diamond/edit_category/' .
+            $edit   = l('Edit','admin/tripal/extension/tseq/edit_category/' .
                     $categories[$i]['category_id']);       
-            $delete = l('Delete','admin/tripal/extension/diamond/delete_category/' .
+            $delete = l('Delete','admin/tripal/extension/tseq/delete_category/' .
                     $categories[$i]['category_id']);
             
             $humanReadableBool = ($categories[$i]['enabled'] == '1') ? 'Yes' : 'No'; // Convert 1/0 into Yes/No
@@ -67,7 +67,7 @@ function tripal_diamond_config_categories_page_build($page)
     }
     else if (($page * 10) % count($categories) < 10)
     {
-        $emptyCase = l('There aren\'t that many categories yet. Click here to go back to the list','admin/tripal/extension/diamond');
+        $emptyCase = l('There aren\'t that many categories yet. Click here to go back to the list','admin/tripal/extension/tseq');
     }
     
     $table_vars = array(
@@ -90,7 +90,7 @@ function tripal_diamond_config_categories_page_build($page)
      *  implement this properly using Drupal (or Tripal?) content types
      */
     /*$contents['EI_links'] = array(
-        '#markup'   => t('<a href="'.base_path().'admin/tripal/extension/diamond/export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="'.base_path().'admin/tripal/extension/diamond/import">Import a list (CSV, Excel)</a>'),
+        '#markup'   => t('<a href="'.base_path().'admin/tripal/extension/tseq/export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="'.base_path().'admin/tripal/extension/tseq/import">Import a list (CSV, Excel)</a>'),
         '#weight'    => '3',
     );*/
     
@@ -99,7 +99,7 @@ function tripal_diamond_config_categories_page_build($page)
     if (count($categories) > 10)
     {
         $pageLinks = 'Nagivate to a page: ';
-        $modulePath = base_path().'admin/tripal/extension/diamond/config/categories/';
+        $modulePath = base_path().'admin/tripal/extension/tseq/config/categories/';
         $pageLinks = $pageLinks.'<a href="'.$modulePath.'1">1</a>';
         $numPages = ceil(count($categories) / 10);
         for ($i = 2; $i <= $numPages; $i++)
@@ -120,13 +120,13 @@ function tripal_diamond_config_categories_page_build($page)
 /*
  *  Add a new category
  */
-function tripal_diamond_category_add_form($form, &$form_state)
+function tseq_category_add_form($form, &$form_state)
 {
     //Breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('Diamond', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
-    $breadcrumb[] = l('Add category', 'admin/tripal/extension/diamond/add_category');
+    $breadcrumb[] = l('TSeq', '<front>');
+    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
+    $breadcrumb[] = l('Add category', 'admin/tripal/extension/tseq/add_category');
     drupal_set_breadcrumb($breadcrumb);
     
     $form['category_title'] = array(
@@ -156,7 +156,7 @@ function tripal_diamond_category_add_form($form, &$form_state)
     return $form;
 }
 
-function tripal_diamond_category_add_form_validate($form, &$form_state)
+function tseq_category_add_form_validate($form, &$form_state)
 {
     //
     if (empty($form_state['values']['category_title']))
@@ -186,7 +186,7 @@ function tripal_diamond_category_add_form_validate($form, &$form_state)
     
 }
 
-function tripal_diamond_category_add_form_submit($form, &$form_state)
+function tseq_category_add_form_submit($form, &$form_state)
 {
     /*
      * Add the new database to the database
@@ -203,18 +203,18 @@ function tripal_diamond_category_add_form_submit($form, &$form_state)
      * another
      */ 
     drupal_set_message("This database was successfully added");
-    drupal_set_message(l('Return to Category list','admin/tripal/extension/diamond/config/categories'));
+    drupal_set_message(l('Return to Category list','admin/tripal/extension/tseq/config/categories'));
 }
 /*
  *  Edit an existing category
  */
-function tripal_diamond_category_edit_form($form, &$form_state,$category_id)
+function tseq_category_edit_form($form, &$form_state,$category_id)
 {
     //Breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('Diamond', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/diamond');
-    $breadcrumb[] = l('Edit database', 'admin/tripal/extension/diamond/edit_category/'.$category_id);
+    $breadcrumb[] = l('TSeq', '<front>');
+    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
+    $breadcrumb[] = l('Edit database', 'admin/tripal/extension/tseq/edit_category/'.$category_id);
     drupal_set_breadcrumb($breadcrumb);
     
     $query = "SELECT * FROM tseq_categories WHERE category_id='$category_id'";
@@ -260,7 +260,7 @@ function tripal_diamond_category_edit_form($form, &$form_state,$category_id)
     return $form;//$rowToUpdate['db_id'].': '.$rowToUpdate['name'].': '.$rowToUpdate['version'];;
 }
 
-function tripal_diamond_category_edit_form_validate($form, &$form_state)
+function tseq_category_edit_form_validate($form, &$form_state)
 {
    if (empty($form_state['values']['category_title']))
     {
@@ -268,7 +268,7 @@ function tripal_diamond_category_edit_form_validate($form, &$form_state)
     }    
 }
 
-function tripal_diamond_category_edit_form_submit($form, &$form_state)
+function tseq_category_edit_form_submit($form, &$form_state)
 {    
     $updatedFields = array(
         'category_id'    => $form_state['values']['category_id'],
@@ -283,12 +283,12 @@ function tripal_diamond_category_edit_form_submit($form, &$form_state)
     //Remove the $db_id variable from &drupal_static
     //drupal_static_reset();
     drupal_set_message("This category was successfully updated");
-    drupal_set_message(l('Return to Category list','admin/tripal/extension/diamond/config/categories'));
+    drupal_set_message(l('Return to Category list','admin/tripal/extension/tseq/config/categories'));
 }
 /*
  *  Delete an existing category
  */
-function tripal_diamond_category_delete_form($form, &$form_state,$category_id)
+function tseq_category_delete_form($form, &$form_state,$category_id)
 {
     $form['Instructions'] = array(
         '#type'         => 'fieldset',
@@ -310,12 +310,12 @@ function tripal_diamond_category_delete_form($form, &$form_state,$category_id)
     return $form;
 }
 
-function tripal_diamond_category_delete_form_validate($form, &$form_state)
+function tseq_category_delete_form_validate($form, &$form_state)
 {
     
 }
 
-function tripal_diamond_category_delete_form_submit($form, &$form_state)
+function tseq_category_delete_form_submit($form, &$form_state)
 {
     /*
      * Delete the offending database from the database
@@ -323,5 +323,5 @@ function tripal_diamond_category_delete_form_submit($form, &$form_state)
     db_query('DELETE FROM tseq_categories where category_id = '.$form_state['values']['category_id']);
     
     drupal_set_message("This category was successfully deleted");
-    drupal_goto('admin/tripal/extension/diamond/config/categories');
+    drupal_goto('admin/tripal/extension/tseq/config/categories');
 }
