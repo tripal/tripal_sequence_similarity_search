@@ -244,7 +244,7 @@ function tseq_submit_form($form, &$form_state)
             {
                 //echo $type['type'].", ".$category['category_title'].": ".$databaseCount[$type['type']][$category['category_title']]['count']."<br />"; 
                 //Get databases belonging to the category and type
-                $databaseListToShow[$type['type']][$category['category_title']] = DiamondDatabases::getDatabasesByTypeCategory($type['type'], $category['category_title']);
+                $databaseListToShow[$type['type']][$category['category_title']] = TSeqDatabases::getDatabasesByTypeCategory($type['type'], $category['category_title']);
                 
                 //Prepare them nicely
                 unset($databaseSelect); //Flush the list
