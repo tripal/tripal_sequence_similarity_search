@@ -13,6 +13,10 @@ function tripal_diamond_review($jobID)
       return theme('tripal_diamond_results', array('status' => 'debug','job_id' => '-1'));
   }
   
+  // Extract the Tripal Job ID from the $jobID if necessary
+  $TUI_parts = explode('_',$jobID);  
+  $jobID = (count($TUI_parts) == 1) ? $TUI_parts[0] : $TUI_parts[1];
+  
   $jobInfo = tripal_get_job($jobID);
     //print_r($jobInfo);
     // 1) Job is in the Queue
