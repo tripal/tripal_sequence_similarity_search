@@ -196,7 +196,13 @@ function tripal_diamond_schema()
                 'type' => 'varchar',
                 'length' => 511,
                 'not NULL' => true,
-            )
+            ),
+                'tseq_unique_id' => array(
+                'descripton'    => 'TSeq Unique ID: TUI + job_id + #ofseqs + search type + date + time',
+                'type'          => 'varchar',
+                'length'        => 255,
+                'not null'      => FALSE,
+            ),
         ),
     );
     
@@ -243,7 +249,13 @@ function tripal_diamond_schema()
                 'type'          => 'varchar',
                 'length'        => 512,
                 'not null'      => FALSE,
-            )
+            ),
+            'count' => array(
+                'descripton'    => 'Count of genes, proteins, or scaffolds in the original sequence',
+                'type'          => 'int',
+                'length'        => 15,
+                'not null'      => FALSE,
+            ),
         ),
     );
     
@@ -709,4 +721,63 @@ function tripal_diamond_update_7004()
                 'length'        => 15,
             )
         );
+}
+
+/**
+ * Add "count" to tseq_db_existing_locations to keep track of gene/protein/scaffold count in original sequence
+ */
+function tripal_diamond_update_7005()
+{
+    db_add_field(
+        'tseq_db_existing_locations',
+        'count',
+        array(
+            'descripton'    => 'Count of genes, proteins, or scaffolds in the original sequence',
+            'type'          => 'int',
+            'length'        => 15,
+            'not null'      => FALSE,
+        )
+    );
+}
+
+/**
+ * Add "tseq_unique_id" to tseq_job_information "TSeq Unique ID, TUI". Used to keep track of jobs with built-in
+ * meta-data.
+ */
+function tripal_diamond_update_7006()
+{
+    db_add_field(
+        'tseq_job_information',
+        'tseq_unique_id',
+        array(
+            'descripton'    => 'TSeq Unique ID: TUI + job_id + #ofseqs + search type + date + time',
+            'type'          => 'varchar',
+            'length'        => 255,
+            'not null'      => FALSE,
+        )
+    );
+}
+
+/**
+ * Populates the tseq_unique_id field from tseq_job_information table with data
+ */
+
+function tripal_diamond_update_7007()
+{
+    $v1Jobs = db_select('tseq_job_information', 't')
+            ->fields('t', array('tseq_job_id', 'tripal_job_id','tseq_unique_id','submit_time'))
+            ->condition('tseq_unique_id',NULL)
+            ->orderBy('tseq_job_id','ASC')
+            ->execute();
+    //$i = 0;
+    foreach ($v1Jobs as $v1Job)
+    {
+        $newTUI = "TUI_".$v1Job->tripal_job_id."_legacyV1_".format_date($v1Job->submit_time, 'custom', 'Ymd_His');
+        
+        db_update('tseq_job_information')
+            ->fields(array('tseq_unique_id' => $newTUI))
+            ->condition('tseq_job_id', $v1Job->tseq_job_id)
+            ->execute();
+        
+    }
 }
