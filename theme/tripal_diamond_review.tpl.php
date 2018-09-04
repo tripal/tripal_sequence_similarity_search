@@ -37,6 +37,7 @@ drupal_set_title('Status of Job #'.$job_id);
 <!-- Show results if job was successful -->
 <?php
 $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
+echo "Click <a href=\"/TSeq/submit\">here</a> to run another job";
 if ($status == 'debug')
 {
     echo "This was a debugging run. The job was not submitted. There are no results and there will never be any.";
