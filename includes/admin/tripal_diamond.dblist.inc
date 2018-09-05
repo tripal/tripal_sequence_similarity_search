@@ -396,7 +396,7 @@ function tseq_database_export_form_submit($form, &$form_state)
 {
     $db = TSeqDatabases::getDatabases('%');
     
-    if (tripal_diamond_db_export($db, $form_state['values']['Type']))
+    if (tseq_db_export($db, $form_state['values']['Type']))
     {
        drupal_set_message("Databases successfully exported"); 
     }
