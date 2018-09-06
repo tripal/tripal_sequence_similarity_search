@@ -22,16 +22,6 @@ drupal_set_title('Status of Job #'.$job_id);
         
 ?>
 <br />
-<!-- Current status of your job on the Remote Server: <?php //echo $remote_status; ?> -->
-<!--<div id="tseq_test">Dingo</div>
-<script type="text/javascript">
-    function loady()
-    {
-        var dingo = document.getElementById("tseq_test");
-        dingo.innerHTML = tseq_test();
-    }
-</script>
--->
 
 
 <!-- Show results if job was successful -->
