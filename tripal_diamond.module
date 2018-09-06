@@ -4,25 +4,25 @@ error_reporting(E_ALL);
  *    Let's include some files
  */
 // Admin 
-require_once 'includes/admin/tripal_diamond.dblist.inc';
-require_once 'includes/admin/tripal_diamond.settings.inc';
-require_once 'includes/admin/tripal_diamond.categories.inc';
+require_once 'includes/admin/tseq.dblist.inc';
+require_once 'includes/admin/tseq.settings.inc';
+require_once 'includes/admin/tseq.categories.inc';
 
 // Classes
-require_once 'includes/tripal_diamond_databases.inc';
+require_once 'includes/tseq_databases.inc';
 
 // API
-require_once 'api/tripal_diamond.api.inc';
+require_once 'api/tseq.api.inc';
 
 // Forms (allow for more than just basic form)
-require_once 'includes/tripal_diamond_submit.form.inc';
+require_once 'includes/tseq_submit.form.inc';
 
 // Theme
-require_once 'theme/tripal_diamond.theme.inc';
+require_once 'theme/tseq.theme.inc';
 
 // Output
-require_once 'includes/tripal_diamond.review.inc';
-require_once 'includes/tripal_diamond.download.inc';
+require_once 'includes/tseq.review.inc';
+require_once 'includes/tseq.download.inc';
 
 // Permissions
 function tripal_diamond_permission() {
@@ -45,7 +45,7 @@ function tripal_diamond_menu()
 {
     $items = array();
     
-    // Diamond Job submission form (for URL)
+    // TSeq Job submission form (for URL)
     $items['TSeq/submit'] = array(
         'title' => 'Sequence Similarity Search: Diamond/BLAST',
         'page callback' => 'drupal_get_form',
@@ -55,7 +55,7 @@ function tripal_diamond_menu()
         'type' => MENU_NORMAL_ITEM,
         );
         
-    // Diamond Results page
+    // TSeq Results page
     $items['TSeq/results/%'] = array(
         'title' => 'Diamond Job Results',
         'page callback' => 'tseq_review',
@@ -65,7 +65,7 @@ function tripal_diamond_menu()
         'type' => MENU_CALLBACK
         );
     
-    // Diamond Download page
+    // TSeq Download page
     $items['TSeq/results/download/%/%'] = array(
         'title' => 'TSeq Job Results Download',
         'page callback' => 'tseq_download',
@@ -82,7 +82,7 @@ function tripal_diamond_menu()
         'page callback' => 'tseq_config_page_build',
         'page arguments'=>  array('1','tseq_config_page'),
         'type'  =>  MENU_NORMAL_ITEM,
-        'file'  =>  'includes/admin/tripal_diamond.dblist.inc',
+        'file'  =>  'includes/admin/tseq.dblist.inc',
         'file path'     =>  drupal_get_path('module','tripal_diamond'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
@@ -97,7 +97,7 @@ function tripal_diamond_menu()
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_DEFAULT_LOCAL_TASK ,
-        'file' => 'includes/admin/tripal_diamond.dblist.inc',
+        'file' => 'includes/admin/tseq.dblist.inc',
         'file path' => drupal_get_path ('module', 'tripal_diamond')
         );
     
@@ -110,7 +110,7 @@ function tripal_diamond_menu()
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_NORMAL_ITEM,
-        'file' => 'includes/admin/tripal_diamond.dblist.inc',
+        'file' => 'includes/admin/tseq.dblist.inc',
         'file path' => drupal_get_path ('module', 'tripal_diamond')
         );
     
@@ -124,7 +124,7 @@ function tripal_diamond_menu()
         'page arguments'=>  array('tseq_configuration_settings_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'file' => 'includes/admin/tripal_diamond.settings.inc',
+        'file' => 'includes/admin/tseq.settings.inc',
         'file path' => drupal_get_path ('module', 'tripal_diamond')
     );
     
@@ -152,7 +152,7 @@ function tripal_diamond_menu()
         'page arguments'=>  array('1', 'tseq_config_categories_page'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'file' => 'includes/admin/tripal_diamond.categories.inc',
+        'file' => 'includes/admin/tseq.categories.inc',
         'file path' => drupal_get_path ('module', 'tripal_diamond')
     );
     
@@ -278,7 +278,7 @@ function tripal_diamond_menu()
         'page arguments' => array(1),
         'access callback' => TRUE,
         'type' => MENU_LOCAL_TASK,
-        'file' => 'includes/tripal_diamond.user.inc',
+        'file' => 'includes/tseq.user.inc',
         'file path' => drupal_get_path('module', 'tripal_diamond'),
     );
     
@@ -318,8 +318,8 @@ function tripal_diamond_theme()
   $path = drupal_get_path('module', 'tripal_diamond');
 
   // Displays the BLAST results for each job
-  $items['tripal_diamond_results'] = array(
-    'template' => 'tripal_diamond_review',
+  $items['tseq_results'] = array(
+    'template' => 'tseq_review',
     'path' => "$path/theme",
   );
  return $items;
