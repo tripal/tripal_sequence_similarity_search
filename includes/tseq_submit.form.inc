@@ -776,7 +776,7 @@ function tseq_submit_form_submit($form, &$form_state)
         //$targetDBPath = "/linuxshare/projects/treegenes/tgwebprod_store/FTP/Genomes/".$targetDB."/index/".$targetDBU."_dmndBlast/".$targetDBU."_diamond/";
         //$targetDBFile = $targetDBU.".dmnd";
         //
-        $targetFile = DiamondDatabases::getDBInfo($targetDB,"location");
+        $targetFile = TSeqDatabases::getDBInfo($targetDB,"location");
         if($debug){drupal_set_message("targetdbfile: ".$targetDB);}
         //drupal_set_message("Target DB path: ".$targetDBPath);
         //drupal_set_message("Full path to file: ".$targetDBPath.$targetDBFile);

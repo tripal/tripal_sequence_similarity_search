@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Main theme for displaying the results of a submitted Diamond job
+ * Main theme for displaying the results of a submitted TSeq job
  */
 
 drupal_set_title('Status of Job #'.$job_id);
