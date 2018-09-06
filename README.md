@@ -11,9 +11,9 @@ This module supports sequence similarity search on a Tripal website through a ne
 1. Visit /admin/config/diamond to set up databases and other options
 2. Permission role 'administer diamond' created for site admins
 
-- Diamond                           Main Page
-- Diamond/submit                    Main Submission Page
-- Diamond/results/#                 Job results page (# is the Tripal Job ID)
+- TSeq                           Main Page
+- TSeq/submit                    Main Submission Page
+- TSeq/results/#                 Job results page (# is the Tripal Job ID)
 - admin/tripal/extension/diamond    Diamond Module Administration
 
 ## Status
