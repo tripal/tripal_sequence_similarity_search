@@ -1,7 +1,7 @@
 name = Tripal Diamond
-description = Diamond Module for Tripal
+description = Diamond and BLAST+ Module for Tripal
 dependencies[] = tripal_remote_job:tripal_remote_job
 core = 7.x
-configure = admin/config/diamond
-stylesheets[all][] = theme/diamond.css
+configure = admin/config/tseq
+stylesheets[all][] = theme/tseq.css
 scripts[]          = includes/js/diamond.js
