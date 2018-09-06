@@ -1,12 +1,15 @@
 <?php
 
-function tseq_config_page_build($page)
-{   
+function tseq_config_dblist_page_build()
+{
     // Build the breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('TSeq', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
-    $breadcrumb[] = l('Database list, page '.$page, 'admin/tripal/extension/tseq/config/dblist/'.$page);
+    $breadcrumb[] = l('Home', '<front>');
+    $breadcrumb[] = l('Administration', 'admin');
+    $breadcrumb[] = l('Tripal','admin/tripal');
+    $breadcrumb[] = l('Extensions', 'admin/tripal/extension');
+    $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
+    $breadcrumb[] = l('Available Databases','admin/tripal/extension/tseq/config/dblist');    
     drupal_set_breadcrumb($breadcrumb);
     
     // Generate link to add another database

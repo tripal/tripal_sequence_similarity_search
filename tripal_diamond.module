@@ -76,11 +76,12 @@ function tripal_diamond_menu()
         );
         
     // Configuration page
+    
     $items['admin/tripal/extension/tseq/config'] = array(
         'title' =>  'TSeq Configuration',
-        'description'   =>  'Configuration for the Tripal Diamond module',
-        'page callback' => 'tseq_config_page_build',
-        'page arguments'=>  array('1','tseq_config_page'),
+        'description'   =>  'Configuration for the Tripal Sequence Similarity Search module',
+        'page callback' => 'tseq_config_dblist_page_build',
+        'page arguments'=>  array('tseq_config_dblist_page'),
         'type'  =>  MENU_NORMAL_ITEM,
         'file'  =>  'includes/admin/tseq.dblist.inc',
         'file path'     =>  drupal_get_path('module','tripal_diamond'),
@@ -90,10 +91,10 @@ function tripal_diamond_menu()
     
     // Configuration: Database list, first page
     $items['admin/tripal/extension/tseq/config/dblist'] = array(
-        'title' => 'Existing Database List',
+        'title' => 'Available Databases',
         'description' => 'Tripal Diamond Admin Configuration page',
-        'page callback' => 'tseq_config_page_build',
-        'page arguments' => array('1','tseq_config_page'),
+        'page callback' => 'tseq_config_dblist_page_build',
+        'page arguments' => array('tseq_config_dblist_page'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_DEFAULT_LOCAL_TASK ,
@@ -101,25 +102,26 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
         );
     
-    // Configuration: Database list, specified page
-    $items['admin/tripal/extension/tseq/config/dblist/%'] = array(
-        'title' => 'TSeq Configuration',
-        'description' => 'Tripal Diamond Admin Configuration page',
-        'page callback' => 'tseq_config_page_build',
-        'page arguments' => array(6,'tseq_config_page'),
-        'access callback' => TRUE,
-        'access arguments' => array('administer diamond'),
-        'type' => MENU_NORMAL_ITEM,
-        'file' => 'includes/admin/tseq.dblist.inc',
-        'file path' => drupal_get_path ('module', 'tripal_diamond')
-        );
-    
-    // Configuration: Settings Tab
-    $items['admin/tripal/extension/tseq/config/settings'] = array(
-        'title' => 'Settings',
+    //Configuration: Categories Tab
+    $items['admin/tripal/extension/tseq/config/categories'] = array(
+        'title' => 'Categories',
         'type'  => MENU_LOCAL_TASK,
         'weight' => 1,
         'priority' => 1,
+        'page callback' =>  'tseq_config_categories_page_build',
+        'page arguments'=>  array('tseq_config_categories_page'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'file' => 'includes/admin/tseq.categories.inc',
+        'file path' => drupal_get_path ('module', 'tripal_diamond')
+    );
+    
+    // Configuration: Settings Tab
+    $items['admin/tripal/extension/tseq/config/settings'] = array(
+        'title' => 'Job Settings',
+        'type'  => MENU_LOCAL_TASK,
+        'weight' => 2,
+        'priority' => 2,
         'page callback' =>  'drupal_get_form',
         'page arguments'=>  array('tseq_configuration_settings_form'),
         'access callback' => TRUE,
@@ -130,10 +132,10 @@ function tripal_diamond_menu()
     
     // Configuration: Defaults Tab
     $items['admin/tripal/extension/tseq/config/defaults'] = array(
-        'title' => 'Advanced Options - Defaults',
+        'title' => 'Submission Defaults',
         'type'  => MENU_LOCAL_TASK,
-        'weight' => 2,
-        'priority' => 2,
+        'weight' => 3,
+        'priority' => 3,
         'page callback' =>  'drupal_get_form',
         'page arguments'=>  array('tseq_configuration_defaults_form'),
         'access callback' => TRUE,
@@ -142,22 +144,10 @@ function tripal_diamond_menu()
         'file path' => drupal_get_path ('module', 'tripal_diamond')
     );
     
-    //Configuration: Categories Tab
-    $items['admin/tripal/extension/tseq/config/categories'] = array(
-        'title' => 'Categories',
-        'type'  => MENU_LOCAL_TASK,
-        'weight' => 3,
-        'priority' => 3,
-        'page callback' =>  'tseq_config_categories_page_build',
-        'page arguments'=>  array('1', 'tseq_config_categories_page'),
-        'access callback' => TRUE,
-        'access arguments' => array('administer diamond'),
-        'file' => 'includes/admin/tseq.categories.inc',
-        'file path' => drupal_get_path ('module', 'tripal_diamond')
-    );
+    
     
     //Admin: Genome Browser Link Scheme Tab
-    $items['admin/tripal/extension/tseq/config/browseLink'] = array(
+    /*$items['admin/tripal/extension/tseq/config/browseLink'] = array(
         'title' => 'Genome Browser Link',
         'type'  => MENU_LOCAL_TASK,
         'weight' => 4,
@@ -169,6 +159,8 @@ function tripal_diamond_menu()
         'file' => 'includes/admin/tseq.browseLink.inc',
         'file path' => drupal_get_path ('module', 'tripal_diamond')
     );
+     * 
+     */
     
     // Admin: add a new target database
     $items['admin/tripal/extension/tseq/add_db'] = array(

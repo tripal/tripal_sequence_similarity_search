@@ -2,118 +2,68 @@
 /*
  *  Build the page to display current categories
  */
-function tseq_config_categories_page_build($page)
-{   
-    /*
-     * The table of currently stored databases
-     */
-    $headers = array('','Category Title','Enabled','Actions');
-    $rows = array();
-    /*
-     * Get categories from the database
-     */
-    $query = 'select * from tseq_categories';
-    $results = db_query($query);
-    
-    $categories = array();
-        
-    //Iterate through the returned database 
-    for($i = 0; $i< $results->rowCount();$i++)
-    {
-      $categories[$i] = $results->fetchAssoc();
-    }
-        
-    // Deal with bad numbers 
-    if ($page == 'tseq_config_page' || $page <= 0)
-    {
-        $page = 1;
-    }
-    
-        //Breadcrumb
+function tseq_config_categories_page_build()
+{
+    //Breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('TSeq', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
-    $breadcrumb[] = l('Category list, page '.$page, 'admin/tripal/extension/tseq/config/categories/'.$page);
+    $breadcrumb[] = l('Home', '<front>');
+    $breadcrumb[] = l('Administration', 'admin');
+    $breadcrumb[] = l('Tripal','admin/tripal');
+    $breadcrumb[] = l('Extensions', 'admin/tripal/extension');
+    $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
+    $breadcrumb[] = l('Categories','admin/tripal/extension/tseq/config/dblist');
     drupal_set_breadcrumb($breadcrumb);
 
-    // Generate link to add another database
+    // Generate link to add another category
     $contents['addLink'] = array(
         '#markup'   => l('Add an new category','./admin/tripal/extension/tseq/add_category'),
         '#weight'   => '1',
     );
     
-    $j = $page * 10;
-    $i = $j - 10;
-    $returnedCategories = array();
-    for($i; $i < $j; $i++)
-    {
-        if ($i < count($categories))
-        {
-            $edit   = l('Edit','admin/tripal/extension/tseq/edit_category/' .
-                    $categories[$i]['category_id']);       
-            $delete = l('Delete','admin/tripal/extension/tseq/delete_category/' .
-                    $categories[$i]['category_id']);
-            
-            $humanReadableBool = ($categories[$i]['enabled'] == '1') ? 'Yes' : 'No'; // Convert 1/0 into Yes/No
-            $returnedCategories[] = array($i+1,$categories[$i]['category_title'],$humanReadableBool, $edit.' | '.$delete);
-        }
-    }
-    
-    //Check to see if there are databases
-    $emptyCase = '';
-    if (count($categories) == 0)
-    {
-        $emptyCase = t('No categories have been found. At least one category should exist for any databases to appear on the Submit page');
-    }
-    else if (($page * 10) % count($categories) < 10)
-    {
-        $emptyCase = l('There aren\'t that many categories yet. Click here to go back to the list','admin/tripal/extension/tseq');
-    }
-    
-    $table_vars = array(
-        'header'      => $headers, 
-        'rows'        => $returnedCategories,
-        'attributes'  => array(),
-        'sticky'      => TRUE,
-        'colgroups'   => array(),
-        'empty'       => $emptyCase,
+    // Generate the table of existing database categories
+    // Build the table variables
+    $category_header = array(
+        array('data' => '',                 'sort' => 'ASC'),
+        array('data' => 'Category Title',   'field' => 'category_title'),
+        array('data' => 'Enabled',          'field' => 'enabled'),
+        array('data' => 'Actions'),            
     );
     
-    $contents['resource_list'] = array(
-        '#markup'   => theme('table', $table_vars),
+    // Generate the database query (with sorting and pagination)
+    $select = db_select('tseq_categories','db')
+            ->extend('PagerDefault')
+            ->extend('TableSort');
+    
+    $select->fields('db',array('category_id','category_title','enabled'))
+           ->limit(15)
+           ->orderByHeader($category_header);
+    $categories = $select->execute();
+    $category_list = array();
+    foreach($categories as $key => $category)
+    {
+        $edit = l('Edit','admin/tripal/extension/tseq/edit_category/'.$category->category_id);
+        $delete = l('Delete','admin/tripal/extension/tseq/delete_category/'.$category->category_id);
+        
+        $category_list[] = array(
+            $key+1,
+            $category->category_title,
+            $category->enabled == '1' ? 'Yes' : 'No', // Make the result human readable (Yes/No instead of 1/0)
+            $edit.' | '.$delete,
+        );
+    }
+    
+    $output = theme('table', array('header' => $category_header, 'rows' => $category_list));
+    
+    $output .= theme('pager');
+    
+    $contents['database_list'] = array(
+        '#markup'   => $output,
         '#weight'   => '4',
     );
     
-    /*
-     * Import/Export links. currently disabled
-     * @todo
-     *  implement this properly using Drupal (or Tripal?) content types
-     */
-    /*$contents['EI_links'] = array(
-        '#markup'   => t('<a href="'.base_path().'admin/tripal/extension/tseq/export">Export this list (CSV)</a>&nbsp;|&nbsp;<a href="'.base_path().'admin/tripal/extension/tseq/import">Import a list (CSV, Excel)</a>'),
-        '#weight'    => '3',
-    );*/
-    
-    // Generate the pagination links
-    $pageLinks = '';
-    if (count($categories) > 10)
-    {
-        $pageLinks = 'Nagivate to a page: ';
-        $modulePath = base_path().'admin/tripal/extension/tseq/config/categories/';
-        $pageLinks = $pageLinks.'<a href="'.$modulePath.'1">1</a>';
-        $numPages = ceil(count($categories) / 10);
-        for ($i = 2; $i <= $numPages; $i++)
-        {
-            $pageLinks = $pageLinks.' | <a href="'.$modulePath.$i.'">'.$i.'</a>';
-        }
-    }
-    
-    $contents['pagination'] = array(
-        '#markup'   => $pageLinks,
-        '#weight'   => '10',
-    );
-    
     return $contents;
+    
+    
 }
 
 

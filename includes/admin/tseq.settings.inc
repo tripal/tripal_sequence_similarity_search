@@ -2,6 +2,14 @@
 
 function tseq_configuration_settings_form($form, &$form_state)
 {
+    $breadcrumb = array();
+    $breadcrumb[] = l('Home', '<front>');
+    $breadcrumb[] = l('Administration', 'admin');
+    $breadcrumb[] = l('Tripal','admin/tripal');
+    $breadcrumb[] = l('Extensions', 'admin/tripal/extension');
+    $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
+    $breadcrumb[] = l('Job Settings','admin/tripal/extension/tseq/config/settings');
+    drupal_set_breadcrumb($breadcrumb);
     /*
      * Get the currently saved settings (or substitute in defaults
      */
