@@ -20,8 +20,7 @@ function tseq_config_dblist_page_build()
     
     // Build the table variables
     $database_header = array(
-        array('data' => '',        'sort' => 'ASC'),
-        array('data' => 'Name',     'field' => 'name'),
+        array('data' => 'Name',     'field' => 'name',        'sort' => 'asc'),
         array('data' => 'Version',  'field' => 'version'),
         array('data' => 'Type',     'field' => 'type'),
         array('data' => 'Category', 'field' => 'category'),
@@ -45,7 +44,6 @@ function tseq_config_dblist_page_build()
         $delete = l('Delete','admin/tripal/extension/tseq/delete_db/'.$database->db_id);
         
         $database_list[] = array(
-            $key+1,
             $database->name,
             $database->version,
             $database->type,

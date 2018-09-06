@@ -11,7 +11,7 @@ function tseq_config_categories_page_build()
     $breadcrumb[] = l('Tripal','admin/tripal');
     $breadcrumb[] = l('Extensions', 'admin/tripal/extension');
     $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
-    $breadcrumb[] = l('Categories','admin/tripal/extension/tseq/config/dblist');
+    $breadcrumb[] = l('Categories','admin/tripal/extension/tseq/config/categories');
     drupal_set_breadcrumb($breadcrumb);
 
     // Generate link to add another category
@@ -23,8 +23,7 @@ function tseq_config_categories_page_build()
     // Generate the table of existing database categories
     // Build the table variables
     $category_header = array(
-        array('data' => '',                 'sort' => 'ASC'),
-        array('data' => 'Category Title',   'field' => 'category_title'),
+        array('data' => 'Category Title',   'field' => 'category_title',           'sort' => 'asc'),
         array('data' => 'Enabled',          'field' => 'enabled'),
         array('data' => 'Actions'),            
     );
@@ -45,7 +44,6 @@ function tseq_config_categories_page_build()
         $delete = l('Delete','admin/tripal/extension/tseq/delete_category/'.$category->category_id);
         
         $category_list[] = array(
-            $key+1,
             $category->category_title,
             $category->enabled == '1' ? 'Yes' : 'No', // Make the result human readable (Yes/No instead of 1/0)
             $edit.' | '.$delete,
