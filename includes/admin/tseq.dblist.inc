@@ -25,6 +25,7 @@ function tseq_config_dblist_page_build()
         array('data' => 'Type',     'field' => 'type'),
         array('data' => 'Category', 'field' => 'category'),
         array('data' => 'Location (Remote)',    'field' => 'location'),
+        array('data' => 'Count',          'field' => 'count'),
         array('data' => 'Actions'),            
     );
     
@@ -33,7 +34,7 @@ function tseq_config_dblist_page_build()
             ->extend('PagerDefault')
             ->extend('TableSort');
     
-    $select->fields('db',array('db_id','name','version','type','category','location'))
+    $select->fields('db',array('db_id','name','version','type','category','location','count'))
            ->limit(15)
            ->orderByHeader($database_header);
     $databases = $select->execute();
@@ -49,6 +50,7 @@ function tseq_config_dblist_page_build()
             $database->type,
             $database->category,
             $database->location,
+            $database->count,
             $edit.' | '.$delete,
         );
     }
@@ -70,11 +72,14 @@ function tseq_config_dblist_page_build()
  */
 function tseq_database_add_form($form, &$form_state)
 {
-    //Breadcrumb
+    // Build the breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('TSeq', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
-    $breadcrumb[] = l('Add database', 'admin/tripal/extension/tseq/add');
+    $breadcrumb[] = l('Home', '<front>');
+    $breadcrumb[] = l('Administration', 'admin');
+    $breadcrumb[] = l('Tripal','admin/tripal');
+    $breadcrumb[] = l('Extensions', 'admin/tripal/extension');
+    $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
+    $breadcrumb[] = l('Add Target Database','admin/tripal/extension/tseq/config/add_db');    
     drupal_set_breadcrumb($breadcrumb);
     
     /*
@@ -149,6 +154,13 @@ function tseq_database_add_form($form, &$form_state)
         '#required'     => false,
     );
     
+    $form['Count'] = array(
+        '#type'         => 'textfield',
+        '#title'        => 'Genes, Proteins, or Scaffolds (Optional)',
+        '#size'         => '10',
+        '#description'  => 'How many genes, proteins, or scaffolds the sequence contains'
+    );
+    
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Add'),
@@ -191,6 +203,7 @@ function tseq_database_add_form_submit($form, &$form_state)
         'location'      => $form_state['values']['Location'],
         'category'      => $form_state['values']['Category'],
         'web_location'  => $form_state['values']['WebLocation'],
+        'count'         => $form_state['values']['Count'],
     );
     
     drupal_write_record('tseq_db_existing_locations', $newDB);
@@ -206,11 +219,15 @@ function tseq_database_add_form_submit($form, &$form_state)
  */
 function tseq_database_edit_form($form, &$form_state,$db_id)
 {
-    //Breadcrumb
+    // Build the breadcrumb
     $breadcrumb = array();
-    $breadcrumb[] = l('TSeq', '<front>');
-    $breadcrumb[] = l('Config', 'admin/tripal/extension/tseq');
-    $breadcrumb[] = l('Edit database', 'admin/tripal/extension/tseq/edit_db/'.$db_id);
+    $breadcrumb[] = l('Home', '<front>');
+    $breadcrumb[] = l('Administration', 'admin');
+    $breadcrumb[] = l('Tripal','admin/tripal');
+    $breadcrumb[] = l('Extensions', 'admin/tripal/extension');
+    $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
+    $breadcrumb[] = l('Available Databases','admin/tripal/extension/tseq/config/db_list');
+    $breadcrumb[] = l('Database ID '.$db_id, 'admin/tripal/extension/tseq/edit_db/'.$db_id);
     drupal_set_breadcrumb($breadcrumb);
     
     $query = "SELECT * FROM tseq_db_existing_locations WHERE db_id='$db_id'";
@@ -270,6 +287,14 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
         '#default_value'      =>  t($rowToUpdate['web_location']),
     );
     
+    $form['Count'] = array(
+        '#type'         => 'textfield',
+        '#title'        => 'Sequence Count (Optional)',
+        '#size'         => '10',
+        '#description'  => 'How many genes, proteins, or scaffolds the sequence contains',
+        '#default_value'    => t($rowToUpdate['count']),
+    );
+    
     $form['db_id'] = array(
         '#type'         =>  'value',
         '#value'        =>  $db_id,
@@ -317,6 +342,7 @@ function tseq_database_edit_form_submit($form, &$form_state)
         'version'       => $form_state['values']['Version'],
         'location'      => $form_state['values']['Location'],
         'web_location'  => $form_state['values']['WebLocation'],
+        'count'         => $form_state['values']['Count'],
     );
     
     drupal_write_record('tseq_db_existing_locations', $updatedFields, 'db_id');
