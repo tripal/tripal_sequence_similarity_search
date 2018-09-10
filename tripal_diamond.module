@@ -297,9 +297,6 @@ function tripal_diamond_menu()
         );
      * 
      */
-    
-    
-    
     return $items;
 }
 
