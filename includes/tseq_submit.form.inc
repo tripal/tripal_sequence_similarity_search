@@ -153,16 +153,6 @@ function tseq_submit_form($form, &$form_state)
       '#type'           => 'container',
       '#prefix'         => '<h2>Provide/load Query Sequence</h2>',
     );
-    //We don't need this anymore since we're always showing everything
-    /*$form['QueryDataType'] = array(
-        '#type'         => 'radios',
-        '#title'        => t('Provide sequence set for search:'),
-        //'#description'  => t('Select how you want to upload your query.'),
-        '#options'      => array(
-            'upload' => t('Upload a File'),
-            'paste' => t('Type or paste manually')),
-        '#prefix'   =>  '<h2>Query</h2>',
-    );*/
     
     $form['Query']['QueryPaste'] = array(
         '#type'         => 'textarea',
@@ -202,7 +192,7 @@ function tseq_submit_form($form, &$form_state)
     $categories = array();
     $types = array();
        
-    //Iterate through the returned database 
+    //Iterate through the returned categories 
     for($i = 0; $i< $results->rowCount();$i++)
     {
       $categories[$i] = $results->fetchAssoc();
@@ -217,9 +207,8 @@ function tseq_submit_form($form, &$form_state)
         $types[$j] = $results->fetchAssoc();
     }
     
-    
      
-   $databaseListToShow = array();
+    $databaseListToShow = array();
     $databaseCount = array();
     $listsToVerify = array();
     
@@ -251,7 +240,9 @@ function tseq_submit_form($form, &$form_state)
                 $databaseSelect['default'] = t('--');
                 foreach($databaseListToShow[$type['type']][$category['category_title']] as $dbList)
                 {
+                    
                     $databaseSelect[$dbList['db_id']] = $dbList['name'].', version '.$dbList['version'];
+                    $dbList['count'] == '' ? $databaseSelect[$dbList['db_id']] .= '' : $databaseSelect[$dbList['db_id']] .= ', ('.$dbList['count'].' sequences)';
                 }
                 
                 //Create the form element to display them
@@ -546,14 +537,13 @@ function tseq_submit_form_validate($form, &$form_state)
         }
     }
     
-    
     //Handle if there are more than 1 targets selected
     if ($targetType == 'Protein' && $form_state['values']['TargetDataType'] == 'database')
     {
         if ($targetsProvidedPro > 1)
         {
             form_set_error('Target',t("Please choose only 1 target."));
-            if ($form_state['values']['TargetDBProtein'] != 'default')
+            /*if ($form_state['values']['TargetDBProtein'] != 'default')
             {
                form_set_error('TargetDBProtein');
             }
@@ -561,6 +551,9 @@ function tseq_submit_form_validate($form, &$form_state)
             {
                form_set_error('TargetDBUnigenePro');
             }
+             *
+             */
+            //form_set_error('Target');
         }
         else if ($targetsProvidedPro < 1)
         {
@@ -572,7 +565,7 @@ function tseq_submit_form_validate($form, &$form_state)
         if ($targetsProvidedNuc > 1)
         {
             form_set_error('Target',t("Please choose only 1 target."));
-            if ($form_state['values']['TargetDBGene'] != 'default')
+            /*if ($form_state['values']['TargetDBGene'] != 'default')
             {
                form_set_error('TargetDBGene');
             }
@@ -584,6 +577,8 @@ function tseq_submit_form_validate($form, &$form_state)
             {
               form_set_error('TargetDBUnigeneNuc');
             }
+             * 
+             */
         }
         else if ($targetsProvidedNuc < 1)
         {
