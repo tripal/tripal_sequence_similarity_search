@@ -20,10 +20,12 @@ This module supports sequence similarity search on a Tripal website through a ne
 - [x] Submit Form
 - [x] Admin
 - [x] Add/Delete/Modify Target Database List
+- [x] Categories
 - [x] Permissions
 - [x] Basic Results Page
 - [x] Advanced Results Page
+- [x] Results list on User Profile "TSeq Analysis" tab
 - [x] Database categorization
 - [ ] Check if existing database files are readable (for purposes of running against)
-- [x] Email user when job has finished
-- [ ] Show the number of sequences in each target database
+- [ ] Email user when job has finished
+- [x] Show the number of sequences in each target database
