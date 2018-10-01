@@ -888,7 +888,7 @@ function tseq_submit_form_submit($form, &$form_state)
             // Get the # of sequences
             $sequence_count = tseq_get_query_sequence_count($queryFile);
             
-            $tseq_unique_id = "TUI_".$remote_diamond_job_id."_seqs".$sequence_count."_".$tool_type."_".format_date($submit_time, 'custom', 'Ymd_His');
+            $tseq_unique_id = "TUI_".$remote_diamond_job_id."_".$sequence_count."seqs_".$tool_type."_".format_date($submit_time, 'custom', 'Ymd_His');
             drupal_set_message("New unique ID: ".$tseq_unique_id);
         
         //drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
@@ -953,27 +953,4 @@ function tseq_submit_form_submit($form, &$form_state)
     );
     
     drupal_write_record('tseq_job_information', $new_job);
-    
-    //Do up a small table
-    // What was this for?
-    /*
-    $headerTest = array("One", "Two", "Three");
-    $rowsTest = array(
-        array("a","b","c"),
-        array("A","B","C"),
-        array("alpha","beta","charlie"),
-    );
-    
-    $testTableVars = array(
-        'header' => $headerTest,
-        'rows'   => $rowsTest,
-    );
-    
-    $output = theme('table',$testTableVars);
-    return $output;
-    echo "Hello";
-    //$form_state['redirect'] = 'Diamond/results/'.$remote_diamond_job_id;
-     * 
-     */
- 
 }
