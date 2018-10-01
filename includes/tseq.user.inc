@@ -14,7 +14,7 @@ function tseq_user_analysis_page($uid) {
     
     // Header
     $header = array(
-        array('data' => 'Job ID',       'field' => 'd.tripal_job_id',           'sort' => 'asc'),
+        array('data' => 'Tripal ID',       'field' => 'd.tseq_unique_id',           'sort' => 'asc'),
         array('data' => 'Submit Time',  'field' => 'd.submit_time'),
         array('data' => 'Query Type',   'field' => 'd.sequence_query_type'),
         array('data' => 'Search Type',  'field' => 'd.database_search_type'),
@@ -29,7 +29,7 @@ function tseq_user_analysis_page($uid) {
     $query->join('tripal_jobs','t','d.tripal_job_id=t.job_id');
     
     // Which fields are we interested in the database?
-    $query->fields('d', array('tripal_job_id','submit_time','sequence_query_type','database_search_type','user_id'))
+    $query->fields('d', array('tripal_job_id','submit_time','sequence_query_type','database_search_type','user_id','tseq_unique_id'))
           ->fields('t', array('status'));
     
     // Extend the table with pagination and sorting, add other specifications
@@ -48,10 +48,10 @@ function tseq_user_analysis_page($uid) {
     $job_list = array();
     foreach($userJobs as $job)
     {
-        $link = l('Your results','/TSeq/results/'.$job->tripal_job_id);
+        $link = l('Your results','/TSeq/results/'.$job->tseq_unique_id);
         
         $job_list[] = array(
-            $job->tripal_job_id,
+            $job->tseq_unique_id,
             format_date($job->submit_time, 'short'),
             ucwords($job->sequence_query_type),
             ucwords($job->database_search_type),
