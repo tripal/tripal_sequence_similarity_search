@@ -347,8 +347,8 @@ function tripal_diamond_mail($key, &$message, $params) {
       break;
       */
     case 'job-error':
-      $message['subject'] = t("This is a test");
-      $message['body'][] = "This has been a test.";
+      $message['subject'] = t("TSeq Job: Error");
+      $message['body'][] = "There was an issue with the TSeq job";
       break;
   }
 }
