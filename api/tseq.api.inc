@@ -10,6 +10,21 @@ function tseq_get_job_information($tripal_job_id)
     return $details;
 }
 
+/**
+ *  Retrieve the job results (all data)
+ *  @param integer $job_id The Tripal Job ID used to run this job
+ * 
+ *  @return array Array of results from the database concerning this job
+ */
+function tseq_get_job_results($tripal_job_id)
+{
+    $query = "select * from tseq_results where tripal_job_id=".$tripal_job_id;
+    $results = db_query($query);
+    
+    $details = $results->fetchAssoc();
+    return $details;
+}
+
 // Retrieve the db_id of one of the stored existing databases (tseq_db_existing_locations)
 // This seems a little dirty since 'location' is not a primary key and there are no uniqueness constraints on it
 function tseq_get_db_id_by_location($location)
@@ -59,4 +74,50 @@ function tseq_results_exist($tripal_job_id)
     
     $count = $results->fetchAssoc();
     return $count['count'];
+}
+
+
+/**
+ * 
+ * @param string $sequence_query_type
+ * @param string $database_search_type
+ * @return array Type of job, program name
+ */
+function tseq_get_program($sequence_query_type, $database_search_type)
+{
+    /*  Query		Target		Program
+        Nucleotide	Protein		blastx	(Diamond)
+        Protein		Protein		blastp	(Diamond)
+        Nucleotide	Nucleotide	blastn  (BLAST)
+        Protein		Nucleotide	tblastn (BLAST)
+      
+        Target           Query           Program
+        Protein          Nucleotide      blastx  (Diamond)
+        Protein          Protein         blastp  (Diamond)
+        Nucleotide       Nucleotide      blastn  (BLAST)
+        Nucleotide       Protein         tblastn (BLAST)          
+     */
+    
+    if ($sequence_query_type == 'genomic')
+    {
+        if ($database_search_type == 'protein')
+        {
+            return array('Diamond','blastx');
+        }
+        else
+        {
+            return array('BLAST','blastn');
+        }
+    }
+    else
+    {
+        if ($database_search_type == 'protein')
+        {
+            return array('Diamond','blastp');
+        }
+        else
+        {
+            return array('BLAST','tblastn');
+        }
+    }
 }
