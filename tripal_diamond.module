@@ -389,9 +389,9 @@ function tripal_diamond_mail($key, &$message, $params) {
   /*
   * Get information from the job (tseq_job_information)
   */
-  
-  $job_information = tseq_get_job_information($params['job']);
-  $job_results = tseq_get_job_results($params['job']);
+  $job_id = $params['job']->getJobID();
+  $job_information  = tseq_get_job_information($job_id);
+  $job_results      = tseq_get_job_results($job_id);
   $job_human_readable = tseq_get_program($job_information['sequence_query_type'],$job_information['database_search_type']);
   switch ($key) {
     case 'job-complete':
