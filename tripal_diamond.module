@@ -319,6 +319,70 @@ function tripal_diamond_theme()
  *  Email to users
  */
 
+/**
+ * Listen for notifications from Tripal Remote Job and send email as appropriate
+ * Notify Tripal Remote Job of sent status
+ * This function is necessary in order to send the user more detailed information than
+ * what is possible by having Tripal Remote Job send the message.
+ * 
+ * 
+ * @param integer $job_id Tripal Job ID of the job
+ * @param integer $$job_status Status event of the job (started, finished, etc.)
+ * 
+ * @return integer 1: This module will handle the mail for this event
+ *                 0: This module will not handle the mail for this event
+ *                -1: This module was unable to send due to other reasons (such as no matching job found)
+ *                      or if the drupal mail function failed
+ * 
+ */
+/*Don't do this since we assume that any mail about a job will be related to start/stop.
+ * If this is not the case, implement a system like below
+ * function tripal_diamond_mail_jobinfo($job_id, $job_status)
+{
+    $result = drupal_mail($module, $key, $to, $language, $params, $from, $send);
+    // Let Tripal Remote Job that the mail was successfully sent and that it does
+    // not have to send its own message
+    //return $mail_sent;
+    
+    // Determine if this module will handle the mail
+    switch ($job_status)
+    {
+        case 'started':
+            // Do the mail and check for errors
+            $result = drupal_mail(tripal_diamond, $key, $to, $language, $params, $from, $send);
+            if ($result['result'] != TRUE) {
+                return '-1';
+            }
+            return '1';
+            break;
+        case 'finished':
+            echo "yes";
+            break;
+        default:
+            echo "no";
+            break;
+    }
+    
+    
+    
+    //test
+}
+ * 
+ */
+    //  seq_query_ty    db_search_ty
+    /*  Query		Target		Program
+        Nucleotide	Protein		blastx	(Diamond)
+        Protein		Protein		blastp	(Diamond)
+        Nucleotide	Nucleotide	blastn  (BLAST)
+        Protein		Nucleotide	tblastn (BLAST)
+      
+        Target           Query           Program
+        Protein          Nucleotide      blastx  (Diamond)
+        Protein          Protein         blastp  (Diamond)
+        Nucleotide       Nucleotide      blastn  (BLAST)
+        Nucleotide       Protein         tblastn (BLAST)          
+     */
+
 function tripal_diamond_mail($key, &$message, $params) {
   $site_name = variable_get('site_name', "");
   
@@ -326,26 +390,33 @@ function tripal_diamond_mail($key, &$message, $params) {
   * Get information from the job (tseq_job_information)
   */
   
+  $job_information = tseq_get_job_information($params['job']);
+  $job_results = tseq_get_job_results($params['job']);
+  $job_human_readable = tseq_get_program($job_information['sequence_query_type'],$job_information['database_search_type']);
   switch ($key) {
     case 'job-complete':
-      #if (!"test_for_error")
+        $user = $params['user'];
+        $message['subject'] = t("Your Sequence Similary Search Job has finished");
+        $message['body'][] = "The ".$job_human_readable[0]." you submitted to ".$site_name."has finished.";
+        $message['body'][] = "You can view the results by <a href=\"midspin.net".$job_information['tseq_job_id']."\">clicking here</a>.";
+        $message['body'][] = "Job details:";
+        $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
+        $message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
+        $message['body'][] = "Number of matches found: ".$job_results['matches'];
+        
+        break;
       
-      /*$job     = $params['job'];
-      $user    = $params['user'];
-      $message['subject'] = t("Your $site_name job: " . $job->getJobName());
-      $message['body'][] = "Your job titled \"" . $job->getJobName() . "\", has completed.";
-      $message['body'][] = "Please return to $site_name site to view the results for this job.";
-      break;
-      */
     case 'job-started':
-        /*
-      $job  = $params['job'];
-      $user = $params['user'];
-      $message['subject'] = t("Your $site_name job has started: " . $job->getJobName());
-      $message['body'][] = "Your job titled \"" . $job->getJobName() . "\" " .
-      $message['body'][] = "You will receive an email once the job has completed.";
-      break;
-      */
+        $user = $params['user'];
+        $message['subject'] = t("Your Sequence Similary Search Job has started");
+        $message['body'][] = "The ".$job_human_readable[0]." you submitted to ".$site_name."has started.";
+        $message['body'][] = "You can view the progress by <a href=\"midspin.net".$job_information['tseq_job_id']."\">clicking here</a>.";
+        $message['body'][] = "Job details:";
+        $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
+        $message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
+        
+        break;
+      
     case 'job-error':
       $message['subject'] = t("TSeq Job: Error");
       $message['body'][] = "There was an issue with the TSeq job";
