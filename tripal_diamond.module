@@ -393,7 +393,7 @@ function tripal_diamond_mail($key, &$message, $params) {
   $job_information  = tseq_get_job_information($job_id);    // from table: tseq_job_information
   $job_results      = tseq_get_job_results($job_id);        // from table: tseq_results
   $job_human_readable = tseq_get_program($job_information['sequence_query_type'],$job_information['database_search_type']);
-  $global $base_url;
+  global $base_url;
   switch ($key) {
           
     case 'job-started':
