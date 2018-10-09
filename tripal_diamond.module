@@ -394,26 +394,29 @@ function tripal_diamond_mail($key, &$message, $params) {
   $job_results      = tseq_get_job_results($job_id);
   $job_human_readable = tseq_get_program($job_information['sequence_query_type'],$job_information['database_search_type']);
   switch ($key) {
-    case 'job-complete':
-        $user = $params['user'];
-        $message['subject'] = t("Your Sequence Similary Search Job has finished");
-        $message['body'][] = "The ".$job_human_readable[0]." you submitted to ".$site_name."has finished.";
-        $message['body'][] = "You can view the results by <a href=\"midspin.net".$job_information['tseq_job_id']."\">clicking here</a>.";
-        $message['body'][] = "Job details:";
-        $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
-        $message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
-        $message['body'][] = "Number of matches found: ".$job_results['matches'];
-        
-        break;
-      
+          
     case 'job-started':
         $user = $params['user'];
         $message['subject'] = t("Your Sequence Similary Search Job has started");
         $message['body'][] = "The ".$job_human_readable[0]." you submitted to ".$site_name."has started.";
-        $message['body'][] = "You can view the progress by <a href=\"midspin.net".$job_information['tseq_job_id']."\">clicking here</a>.";
+        $message['body'][] = "You can view the progress by <a href=\"".$base_url."/TSeq/results/".$job_information['tseq_job_id']."\">clicking here</a>.";
         $message['body'][] = "Job details:";
+        $message['body'][] = "Job ID: ".$job_id;
         $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
         $message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
+        
+        break;
+    
+    case 'job-complete':
+        $user = $params['user'];
+        $message['subject'] = t("Your Sequence Similary Search Job has finished");
+        $message['body'][] = "The ".$job_human_readable[0]." you submitted to ".$site_name."has finished.";
+        $message['body'][] = "You can view the progress by <a href=\"".$base_url."/TSeq/results/".$job_information['tseq_job_id']."\">clicking here</a>.";
+        $message['body'][] = "Job details:";
+        $message['body'][] = "Job ID: ".$job_id;
+        $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
+        $message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
+        $message['body'][] = "Number of matches found: ".$job_results['matches'];
         
         break;
       
