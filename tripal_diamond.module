@@ -401,6 +401,7 @@ function tripal_diamond_mail($key, &$message, $params) {
         $message['subject'] = t("Your Sequence Similary Search Job has started");
         $message['body'][] = "The ".$job_human_readable[0]." job you submitted to ".$site_name."has started.";
         $message['body'][] = "You can view the progress by <a href=\"".$base_url."/TSeq/results/".$job_information['tseq_job_id']."\">clicking here</a>.";
+        $message['body'][] = "or by visiting this URL: ".$base_url;
         $message['body'][] = "Job details:";
         $message['body'][] = "Job ID: ".$job_id;
         $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
@@ -413,6 +414,7 @@ function tripal_diamond_mail($key, &$message, $params) {
         $message['subject'] = t("Your Sequence Similary Search Job has finished");
         $message['body'][] = "The ".$job_human_readable[0]." job you submitted to ".$site_name."has finished.";
         $message['body'][] = "You can view the progress by <a href=\"".$base_url."/TSeq/results/".$job_information['tseq_job_id']."\">clicking here</a>.";
+        $message['body'][] = "or by visiting this URL: ".$base_url;
         $message['body'][] = "Job details:";
         $message['body'][] = "Job ID: ".$job_id;
         $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
