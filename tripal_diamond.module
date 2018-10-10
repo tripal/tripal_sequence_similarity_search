@@ -399,7 +399,7 @@ function tripal_diamond_mail($key, &$message, $params) {
     case 'job-started':
         $user = $params['user'];
         $message['subject'] = t("Your Sequence Similary Search Job has started");
-        $message['body'][] = "The ".$job_human_readable[0]." job you submitted to ".$site_name."has started.";
+        $message['body'][] = "The ".$job_human_readable[0]." job you submitted to ".$site_name." has started.";
         $message['body'][] = "You can view the progress by <a href=\"".$base_url."/TSeq/results/".$job_information['tripal_job_id']."\">clicking here</a>.";
         $message['body'][] = "or by visiting this URL: ".$base_url."/TSeq/results/".$job_information['tripal_job_id'];
         $message['body'][] = "Job details:";
@@ -412,7 +412,7 @@ function tripal_diamond_mail($key, &$message, $params) {
     case 'job-complete':
         $user = $params['user'];
         $message['subject'] = t("Your Sequence Similary Search Job has finished");
-        $message['body'][] = "The ".$job_human_readable[0]." job you submitted to ".$site_name."has finished.";
+        $message['body'][] = "The ".$job_human_readable[0]." job you submitted to ".$site_name." has finished.";
         $message['body'][] = "You can view the progress by <a href=\"".$base_url."/TSeq/results/".$job_information['tripal_job_id']."\">clicking here</a>.";
         $message['body'][] = "or by visiting this URL: ".$base_url."/TSeq/results/".$job_information['tripal_job_id'];
         $message['body'][] = "Job details:";
@@ -429,3 +429,174 @@ function tripal_diamond_mail($key, &$message, $params) {
       break;
   }
 }
+
+/**
+ * @param integer $tripal_job_id Job ID that TSeq is being notified about
+ * @param string $key one-word status of job
+ *
+ * Allow Tripal Remote Job to notify this module that something has happened
+ */
+
+function tripal_diamond_trj_notify($tripal_job_id,$key)
+{
+    switch ($key)
+    {
+        case "started":
+            break;
+        case "completed":
+            publish_results($tripal_job_id);
+            break;
+        default:
+            // handle errors PUMPKIN
+            break;
+    }
+}
+
+/**
+ * @param int $job_id Tripal Job ID of the completed job
+ * 
+ * Publish the results to the database so they can be viewed on the results page and in email notifications immediately
+ */
+function publish_results($job_id)
+{
+    // Get the Job information to be used throughout this function
+    $job_information = tseq_get_job_information($job_id);
+    
+    $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
+    // Do the results of this job exist in the database?
+    $resultsFound = FALSE;
+    if (!tseq_results_exist($job_id)) // No
+    {
+        //Prepare the data to be inserted into table `tseq_results`
+        /*
+         *  tripal_job_id       $job_id
+         *  user_id             $job_information['user_id'];
+         *  tseq_db_id          tseq_get_db_id_by_location($job_information['database_file'])
+         *  summary             ?
+         *  result_type         assume BLAST XML
+         *  data                ...
+         *  matches             ...
+         *  database_used       
+         */
+        $user_id = $job_information['user_id'];
+        $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
+        $result_type = "BLAST XML";
+        // Get status and data
+        $matches_found = 0;
+        //Database used
+        if ($job_information['database_file_type'] == 'database')
+        {
+            // Make some spaghetti getting this information because the sequence database name isn't stored in the tseq db
+            $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
+            $db_info = tseq_get_db_info($tseq_db_id);        
+            //drupal_set_message("Database used: ".$db_info['name'].", version ".$db_info['version']." (".$db_info['category'].")");
+            $database_used = $db_info['name'].", version ".$db_info['version']." (".$db_info['type']." - ".$db_info['category'].")";
+            
+        }
+        else
+        {
+            $database_used = '';
+        }
+        //Sequences queried
+        $query_file_no_path = explode('/',$job_information['sequence_file']);
+        $query_file = $outputPath.$job_id.'/'.$query_file_no_path[count($query_file_no_path)-1];
+        if (file_exists($query_file))
+        {
+            $sequence_count = tseq_get_query_sequence_count($query_file);
+        }
+        else
+        {
+            $sequence_count = -1;
+        }
+        
+        if (file_exists($outputPath.$job_id.'/STDOUT.txt') && file_exists($outputPath.$job_id.'/STDERR.txt'))
+        {
+            //Prepare output if there is any data to show in STDOUT
+            if (filesize($outputPath.$job_id.'/STDOUT.txt') > 0)
+            {
+                $jobResults = file($outputPath.$job_id.'/STDOUT.txt');
+                $resultsFound = TRUE;
+                foreach($jobResults as $resultLine)
+                {
+                    if ($resultLine == "***** No hits found *****")
+                    {   $resultsFound = FALSE;
+                        $summary = "no results found";
+                        $data = "no results found";
+                    }
+                }
+                if ($resultsFound)
+                {
+                    $summary = "results found";
+                    $data = 'Look for data in tseq_results_data table';
+                }
+                // Gather other details
+                //Matches found
+                $matches_found = tseq_get_matches_count($outputPath.$job_id.'/STDOUT.txt');
+                
+            }
+            else if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
+            {
+                $data = file_get_contents($outputPath.$job_id.'/STDERR.txt');
+                $summary = "error";
+            }
+            else
+            {
+                $data = "There were no matches found.";
+                $summary = "error";
+            }
+        }
+        else
+        {
+            $data = "Results not found. Please contact an adminstrator and reference Tripal Job Number: ".$job_id;        // This means there was no STDERR or STDOUT files, and possibly even the job dir (most likely due to system)
+            $summary = "error";
+            if (file_exists($query_file))
+            {
+                $sequence_count = 0;
+            }
+            $database_used ='';
+        }
+                
+        
+        // and finally, insert (if there is anything to insert
+        
+        // Results details (always insert these)
+        $newDB = array(
+            'tripal_job_id' => $job_id,
+            'user_id'       => $user_id,
+            'tseq_db_id'    => $tseq_db_id,
+            'data'          => $data,
+            'summary'       => $summary,
+            'result_type'   => $result_type,
+            'sequence_count'=> $sequence_count,
+            'matches'       => $matches_found,
+            'database_used' => $database_used,
+        );
+        drupal_write_record('tseq_results', $newDB); // Insert the job details
+
+        // Results data (Insert these only if they exist)
+        if ($resultsFound)
+        {
+            foreach($jobResults as $key => $jobResult)
+            {
+                $columns = explode("\t", $jobResult);
+                $job_results_data[$key] = array(
+                    'tripal_job_id' => $job_id,
+                    'match_id'      => $key,
+                    'query_label'   => $columns[0],
+                    'target'        => $columns[1],
+                    'percent_identity'  => $columns[2],
+                    'alignment_length'  => $columns[3],
+                    'mismatches'        => $columns[4],
+                    'gap_opens'         => $columns[5],
+                    'start_position_query'  => $columns[6],
+                    'end_position_query'     => $columns[7],
+                    'start_position_database'  => $columns[8],
+                    'end_position_database'     => $columns[9],
+                    'e_value'   =>  $columns[10],
+                    'bit_score' =>  $columns[11],
+                );
+                drupal_write_record('tseq_results_data',$job_results_data[$key]);
+            }
+        }
+    }}
+
