@@ -405,7 +405,7 @@ function tripal_diamond_mail($key, &$message, $params) {
         $message['body'][] = "Job details:";
         $message['body'][] = "Job ID: ".$job_id;
         $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
-        $message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
+        //$message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
         
         break;
     
