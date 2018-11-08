@@ -23,9 +23,6 @@
 
 function tseq_download($job_id, $type)
 {
-    //Pumpkin MAKE DYNAMIC
-    //$file = "/var/www/Drupal/sites/default/files/tripal/jobs/$job_id/STDOUT.txt";
-    
     // Get the job details for the job to provide accurate file links below
     $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
     $job_details = tseq_get_job_information($job_id);
@@ -48,7 +45,7 @@ function tseq_download($job_id, $type)
         case "target":
             // Did the user upload their own target? (any file type except 'database')
             // Theoretically this case will only be called by pages where this is already the case (and has been
-            //     checked, but let's just be sure before we try to send a non-existant file
+            //     checked, but let's just be sure before we try to send a non-existant file)
             if ($job_details['database_file_type'] != 'database')
             {
                 $target_file_no_path = explode('/',$job_details['target_file']);
@@ -95,6 +92,8 @@ function tseq_download($job_id, $type)
  * 
  * @return boolean
  *  Specify if the export operation was a success or not
+ * 
+ * @todo move this to tseq_databases or somewhere that makes more sense
  */
 function tseq_db_export($db, $type)
 {
@@ -102,27 +101,29 @@ function tseq_db_export($db, $type)
     {
         //header('Content-Description: File Transfer');
         header('Content-type: text/plain');
-        header('Content-Disposition: attachment; filename="DiamondDatabases.csv"');
+        header('Content-Disposition: attachment; filename="TSeqDatabases.csv"');
         header('Pragma: public');
-        $dbOut = '';
+        $dbOut = 'Type, Name, Version, Location, Category, Web Location, Count';
+        $dbOut .= "\n";
         
         //drupal_set_message("db: ".$db[1][0]);
         
-        foreach($db as $dbLine)
+        foreach($db as $key => $dbLine)
         {
-                $dbOut .= $dbLine['type'].', '.$dbLine['name'].', '.$dbLine['version'].', '.$dbLine['location'];
-            
-            /*foreach($dbLine as $dbDatapoint)
+            $dbOut .= $dbLine['type'].',';
+            $dbOut .= $dbLine['name'].',';
+            $dbOut .= $dbLine['version'].',';
+            $dbOut .= $dbLine['location'].',';
+            $dbOut .= $dbLine['category'].',';
+            $dbOut .= $dbLine['web_location'].',';
+            $dbOut .= $dbLine['count'];              
+            // Only put a newline if there are more entries
+            if ($key < count($db) - 1)
             {
-                drupal_set_message(var_dump($dbLine));
-                $dbOut = $dbOut.$dbDatapoint;
-                $dbOut = $dbOut.', ';
-            }*/
-              
-             
             $dbOut = $dbOut."\n";
+            }
         }
-        $dbOut = $dbOut."\r\n";
+        //$dbOut = $dbOut."\r\n";
         echo $dbOut;
         exit;
        
