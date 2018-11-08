@@ -26,6 +26,7 @@ function tseq_config_dblist_page_build()
         array('data' => 'Category', 'field' => 'category'),
         array('data' => 'Location (Remote)',    'field' => 'location'),
         array('data' => 'Count',          'field' => 'count'),
+        array('data' => 'Web?',     'field' => 'web_location'),
         array('data' => 'Actions'),            
     );
     
@@ -34,7 +35,7 @@ function tseq_config_dblist_page_build()
             ->extend('PagerDefault')
             ->extend('TableSort');
     
-    $select->fields('db',array('db_id','name','version','type','category','location','count'))
+    $select->fields('db',array('db_id','name','version','type','category','location','count','web_location'))
            ->limit(15)
            ->orderByHeader($database_header);
     $databases = $select->execute();
@@ -43,7 +44,14 @@ function tseq_config_dblist_page_build()
     {
         $edit = l('Edit','admin/tripal/extension/tseq/edit_db/'.$database->db_id);
         $delete = l('Delete','admin/tripal/extension/tseq/delete_db/'.$database->db_id);
-        
+        if ($database->web_location)
+        {
+            $web_available = "<abbr title=\"".$database->web_location."\">Yes</abbr>";
+        }
+        else
+        {
+            $web_available = "<abbr title=\"Add one by clicking 'Edit' to the right\">No</abbr>";
+        }
         $database_list[] = array(
             $database->name,
             $database->version,
@@ -51,6 +59,7 @@ function tseq_config_dblist_page_build()
             $database->category,
             $database->location,
             $database->count,
+            $web_available,
             $edit.' | '.$delete,
         );
     }
@@ -190,6 +199,10 @@ function tseq_database_add_form_validate($form, &$form_state)
     
 }
 
+/**
+ * 
+ * @todo Move this function (and others like it) to tseq_databases.inc
+ */
 function tseq_database_add_form_submit($form, &$form_state)
 {
     /*
@@ -214,6 +227,7 @@ function tseq_database_add_form_submit($form, &$form_state)
     drupal_set_message("This database was successfully added");
     drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
+
 /*
  * Edit a database in the list (form)
  */
@@ -354,6 +368,7 @@ function tseq_database_edit_form_submit($form, &$form_state)
     drupal_set_message("This database was successfully updated");
     drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
+
 /*
  * Delete a database in the list (form)
  */
@@ -441,28 +456,23 @@ function tseq_database_import_form($form, &$form_state)
         '#type'         => 'managed_file',
         '#title'        => 'Import a file of databases',
         '#size'         => '50',
-        '#description'  => 'The file must be of type <code>.csv</code>, <code>.xls</code>, or <code>.xlsx</code>. Show row information',
+        '#description'  => 'The file must be of type <code>.csv</code>.',
         '#required'     => true,
         '#upload_validators' => array(
             'file_validate_extensions' => array('csv xls xlsx'),
         ),
     );
     
-    /*
-     * May not be necessary - user may just have to point to .fa* files and 
-     * let the app server create the index every time (if write access for
-     * creating the diamond indexes is an issue. 
-     */
-    $form['indexCheck'] = array(
+    $form['fileHasHeaders'] = array(
         '#type'         => 'checkbox',
-        '#title'        => 'Automatically index',
-        '#description' => 'Click here to automatically create a Diamond index',
+        '#title'        => 'This data has headers',
+        '#description' => 'Click here if the file has headers',
         '#states' => array(
             'visible' => array(
                 ':input[name="FileSelect"]' => array('value' => 'upload'),
             ),
         ),
-    );    
+    ); 
     
     $form['userValidate'] = array(
         '#type'         => 'checkbox',
@@ -485,42 +495,68 @@ function tseq_database_import_form($form, &$form_state)
     
     return $form;
 }
-
+/**
+ *
+ * @todo Notify user of improperly formatted csv
+ * @todo Detect improperly formatted csv (bad # columns, no columns
+ * @todo Perhaps detect if csv is actually tab-delimited
+ */
 function tseq_database_import_form_validate($form, &$form_state)
 {    
-    $fid = $form_state['values']['FileSelect'];
+    $imported_file = file_load($form_state['values']['FileSelect']);
+    $imported_file_URI = drupal_realpath($imported_file->uri);
     
-    $importFile = file_load($fid);
-    //str_replace("temporary://","",);
-    $fileName = "/tmp/".str_replace("temporary://","",$importFile->uri);
-    
-    $theFile = fopen($fileName,"r");
-    $k = 0;
-    while (!feof($theFile))
+    if ($imported_file_handle = fopen($imported_file_URI, 'r'))
     {
-        $fileLines[$k] = fgetcsv($theFile);
-        $k++;
-    }
-    
-    $table = "<table><tr><th>Type</th><th>Name</th><th>Version</th><th>Location</th></tr>";
-    $table .= "<tr>";
-    for ($i = 0; $i < count($fileLines);$i++)
-    {
-        $table .="<tr>";
-        for ($j = 0; $j < count($fileLines[$i]);$j++)
+        $k = 0;
+        while (!feof($imported_file_handle))
         {
-            $table .="<td>".$fileLines[$i][$j]."</td>";
+            $file_lines[$k] = fgetcsv($imported_file_handle);
+            $k++;
         }
-        $table .="</tr>";
-        //}
-        /*else
+        // Close the file 
+        fclose($imported_file_handle);
+        
+        // Save values to form
+        $form_state['values']['file_lines'] = $file_lines;
+
+        $table = "<table>"
+                . "<tr><th>Type</th>"
+                . "<th>Name</th>"
+                . "<th>Version</th>"
+                . "<th>Location</th>"
+                . "<th>Category</th>"
+                . "<th>Web Location</th>"
+                . "<th>Count</th>"
+                . "</tr>";
+        $table .= "<tr>";
+        // generate table from ingested thingy
+        // Check if the user specified that there are headers
+        if ($form_state['values']['fileHasHeaders'])
         {
-        $table .= "<td>".$fileLines[$i]."</td>";
-        }*/
+            $i = 1;
+        }
+        else
+        {
+            $i = 0;
+        }
+        for ($i; $i < count($file_lines);$i++)
+        {
+            $table .="<tr>";
+            for ($j = 0; $j < count($file_lines[$i]);$j++)
+            {
+                $table .="<td>".trim($file_lines[$i][$j])."</td>";
+            }
+            $table .="</tr>";
+            //}
+            /*else
+            {
+            $table .= "<td>".$fileLines[$i]."</td>";
+            }*/
+        }
+        $table .= "</table>";
+        drupal_set_message($table);
     }
-    $table .= "</table>";
-    drupal_set_message($table);
-   
     
     if (empty($form_state['values']['userValidate']))
     {
@@ -528,9 +564,38 @@ function tseq_database_import_form_validate($form, &$form_state)
     }
 }
 
+/**
+ * 
+ *  This submit function adds any new databases from the imported file.
+ *  New databases are added in proper form to the tseq_db_existing_locations table
+ */
 function tseq_database_import_form_submit($form, &$form_state)
 {
-    drupal_set_message("Pumpkin importation");
+    $file_lines = $form_state['values']['file_lines'];
+    dpm($file_lines);
+    if ($form_state['values']['fileHasHeaders'])
+    {
+        $i = 1;
+    }
+    else
+    {
+        $i = 0;
+    }
+    for ($i; $i < count($file_lines);$i++)
+    {
+        $new_db = array(
+            'name'          => $file_lines[$i][1],
+            'type'          => $file_lines[$i][0],
+            'version'       => $file_lines[$i][2],
+            'location'      => $file_lines[$i][3],
+            'category'      => $file_lines[$i][4],
+            'web_location'  => $file_lines[$i][5],
+            'count'         => $file_lines[$i][6]
+        );
+        dpm($new_db);
+        drupal_write_record('tseq_db_existing_locations', $new_db);
+    }
+    drupal_set_message("List of databases has been successfully imported.");
 }
 
 
