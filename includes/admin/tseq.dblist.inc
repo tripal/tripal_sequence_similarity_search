@@ -591,7 +591,6 @@ function tseq_database_import_form_submit($form, &$form_state)
             'web_location'  => $file_lines[$i][5],
             'count'         => $file_lines[$i][6]
         );
-        dpm($new_db);
         drupal_write_record('tseq_db_existing_locations', $new_db);
     }
     drupal_set_message("List of databases has been successfully imported.");
