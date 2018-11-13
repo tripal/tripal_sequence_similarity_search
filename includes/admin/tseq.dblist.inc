@@ -572,7 +572,6 @@ function tseq_database_import_form_validate($form, &$form_state)
 function tseq_database_import_form_submit($form, &$form_state)
 {
     $file_lines = $form_state['values']['file_lines'];
-    dpm($file_lines);
     if ($form_state['values']['fileHasHeaders'])
     {
         $i = 1;
