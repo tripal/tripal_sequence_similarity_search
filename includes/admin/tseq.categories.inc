@@ -93,6 +93,7 @@ function tseq_category_add_form($form, &$form_state)
             '1'       => t('Yes'),
             '0'        => t('No'),
         ),
+        '#default_value'    => '1',
         '#required'     => true,
     );
     
