@@ -8,7 +8,7 @@ This module supports sequence similarity search on a Tripal website through a ne
 - NCBI Blast version 2.7.1+ (ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/)
 
 ## Installation / Useful Pages & Info
-1. Visit /admin/config/diamond to set up databases and other options
+1. Visit /admin/tripal/extension/tseq/config to set up databases and other options
 2. Permission role 'administer diamond' created for site admins
 
 - TSeq                           Main Page
