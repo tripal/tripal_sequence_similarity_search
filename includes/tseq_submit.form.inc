@@ -89,7 +89,8 @@ function tseq_submit_form($form, &$form_state)
         //'#description'  => t('Choose the type of query'),
         '#options'      => array(
             'Protein'       => t('Protein'),
-            'Genomic'       => t('Genomic (coding or non-coding)'),
+            'Genomic'       => t('Nucleotide (coding or whole genome)')
+            #'Genomic'       => t('Genomic (coding or non-coding)'),
             #'Genome'    => t('Genome'),
         ),
         '#prefix'           => '<hr><h2>Sequence Query Type</h2>',
