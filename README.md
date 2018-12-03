@@ -11,10 +11,10 @@ This module supports sequence similarity search on a Tripal website through a ne
 1. Visit /admin/tripal/extension/tseq/config to set up databases and other options
 2. Permission role 'administer diamond' created for site admins
 
-- TSeq                           Main Page
-- TSeq/submit                    Main Submission Page
-- TSeq/results/#                 Job results page (# is the Tripal Job ID)
-- admin/tripal/extension/diamond    Diamond Module Administration
+- TSeq                                  Main Page
+- TSeq/submit                           Main Submission Page
+- TSeq/results/#                        Job results page (# is the Tripal Job ID)
+- admin/tripal/extension/tseq/config    Tripal Seq Module Administration
 
 ## Status
 - [x] Submit Form
@@ -27,5 +27,6 @@ This module supports sequence similarity search on a Tripal website through a ne
 - [x] Results list on User Profile "TSeq Analysis" tab
 - [x] Database categorization
 - [ ] Check if existing database files are readable (for purposes of running against)
-- [ ] Email user when job has finished
+- [x] Email user when job has finished
 - [x] Show the number of sequences in each target database
+- [ ] Better user input validation (biological)
