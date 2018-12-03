@@ -543,7 +543,7 @@ function tseq_submit_form_validate($form, &$form_state)
     {
         if ($targetsProvidedPro > 1)
         {
-            form_set_error('Target',t("Please choose only 1 target."));
+            form_set_error('Target',t("Please choose only 1 protein target."));
             /*if ($form_state['values']['TargetDBProtein'] != 'default')
             {
                form_set_error('TargetDBProtein');
@@ -565,7 +565,7 @@ function tseq_submit_form_validate($form, &$form_state)
     {
         if ($targetsProvidedNuc > 1)
         {
-            form_set_error('Target',t("Please choose only 1 target."));
+            form_set_error('Target',t("Please choose only 1 nucleotide target."));
             /*if ($form_state['values']['TargetDBGene'] != 'default')
             {
                form_set_error('TargetDBGene');
