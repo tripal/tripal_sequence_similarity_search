@@ -2,9 +2,9 @@
 /*
  * Implements Theme Hook
  */
-function tripal_diamond_theme_registry_alter(&$theme_registry) {
+function tripal_seq_theme_registry_alter(&$theme_registry) {
   $theme_registry_copy = $theme_registry;
-  $module_path = drupal_get_path('module', 'tripal_diamond') . '/theme';
+  $module_path = drupal_get_path('module', 'tripal_seq') . '/theme';
   _theme_process_registry($theme_registry_copy, 'phptemplate', 'theme_engine', 'my_custom_theme', $module_path);
   $theme_registry += array_diff_key($theme_registry_copy, $theme_registry);
   // A list of templates the module will provide templates for
