@@ -696,7 +696,8 @@ function tseq_submit_form_submit($form, &$form_state)
     if(!empty($form_state['values']['QueryPaste']))
     {
         $queryFileType = 'paste';
-        $queryFile = "/tmp/".date('YMd_His').'.fasta';
+        //$queryFile = "/tmp/".date('YMd_His').'.fasta';
+        $queryFile = drupal_realpath("public://").'/'.date('YMd_His').'.fasta';
         $queryFileWrite = file_put_contents($queryFile, $form_state['values']['QueryPaste']);
         if ($queryFileWrite === FALSE){$prepError = TRUE;}
     }
@@ -726,7 +727,8 @@ function tseq_submit_form_submit($form, &$form_state)
     if($form_state['values']['TargetDataType'] == 'paste')
     {
         $targetFileType = 'paste';
-        $targetFile = "/tmp/".date('YMd_His').'.dmnd';
+        //$targetFile = "/tmp/".date('YMd_His').'.dmnd';
+        $targetFile = drupal_realpath("public://").'/'.date('YMd_His').'.dmnd';
         $targetFileWrite = file_put_contents($targetFile, $form_state['values']['TargetPaste']);
         if ($targetFileWrite === FALSE){$prepError = TRUE;}
     }
