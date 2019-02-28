@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 function tseq_config_dblist_page_build()
 {
@@ -269,7 +269,8 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
         '#description'  => 'The type of target database being added',
         '#options'      => array(
             'Protein'       => t('Protein'),
-            'Nucleotide'    => t('Nucleotide'),
+            'Gene'          => t('Gene'),
+            'Genome'        => t('Genome'),
         ),
         '#default_value'      =>  t($rowToUpdate['type']),
     );
