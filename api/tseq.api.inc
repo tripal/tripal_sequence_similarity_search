@@ -121,3 +121,87 @@ function tseq_get_program($sequence_query_type, $database_search_type)
         }
     }
 }
+
+/**
+ * Will add missing headers (numbered) and proper newline formatting to query submissions
+ * 
+ * @param type $query_text
+ */
+function tseq_fix_query($query_text)
+{
+    # Keep track of inserted sequence #
+    $sequenceNo = 1;
+    ## Process the file with regular expressions
+	#$fixed = preg_replace_callback($pattern, functionName, $contents);
+    #
+    # Step 1: Find instances of 2 newline characters and no headers
+    #
+    $pattern = '/([\n]{2})([A-Z])/';	
+    $fixed = preg_replace_callback($pattern, 'step1', $contents);
+
+    function step1($matches){
+            global $sequenceNo;
+            return "\n\n>ADDEDSEQUENCE_TYPE1 " . $sequenceNo++ . "\n" . $matches[2];
+    }
+    #	
+    # Step 2: Make sure at least the first sequence has a header
+    #
+    $pattern2 = '/(^[A-Z])/';
+    $fixed2 = preg_replace_callback($pattern2, 'step2', $fixed);
+
+    function step2($matches){
+            global $sequenceNo;
+            return ">ADDEDSEQUENCE_TYPE2 " . $sequenceNo++ . "\n" . $matches[0];
+    }
+	
+	
+    #
+    # Step 3: Put a newline between the end of a sequence and the header of the next
+    #
+    $pattern3 ='/([A-z])(\n{1})(>)/';
+    $fixed3 = preg_replace_callback($pattern3, 'step3', $fixed2);
+
+    function step3($matches){
+            return $matches[1] . "\n" . $matches[2] . $matches[3];
+    }
+        
+    return $fixed3;
+}
+
+
+// Validate the user's sequences
+// Returns true on valid sequence
+function tseq_validate_sequence($type, $sequence)
+{
+    // Are we dealing with a nucleotide or a protein?
+    if ($type == 'Genomic')
+    {
+        $fastaIdRegEx = '/^>.*(\\n|\\r)/';
+        $fastaSeqRegEx = '/[^ATCGNUKMBVSWDYRHatcgnukmbvswdyrh\n\r]/'; //Includes IUPAC codes.
+        if ( preg_match($fastaSeqRegEx,$sequence) && !(preg_match($fastaIdRegEx,$sequence)) )
+        {
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
+    }
+    else if ($type == 'Protein')
+    {
+        $fastaIdRegEx = '/^>.*(\\n|\\r)/';
+        $fastaSeqRegEx = '/[^ABCDEFGHIKLMNPQRSTUVWYZXabcdefghiklmnpqrstuvwyzx\*\-\n\r]/';
+        if ( preg_match($fastaSeqRegEx,$sequence) && !(preg_match($fastaIdRegEx,$sequence)) )
+        {
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
+    }
+    else
+    {
+        return "error";
+    }
+}
