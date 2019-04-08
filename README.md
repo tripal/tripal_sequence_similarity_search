@@ -30,3 +30,4 @@ This module supports sequence similarity search on a Tripal website through a ne
 - [x] Email user when job has finished
 - [x] Show the number of sequences in each target database
 - [ ] Better user input validation (biological)
+- [ ] Admin option: temp directory (--tmpdir)
