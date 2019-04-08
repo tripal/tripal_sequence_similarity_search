@@ -317,6 +317,18 @@ function tripal_seq_schema()
                 'type'          => 'int',
                 'length'        => 15,
             ),
+            'diamond_exe_version' => array(
+                'description'   => t('Diamond executable version'),
+                'type'          => 'varchar',
+                'length'        => 15,
+                'not null'      => FALSE,
+            ),
+            'blast_exe_version' => array(
+                'description'   => t('BLAST executable version'),
+                'type'          => 'varchar',
+                'length'        => 15,
+                'not null'      => FALSE,
+            ),
         ),
     );
     
@@ -780,4 +792,34 @@ function tripal_seq_update_7007()
             ->execute();
         
     }
+}
+
+/**
+ * Create a column for Diamond version and for BLAST version (both can be NULL)
+ */
+function tripal_seq_update_7008()
+{
+    // Diamond exe version
+    db_add_field(
+        'tseq_settings',
+        'diamond_exe_version',
+        array(
+            'descripton'    => 'Diamond executable version',
+            'type'          => 'varchar',
+            'length'        => 15,
+            'not null'      => FALSE,
+        )
+    );
+    
+    // BLAST exe version
+    db_add_field(
+        'tseq_settings',
+        'blast_exe_version',
+        array(
+            'descripton'    => 'BLAST executable version',
+            'type'          => 'varchar',
+            'length'        => 15,
+            'not null'      => FALSE,
+        )
+    );
 }
