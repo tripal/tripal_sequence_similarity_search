@@ -112,7 +112,7 @@ function tseq_configuration_settings_form($form, &$form_state)
         '#required'     => false,
         '#default_value'    => t($current_settings['diamond_exe_version']),
         '#field_prefix' => 'Version of the Diamond executable on the remote server.',
-        '#description'  => 'This can be found by issuing <code>/path/to/diamond --version</code>. If not specified, certain functionality will be limited. The documentation will list these limitations',
+        '#description'  => 'This can be found by issuing <code>/path/to/diamond --version</code>. If this is not specified, certain functionality will be limited. The documentation will list these limitations',
     );
     
     $form['submit_button'] = array(
