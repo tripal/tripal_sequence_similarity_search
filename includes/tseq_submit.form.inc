@@ -20,42 +20,6 @@ error_reporting(E_ALL);
         return $element;
     }
     
-    // Validate the user's sequences
-    // Returns true on valid sequence
-    function validate_sequence($type, $sequence)
-    {
-        // Are we dealing with a nucleotide or a protein?
-        if ($type == 'Genomic')
-        {
-            $fastaIdRegEx = '/^>.*(\\n|\\r)/';
-            $fastaSeqRegEx = '/[^ATCGNUKMBVSWDYRHatcgnukmbvswdyrh\n\r]/'; //Includes IUPAC codes.
-            if ( preg_match($fastaSeqRegEx,$sequence) && !(preg_match($fastaIdRegEx,$sequence)) )
-            {
-                return FALSE;
-            }
-            else
-            {
-                return TRUE;
-            }
-        }
-        else if ($type == 'Protein')
-        {
-            $fastaIdRegEx = '/^>.*(\\n|\\r)/';
-            $fastaSeqRegEx = '/[^ABCDEFGHIKLMNPQRSTUVWYZXabcdefghiklmnpqrstuvwyzx\*\-\n\r]/';
-            if ( preg_match($fastaSeqRegEx,$sequence) && !(preg_match($fastaIdRegEx,$sequence)) )
-            {
-                return FALSE;
-            }
-            else
-            {
-                return TRUE;
-            }
-        }
-        else
-        {
-            return "error";
-        }
-    }
 
 function tseq_submit_form($form, &$form_state)
 {
@@ -641,7 +605,7 @@ function tseq_submit_form_validate($form, &$form_state)
         {
             $querySequence = fread($queryFileHandle, filesize($queryFileURI));
             // pass its contents through validation
-            if(!validate_sequence($form_state['values']['QueryType'],$querySequence))
+            if(!tseq_validate_sequence($form_state['values']['QueryType'],$querySequence))
             {
                 form_set_error('QueryFile','The file you uploaded has invalid '
                         . 'syntax. Please check your file and reupload.');
@@ -663,7 +627,7 @@ function tseq_submit_form_validate($form, &$form_state)
         // get the text
         $querySequence = $form_state['values']['QueryPaste'];
         // pass it through validation
-        if(!validate_sequence($form_state['values']['QueryType'],$querySequence))
+        if(!tseq_validate_sequence($form_state['values']['QueryType'],$querySequence))
             {
                 form_set_error('QueryPaste','The file you uploaded has invalid '
                         . 'syntax. Please check your file and reupload.');
