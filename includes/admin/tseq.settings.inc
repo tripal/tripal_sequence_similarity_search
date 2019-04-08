@@ -105,6 +105,16 @@ function tseq_configuration_settings_form($form, &$form_state)
         '#description'  => 'If not specified, will try to use Diamond from the default $PATH. The trailing slash is not required.',
     ); 
     
+    $form['settings']['diamond_exe_version'] = array(
+        '#type'         => 'textfield',
+        '#title'        => 'Diamond Executable Version',
+        '#size'         => '5',
+        '#required'     => false,
+        '#default_value'    => t($current_settings['diamond_exe_version']),
+        '#field_prefix' => 'Version of the Diamond executable on the remote server.',
+        '#description'  => 'This can be found by issuing <code>/path/to/diamond --version</code>. If not specified, certain functionality will be limited. The documentation will list these limitations',
+    );
+    
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Save'),
@@ -123,7 +133,9 @@ function tseq_configuration_settings_form_submit($form, &$form_state)
         'file_expire_time'          => $form_state['values']['expiry'],
         'blast_exe_location'        => $form_state['values']['blast_exe_location'],
         'diamond_exe_location'      => $form_state['values']['diamond_exe_location'],
-        'preferred_remote_resource' => $form_state['values']['preferred_remote_resource'],        
+        'preferred_remote_resource' => $form_state['values']['preferred_remote_resource'],
+        'diamond_exe_version'       => $form_state['values']['diamond_exe_version'],
+        /*'blast_exe_version'         => $form_state['values']['blast_exe_version'],*/
     );
     
     drupal_write_record('tseq_settings', $tseq_settings,'settings_id');
