@@ -817,7 +817,23 @@ function tseq_submit_form_submit($form, &$form_state)
                 "    -k "              . $maxAlignments                   . " \\" . PHP_EOL .
                 "    -e "              . $eValue                          . " \\" . PHP_EOL .
                 "    --subject-cover " . $targetCoverage                  . " \\" . PHP_EOL .
-                "    --query-cover "   . $queryCoverage;
+                "    --query-cover "   . $queryCoverage                   . " \\" . PHP_EOL .
+                "    --outfmt 100 "                                       . " \\" . PHP_EOL .
+                "    --out results.daa "                                  . " \\" . PHP_EOL ;
+
+                // Take DAA format, create BLAST XML output (regular table) and Pairwise output (for showing alignments)
+                $command_to_run .= PHP_EOL;
+                $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                "    --daa results.daa "                                  . " \\" . PHP_EOL .
+                "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore sseq qseq" . " \\" . PHP_EOL .
+                "    --out results_blastxml.txt"                          . " \\" . PHP_EOL ;
+
+                $command_to_run .= PHP_EOL;
+                $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                "    --daa results.daa "                                  . " \\" . PHP_EOL .
+                "    --outfmt 0 "                                         . " \\" . PHP_EOL .
+                "    --out results_pairwise.txt " 
+
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
@@ -848,7 +864,22 @@ function tseq_submit_form_submit($form, &$form_state)
                 "    -k "                . $maxAlignments                 . " \\" . PHP_EOL .
                 "    -e "                . $eValue                        . " \\" . PHP_EOL .
                 "    --subject-cover "   . $targetCoverage                . " \\" . PHP_EOL .
-                "    --query-cover "     . $queryCoverage;
+                "    --query-cover "     . $queryCoverage                 . " \\" . PHP_EOL .
+                "    --outfmt 100 "                                       . " \\" . PHP_EOL .
+                "    --out results.daa "                                  . " \\" . PHP_EOL ;
+
+                // Take DAA format, create BLAST XML output (regular table) and Pairwise output (for showing alignments)
+                $command_to_run .= PHP_EOL;
+                $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                "    --daa results.daa "                                  . " \\" . PHP_EOL .
+                "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore sseq qseq" . " \\" . PHP_EOL .
+                "    --out results_blastxml.txt"                          . " \\" . PHP_EOL ;
+
+                $command_to_run .= PHP_EOL;
+                $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                "    --daa results.daa "                                  . " \\" . PHP_EOL .
+                "    --outfmt 0 "                                         . " \\" . PHP_EOL .
+                "    --out results_pairwise.txt "
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
