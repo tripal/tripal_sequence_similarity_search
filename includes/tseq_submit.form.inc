@@ -879,7 +879,7 @@ function tseq_submit_form_submit($form, &$form_state)
                 $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
                 "    --daa results.daa "                                  . " \\" . PHP_EOL .
                 "    --outfmt 0 "                                         . " \\" . PHP_EOL .
-                "    --out results_pairwise.txt "
+                "    --out results_pairwise.txt "                         . " \\" . PHP_EOL ;
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
