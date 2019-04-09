@@ -809,20 +809,26 @@ function tseq_submit_form_submit($form, &$form_state)
             // If we're running with Diamond
             if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx')
             {
-                $command_to_run = "diamond ".$blastEquiv                      . " \\" . PHP_EOL .
-                "    --threads "       . $jobSettings[0]['num_threads']       . " \\" . PHP_EOL .
-                "    --db "            . $targetFile                          . " \\" . PHP_EOL .
-                "    --query "         . $queryFileNoPath                     . " \\" . PHP_EOL .
-                "    --more-sensitive"                                        . " \\" . PHP_EOL .
-                "    -k "              . $maxAlignments                       . " \\" . PHP_EOL .
-                "    -e "              . $eValue                              . " \\" . PHP_EOL .
-                "    --subject-cover " . $targetCoverage                      . " \\" . PHP_EOL .
+                $command_to_run = "diamond ".$blastEquiv                  . " \\" . PHP_EOL .
+                "    --threads "       . $jobSettings[0]['num_threads']   . " \\" . PHP_EOL .
+                "    --db "            . $targetFile                      . " \\" . PHP_EOL .
+                "    --query "         . $queryFileNoPath                 . " \\" . PHP_EOL .
+                "    --more-sensitive"                                    . " \\" . PHP_EOL .
+                "    -k "              . $maxAlignments                   . " \\" . PHP_EOL .
+                "    -e "              . $eValue                          . " \\" . PHP_EOL .
+                "    --subject-cover " . $targetCoverage                  . " \\" . PHP_EOL .
                 "    --query-cover "   . $queryCoverage;
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
             {
-                $command_to_run = $blastEquiv." -num_threads ".$jobSettings[0]['num_threads']." -db ".$targetFile." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
+                $command_to_run = $blastEquiv                             . " \\" . PHP_EOL .
+                "    -num_threads "     . $jobSettings[0]['num_threads']  . " \\" . PHP_EOL .
+                "    -db "              . $targetFile                     . " \\" . PHP_EOL .
+                "    -query "           . $queryFileNoPath                . " \\" . PHP_EOL .
+                "    -num_alignments "  . $maxAlignments                  . " \\" . PHP_EOL .
+                "    -evalue "          . $eValue                         . " \\" . PHP_EOL . 
+                "    -outfmt 6";
             }
             
             if($debug){drupal_set_message("Will run command: ".$command_to_run);}
@@ -834,12 +840,26 @@ function tseq_submit_form_submit($form, &$form_state)
             
             if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx')
             {
-                $command_to_run = "diamond ".$blastEquiv." --threads ".$jobSettings[0]['num_threads']." --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+                $command_to_run = "diamond ".$blastEquiv.
+                "    --threads "         . $jobSettings[0]['num_threads'] . " \\" . PHP_EOL .  
+                "    --db "              . $targetFileNoPath              . " \\" . PHP_EOL .
+                "    --query "           . $queryFileNoPath               . " \\" . PHP_EOL .
+                "    --more-sensitive "                                   . " \\" . PHP_EOL .
+                "    -k "                . $maxAlignments                 . " \\" . PHP_EOL .
+                "    -e "                . $eValue                        . " \\" . PHP_EOL .
+                "    --subject-cover "   . $targetCoverage                . " \\" . PHP_EOL .
+                "    --query-cover "     . $queryCoverage;
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
             {
-                $command_to_run = $blastEquiv." -num_threads ".$jobSettings[0]['num_threads']." -db ".$targetFileNoPath." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
+                $command_to_run = $blastEquiv                             . " \\" . PHP_EOL .
+                " -num_threads "         . $jobSettings[0]['num_threads'] . " \\" . PHP_EOL .
+                " -db "                  . $targetFileNoPath              . " \\" . PHP_EOL .
+                " -query "               . $queryFileNoPath               . " \\" . PHP_EOL .
+                " -num_alignments "      . $maxAlignments                 . " \\" . PHP_EOL .
+                " -evalue "              . $eValue                        . " \\" . PHP_EOL .
+                " -outfmt 6";
             }
             
             if($debug)drupal_set_message("Will run command: ".$command_to_run);
