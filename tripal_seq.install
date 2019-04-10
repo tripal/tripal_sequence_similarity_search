@@ -194,7 +194,7 @@ function tripal_seq_schema()
             'command' => array(
                 'description' => 'The assembled command to run on the remote machine',
                 'type' => 'varchar',
-                'length' => 511,
+                'length' => 5000,
                 'not NULL' => true,
             ),
                 'tseq_unique_id' => array(
@@ -820,6 +820,21 @@ function tripal_seq_update_7008()
             'type'          => 'varchar',
             'length'        => 15,
             'not null'      => FALSE,
+        )
+    );
+}
+
+/**
+ * Increase the character limit for "command" in tseq_job_information to 5000
+ */
+function tripal_seq_update_7009()
+{
+    db_change_field('tseq_job_information','command','command',
+        array(
+            'description' => 'The assembled command to run on the remote machine',
+            'type' => 'varchar',
+            'length' => 5000,
+            'not NULL' => true,
         )
     );
 }
