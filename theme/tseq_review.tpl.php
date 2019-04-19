@@ -144,16 +144,6 @@ else if ($status == 'Completed')
     $outputPath .= $job_id;
     echo "<h3>Alignment View</h3>";
 
-    // Test if the pairwise file even exists
-    /*try
-    {
-        $pairwise_file = file($outputPath . "/results_pairwise.txt");
-    }
-    catch (Exception $e)
-    {
-        echo "<p>The pairwise file could not be found.</p>";
-    } */
-
     $pairwise_file_name = $outputPath . "/results_pairwise.txt";
     if (file_exists($pairwise_file_name))
     {
@@ -167,7 +157,7 @@ else if ($status == 'Completed')
     }
     else
     {
-        echo "<p>The pairwise results file could not be found.</p>";
+        echo "<p>The pairwise alignment results were either not generated or the file could not be found.</p>";
     }
     
 

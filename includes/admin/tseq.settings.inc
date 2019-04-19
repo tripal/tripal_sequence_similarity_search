@@ -114,6 +114,21 @@ function tseq_configuration_settings_form($form, &$form_state)
         '#field_prefix' => 'Version of the Diamond executable on the remote server.',
         '#description'  => 'This can be found by issuing <code>/path/to/diamond --version</code>. If this is not specified, certain functionality will be limited. The documentation will list these limitations',
     );
+
+    $form['settings']['produce_blast_pairwise'] = array(
+        '#type'         => 'checkbox',
+        '#title'        => 'Produce pairwise alignment for BLAST jobs',
+        '#default_value'    => t($current_settings['produce_blast_pairwise']),
+        '#field_prefix'     => 'Should the jobs also produce a pairwise alignment view?'
+    );
+
+    $form['settings']['produce_diamond_pairwise'] = array(
+        '#type'         => 'checkbox',
+        '#title'        => 'Produce pairwise alignment for Diamond jobs',
+        '#default_value'    => t($current_settings['produce_diamond_pairwise']),
+        '#field_prefix'     => 'Should the jobs also produce a pairwise alignment view?',
+        '#description'      => 'This option requires that Diamond version 0.9.24 is installed',
+    );
     
     $form['submit_button'] = array(
         '#type' => 'submit',
@@ -136,6 +151,8 @@ function tseq_configuration_settings_form_submit($form, &$form_state)
         'preferred_remote_resource' => $form_state['values']['preferred_remote_resource'],
         'diamond_exe_version'       => $form_state['values']['diamond_exe_version'],
         /*'blast_exe_version'         => $form_state['values']['blast_exe_version'],*/
+        'produce_blast_pairwise'    => $form_state['values']['produce_blast_pairwise'],
+        'produce_diamond_pairwise'    => $form_state['values']['produce_diamond_pairwise'],
     );
     
     drupal_write_record('tseq_settings', $tseq_settings,'settings_id');
