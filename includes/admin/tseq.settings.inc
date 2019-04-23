@@ -118,6 +118,7 @@ function tseq_configuration_settings_form($form, &$form_state)
     $form['settings']['produce_blast_pairwise'] = array(
         '#type'         => 'checkbox',
         '#title'        => 'Produce pairwise alignment for BLAST jobs',
+        '#title_display'=> 'before',
         '#default_value'    => t($current_settings['produce_blast_pairwise']),
         '#field_prefix'     => 'Should the jobs also produce a pairwise alignment view?'
     );
@@ -125,6 +126,7 @@ function tseq_configuration_settings_form($form, &$form_state)
     $form['settings']['produce_diamond_pairwise'] = array(
         '#type'         => 'checkbox',
         '#title'        => 'Produce pairwise alignment for Diamond jobs',
+        '#title_display'=> 'before',
         '#default_value'    => t($current_settings['produce_diamond_pairwise']),
         '#field_prefix'     => 'Should the jobs also produce a pairwise alignment view?',
         '#description'      => 'This option requires that Diamond version 0.9.24 is installed',
