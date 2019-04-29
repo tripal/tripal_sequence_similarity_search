@@ -346,7 +346,7 @@ function tseq_submit_form($form, &$form_state)
      */
     
     // Get the default values from the database
-    $query = 'select defaults_e_value, defaults_target_coverage, defaults_query_coverage, defaults_max_alignments_list, defaults_max_alignments_selected from tseq_settings';
+    $query = 'select defaults_e_value, defaults_target_coverage, defaults_query_coverage, defaults_max_alignments_list, defaults_max_alignments_selected, produce_blast_pairwise, produce_diamond_pairwise from tseq_settings';
     $results = db_query($query);
     $advanced_options = $results->fetchAssoc();
     
@@ -787,7 +787,14 @@ function tseq_submit_form_submit($form, &$form_state)
      *  Get other parameters for the build
      *  -Threads (set via admin)
      *  -Executable locations (BLAST+, Diamond)
+     *  -Pairwise alignment generation (BLAST, Diamond)
      */
+
+    $query = 'select num_threads, blast_exe_location, diamond_exe_location, produce_blast_pairwise, produce_diamond_pairwise from tseq_settings';
+    $results = db_query($query);
+    $job_options = $results->fetchAssoc();
+     
+    // TODO Remove this, replace this usage throughout with variables from above
     $query = "select num_threads,blast_exe_location, diamond_exe_location from tseq_settings";
     $results = db_query($query);
     
@@ -809,12 +816,82 @@ function tseq_submit_form_submit($form, &$form_state)
             // If we're running with Diamond
             if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx')
             {
-                $command_to_run = "diamond ".$blastEquiv." --threads ".$jobSettings[0]['num_threads']." --db ".$targetFile." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+                // Do we produce standard output or BLASTXML + Pairwise?
+                if ($job_options['produce_diamond_pairwise'])
+                {
+                    $command_to_run = "diamond ".$blastEquiv                  . " \\" . PHP_EOL .
+                    "    --threads "       . $jobSettings[0]['num_threads']   . " \\" . PHP_EOL .
+                    "    --db "            . $targetFile                      . " \\" . PHP_EOL .
+                    "    --query "         . $queryFileNoPath                 . " \\" . PHP_EOL .
+                    "    --more-sensitive"                                    . " \\" . PHP_EOL .
+                    "    -k "              . $maxAlignments                   . " \\" . PHP_EOL .
+                    "    -e "              . $eValue                          . " \\" . PHP_EOL .
+                    "    --subject-cover " . $targetCoverage                  . " \\" . PHP_EOL .
+                    "    --query-cover "   . $queryCoverage                   . " \\" . PHP_EOL .
+                    "    --outfmt 100 "                                       . " \\" . PHP_EOL .
+                    "    --out results.daa "                                  . " \\" . PHP_EOL ;
+
+                    $command_to_run .= PHP_EOL; // Nice formatting
+
+                    // Take DAA format, create BLAST XML output (regular table) and Pairwise output (for showing alignments)
+                    $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                    "    --daa results.daa "                                  . " \\" . PHP_EOL .
+                    "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" . " \\" . PHP_EOL .
+                    "    --out results_blastxml.txt"                          . " \\" . PHP_EOL ;
+
+                    $command_to_run .= PHP_EOL; // Nice formatting
+
+                    $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                    "    --daa results.daa "                                  . " \\" . PHP_EOL .
+                    "    --outfmt 0 "                                         . " \\" . PHP_EOL .
+                    "    --out results_pairwise.txt "                         . " & echo $! > PID" . PHP_EOL ;
+                }
+                // Just produce regular output (legacy)
+                else
+                {
+                    $command_to_run = "diamond ".$blastEquiv.
+                    "    --threads "       . $jobSettings[0]['num_threads']   . " \\" . PHP_EOL .
+                    "    --db "            . $targetFile                      . " \\" . PHP_EOL .
+                    "    --query "         . $queryFileNoPath                 . " \\" . PHP_EOL .
+                    "    --more-sensitive "                                   . " \\" . PHP_EOL . 
+                    "    -k "              . $maxAlignments                   . " \\" . PHP_EOL .
+                    "    -e "              . $eValue                          . " \\" . PHP_EOL .
+                    "    --subject-cover " . $targetCoverage                  . " \\" . PHP_EOL .
+                    "    --query-cover "   . $queryCoverage                   . " \\" . PHP_EOL .
+                    "    --out results_blastxml.txt"                          . " & echo $! > PID" . PHP_EOL ;
+                }
+
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
             {
-                $command_to_run = $blastEquiv." -num_threads ".$jobSettings[0]['num_threads']." -db ".$targetFile." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
+                $command_to_run = $blastEquiv                             . " \\" . PHP_EOL .
+                "    -num_threads "     . $jobSettings[0]['num_threads']  . " \\" . PHP_EOL .
+                "    -db "              . $targetFile                     . " \\" . PHP_EOL .
+                "    -query "           . $queryFileNoPath                . " \\" . PHP_EOL .
+                "    -num_alignments "  . $maxAlignments                  . " \\" . PHP_EOL .
+                "    -evalue "          . $eValue                         . " \\" . PHP_EOL . 
+                "    -outfmt 11"                                          . " \\" . PHP_EOL .
+                "    -out blast.archive"                                  . " \\" . PHP_EOL ;
+
+                $command_to_run .= PHP_EOL; // Nice formatting
+
+                # Use blast_formatter (basically diamond view) to generate desired outputs (BLASTXML and Pairwise)
+                # BLASTXML
+                $command_to_run .= "blast_formatter"                      . " \\" . PHP_EOL .
+                "    -archive blast.archive"                              . " \\" . PHP_EOL .
+                "    -outfmt 6"                                           . " \\" . PHP_EOL .
+                "    -out results_blastxml.txt"                           . " \\" . PHP_EOL ;
+
+                $command_to_run .= PHP_EOL; // Nice formatting
+
+                # Pairwise
+                $command_to_run .= "blast_formatter"                      . " \\" . PHP_EOL .
+                "    -archive blast.archive"                              . " \\" . PHP_EOL .
+                "    -outfmt 0"                                           . " \\" . PHP_EOL .
+                "    -out results_pairwise.txt"                           . " & echo $! > PID" . PHP_EOL ;
+            
+
             }
             
             if($debug){drupal_set_message("Will run command: ".$command_to_run);}
@@ -826,12 +903,78 @@ function tseq_submit_form_submit($form, &$form_state)
             
             if ($blastEquiv == 'blastp' || $blastEquiv == 'blastx')
             {
-                $command_to_run = "diamond ".$blastEquiv." --threads ".$jobSettings[0]['num_threads']." --db ".$targetFileNoPath." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
+                // Do we produce standard output or BLASTXML + Pairwise?
+                if ($job_options['produce_diamond_pairwise'])
+                {
+                    $command_to_run = "diamond ".$blastEquiv.
+                    "    --threads "         . $jobSettings[0]['num_threads'] . " \\" . PHP_EOL .  
+                    "    --db "              . $targetFileNoPath              . " \\" . PHP_EOL .
+                    "    --query "           . $queryFileNoPath               . " \\" . PHP_EOL .
+                    "    --more-sensitive "                                   . " \\" . PHP_EOL .
+                    "    -k "                . $maxAlignments                 . " \\" . PHP_EOL .
+                    "    -e "                . $eValue                        . " \\" . PHP_EOL .
+                    "    --subject-cover "   . $targetCoverage                . " \\" . PHP_EOL .
+                    "    --query-cover "     . $queryCoverage                 . " \\" . PHP_EOL .
+                    "    --outfmt 100 "                                       . " \\" . PHP_EOL .
+                    "    --out results.daa "                                  . " \\" . PHP_EOL ;
+
+                    // Take DAA format, create BLAST XML output (regular table) and Pairwise output (for showing alignments)
+                    $command_to_run .= PHP_EOL;
+                    $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                    "    --daa results.daa "                                  . " \\" . PHP_EOL .
+                    "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" . " \\" . PHP_EOL .
+                    "    --out results_blastxml.txt"                          . " \\" . PHP_EOL ;
+
+                    $command_to_run .= PHP_EOL;
+                    $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                    "    --daa results.daa "                                  . " \\" . PHP_EOL .
+                    "    --outfmt 0 "                                         . " \\" . PHP_EOL .
+                    "    --out results_pairwise.txt "                         . " & echo $! > PID" . PHP_EOL ;
+                }
+                // Just produce regular output (legacy)
+                else
+                {
+                    $command_to_run = "diamond ".$blastEquiv.
+                    "    --threads "       . $jobSettings[0]['num_threads']   . " \\" . PHP_EOL .
+                    "    --db "            . $targetFileNoPath                      . " \\" . PHP_EOL .
+                    "    --query "         . $queryFileNoPath                 . " \\" . PHP_EOL .
+                    "    --more-sensitive "                                   . " \\" . PHP_EOL . 
+                    "    -k "              . $maxAlignments                   . " \\" . PHP_EOL .
+                    "    -e "              . $eValue                          . " \\" . PHP_EOL .
+                    "    --subject-cover " . $targetCoverage                  . " \\" . PHP_EOL .
+                    "    --query-cover "   . $queryCoverage                   . " \\" . PHP_EOL .
+                    "    --out results_blastxml.txt"                          . " & echo $! > PID" . PHP_EOL ;
+                }
+                
             }
             // If we're running standard BLAST (tblastn or blastn)
             else
             {
-                $command_to_run = $blastEquiv." -num_threads ".$jobSettings[0]['num_threads']." -db ".$targetFileNoPath." -query ".$queryFileNoPath." -num_alignments ".$maxAlignments." -evalue ".$eValue." -outfmt 6";
+                $command_to_run = $blastEquiv                             . " \\" . PHP_EOL .
+                "    -num_threads "      . $jobSettings[0]['num_threads'] . " \\" . PHP_EOL .
+                "    -db "               . $targetFileNoPath              . " \\" . PHP_EOL .
+                "    -query "            . $queryFileNoPath               . " \\" . PHP_EOL .
+                "    -num_alignments "   . $maxAlignments                 . " \\" . PHP_EOL .
+                "    -evalue "           . $eValue                        . " \\" . PHP_EOL .
+                "    -outfmt 11"                                          . " \\" . PHP_EOL .
+                "    -out blast.archive"                                  . " \\" . PHP_EOL ;
+
+                $command_to_run .= PHP_EOL; // Nice formatting
+
+                # Use blast_formatter (basically diamond view) to generate desired outputs (BLASTXML and Pairwise)
+                # BLASTXML
+                $command_to_run .= "blast_formatter"                      . " \\" . PHP_EOL .
+                "    -archive blast.archive"                              . " \\" . PHP_EOL .
+                "    -outfmt 6"                                           . " \\" . PHP_EOL .
+                "    -out results_blastxml.txt"                           . " \\" . PHP_EOL ;
+
+                $command_to_run .= PHP_EOL; // Nice formatting
+
+                # Pairwise
+                $command_to_run .= "blast_formatter"                      . " \\" . PHP_EOL .
+                "    -archive blast.archive"                              . " \\" . PHP_EOL .
+                "    -outfmt 0"                                           . " \\" . PHP_EOL .
+                "    -out results_pairwise.txt"                           . " & echo $! > PID" . PHP_EOL ;
             }
             
             if($debug)drupal_set_message("Will run command: ".$command_to_run);

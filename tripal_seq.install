@@ -194,7 +194,7 @@ function tripal_seq_schema()
             'command' => array(
                 'description' => 'The assembled command to run on the remote machine',
                 'type' => 'varchar',
-                'length' => 511,
+                'length' => 5000,
                 'not NULL' => true,
             ),
                 'tseq_unique_id' => array(
@@ -327,6 +327,20 @@ function tripal_seq_schema()
                 'description'   => t('BLAST executable version'),
                 'type'          => 'varchar',
                 'length'        => 15,
+                'not null'      => FALSE,
+            ),
+            'produce_blast_pairwise' => array(
+                'description'   => t('Produce pairwise alignment view for BLAST jobs'),
+                'type'          => 'int',
+                'size'          => 'tiny',
+                'default'       => 1,
+                'not null'      => FALSE,
+            ),
+            'produce_diamond_pairwise'  => array(
+                'description'   => t('Produce pairwise alignment view for Diamond jobs'),
+                'type'          => 'int',
+                'size'          => 'tiny',
+                'default'       => 0,
                 'not null'      => FALSE,
             ),
         ),
@@ -819,6 +833,52 @@ function tripal_seq_update_7008()
             'descripton'    => 'BLAST executable version',
             'type'          => 'varchar',
             'length'        => 15,
+            'not null'      => FALSE,
+        )
+    );
+}
+
+/**
+ * Increase the character limit for "command" in tseq_job_information to 5000
+ */
+function tripal_seq_update_7009()
+{
+    db_change_field('tseq_job_information','command','command',
+        array(
+            'description' => 'The assembled command to run on the remote machine',
+            'type' => 'varchar',
+            'length' => 5000,
+            'not NULL' => true,
+        )
+    );
+}
+
+/**
+ * Add "produce pairwise alignments" for Diamond and BLAST jobs setting
+ */
+function tripal_seq_update_7010()
+{
+    # Produce BLAST Pairwise alignment view
+    db_add_field(
+        'tseq_settings',
+        'produce_blast_pairwise',
+        array(
+            'description'   => t('Produce pairwise alignment view for BLAST jobs'),
+            'type'          => 'int',
+            'size'          => 'tiny',
+            'default'       => 1,
+            'not null'      => FALSE,
+        )
+    );
+    # Produce DIAMOND Pairwise alignment view
+    db_add_field(
+        'tseq_settings',
+        'produce_diamond_pairwise',
+        array(
+            'description'   => t('Produce pairwise alignment view for Diamond jobs'),
+            'type'          => 'int',
+            'size'          => 'tiny',
+            'default'       => 0,
             'not null'      => FALSE,
         )
     );
