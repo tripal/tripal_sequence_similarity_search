@@ -138,6 +138,29 @@ else if ($status == 'Completed')
         echo $output;
     }
     
+    // Alignments view Section
+    // Basic version currently - just display the text file inline
+    $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
+    $outputPath .= $job_id;
+    echo "<h3>Alignment View</h3>";
+
+    $pairwise_file_name = $outputPath . "/results_pairwise.txt";
+    if (file_exists($pairwise_file_name))
+    {
+        $pairwise_file = file($pairwise_file_name);
+        echo "<pre>";
+        foreach($pairwise_file as $pairwise_line)
+        {
+            echo $pairwise_line;
+        }
+        echo "</pre>";
+    }
+    else
+    {
+        echo "<p>The pairwise alignment results were either not generated or the file could not be found.</p>";
+    }
+    
+
     // Download section
     // Get some relevent info
     

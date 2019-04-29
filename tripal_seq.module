@@ -506,12 +506,17 @@ function publish_results($job_id)
             $sequence_count = -1;
         }
         
-        if (file_exists($outputPath.$job_id.'/STDOUT.txt') && file_exists($outputPath.$job_id.'/STDERR.txt'))
+        /**
+        * Look in the results files to see what has been returned. 
+        */
+        $blastXML_filename = '/results_blastxml.txt';
+        $pairwise_filename = '/results_pairwise.txt';
+        if (file_exists($outputPath.$job_id.$blastXML_filename) && file_exists($outputPath.$job_id.'/STDERR.txt'))
         {
-            //Prepare output if there is any data to show in STDOUT
-            if (filesize($outputPath.$job_id.'/STDOUT.txt') > 0)
+            //Prepare output if there is any data to show in $blastXML_filename
+            if (filesize($outputPath.$job_id.$blastXML_filename) > 0)
             {
-                $jobResults = file($outputPath.$job_id.'/STDOUT.txt');
+                $jobResults = file($outputPath.$job_id.$blastXML_filename);
                 $resultsFound = TRUE;
                 foreach($jobResults as $resultLine)
                 {
@@ -528,7 +533,7 @@ function publish_results($job_id)
                 }
                 // Gather other details
                 //Matches found
-                $matches_found = tseq_get_matches_count($outputPath.$job_id.'/STDOUT.txt');
+                $matches_found = tseq_get_matches_count($outputPath.$job_id.$blastXML_filename);
                 
             }
             else if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
@@ -552,6 +557,18 @@ function publish_results($job_id)
             }
             $database_used ='';
         }
+
+        // Pairwise/alignment view
+        /*
+        if (file_exists($outputPath.$job_id.$pairwise_filename)) // File exists
+        {
+            if (filesize($outputPath.$job_id.$pairwise_filename) > 0) // File has contents
+            {
+                // TODO Determine contents of pairwise results with 0 matches
+                $pairwise_results = file($outputPath.$job_id.$pairwise_filename);
+                foreach ($pairwise_results as $pairwise_result)
+            }
+        }*/
                 
         
         // and finally, insert (if there is anything to insert
