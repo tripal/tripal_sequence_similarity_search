@@ -836,7 +836,7 @@ function tseq_submit_form_submit($form, &$form_state)
                     // Take DAA format, create BLAST XML output (regular table) and Pairwise output (for showing alignments)
                     $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
                     "    --daa results.daa "                                  . " \\" . PHP_EOL .
-                    "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore sseq qseq" . " \\" . PHP_EOL .
+                    "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" . " \\" . PHP_EOL .
                     "    --out results_blastxml.txt"                          . " \\" . PHP_EOL ;
 
                     $command_to_run .= PHP_EOL; // Nice formatting
@@ -922,7 +922,7 @@ function tseq_submit_form_submit($form, &$form_state)
                     $command_to_run .= PHP_EOL;
                     $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
                     "    --daa results.daa "                                  . " \\" . PHP_EOL .
-                    "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore sseq qseq" . " \\" . PHP_EOL .
+                    "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" . " \\" . PHP_EOL .
                     "    --out results_blastxml.txt"                          . " \\" . PHP_EOL ;
 
                     $command_to_run .= PHP_EOL;
