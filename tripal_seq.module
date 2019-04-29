@@ -85,7 +85,6 @@ function tripal_seq_menu()
         'type'  =>  MENU_NORMAL_ITEM,
         'file'  =>  'includes/admin/tseq.dblist.inc',
         'file path'     =>  drupal_get_path('module','tripal_seq'),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
     );
     
@@ -95,7 +94,6 @@ function tripal_seq_menu()
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'tseq_config_dblist_page_build',
         'page arguments' => array('tseq_config_dblist_page'),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_DEFAULT_LOCAL_TASK ,
         'file' => 'includes/admin/tseq.dblist.inc',
@@ -110,7 +108,6 @@ function tripal_seq_menu()
         'priority' => 1,
         'page callback' =>  'tseq_config_categories_page_build',
         'page arguments'=>  array('tseq_config_categories_page'),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'file' => 'includes/admin/tseq.categories.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
@@ -124,7 +121,6 @@ function tripal_seq_menu()
         'priority' => 2,
         'page callback' =>  'drupal_get_form',
         'page arguments'=>  array('tseq_configuration_settings_form'),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'file' => 'includes/admin/tseq.settings.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
@@ -138,7 +134,6 @@ function tripal_seq_menu()
         'priority' => 3,
         'page callback' =>  'drupal_get_form',
         'page arguments'=>  array('tseq_configuration_defaults_form'),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'file' => 'includes/admin/tseq.defaults.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
@@ -166,7 +161,6 @@ function tripal_seq_menu()
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_database_add_form',5),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK,
         );
@@ -177,7 +171,6 @@ function tripal_seq_menu()
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_database_edit_form',5),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
@@ -187,7 +180,6 @@ function tripal_seq_menu()
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_database_delete_form', 5),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
@@ -200,7 +192,6 @@ function tripal_seq_menu()
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_category_add_form',5),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK,
         );
@@ -210,7 +201,6 @@ function tripal_seq_menu()
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_category_edit_form',5),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
@@ -220,7 +210,6 @@ function tripal_seq_menu()
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_category_delete_form', 5),
-        'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
