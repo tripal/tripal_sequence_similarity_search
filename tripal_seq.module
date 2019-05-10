@@ -24,7 +24,9 @@ require_once 'theme/tseq.theme.inc';
 require_once 'includes/tseq.review.inc';
 require_once 'includes/tseq.download.inc';
 
-// Permissions
+/**
+ * Implements hook_permission
+ */
 function tripal_seq_permission() {
   return array (
     'administer diamond' => array (
@@ -39,7 +41,7 @@ function tripal_seq_init()
 }
 
 /*
- * Generate the links for the module
+ * Implements hook_menu
  */
 function tripal_seq_menu()
 {
@@ -75,8 +77,8 @@ function tripal_seq_menu()
         'type' => MENU_CALLBACK
         );
         
-    // Configuration page
-    
+    // Configuration pages
+    // Configuration: Main page
     $items['admin/tripal/extension/tseq/config'] = array(
         'title' =>  'TSeq Configuration',
         'description'   =>  'Configuration for the Tripal Sequence Similarity Search module',
@@ -100,7 +102,7 @@ function tripal_seq_menu()
         'file path' => drupal_get_path ('module', 'tripal_seq')
         );
     
-    //Configuration: Categories Tab
+    // Configuration: Categories Tab
     $items['admin/tripal/extension/tseq/config/categories'] = array(
         'title' => 'Categories',
         'type'  => MENU_LOCAL_TASK,
@@ -183,9 +185,9 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
-    /*
-     *  Add/Edit/Delete Categories
-     */
+    
+    //  Add/Edit/Delete Categories
+     
     // Admin: add a new category
     $items['admin/tripal/extension/tseq/add_category'] = array(
         'title' => 'Add Category',
@@ -195,6 +197,7 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK,
         );
+
    // Admin: edit an existing category
     $items['admin/tripal/extension/tseq/edit_category/%'] = array(
         'title' => 'Tripal Diamond Category Edit',
@@ -204,6 +207,7 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
+
     // Admin: delete an existing category
     $items['admin/tripal/extension/tseq/delete_category/%'] = array(
         'title' => 'Tripal Diamond Database Delete',
@@ -246,21 +250,9 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
-    
      * 
      */
-    //Test for Analyses Page
-    $items['user/%/tseq_analysis'] = array (
-        'title' => 'TSeq Analysis',
-        'description' => 'Show results of Diamond or BLAST jobs belonging to the user',
-        'page callback' => 'tseq_user_analysis_page',
-        'page arguments' => array(1),
-        'access callback' => TRUE,
-        'type' => MENU_LOCAL_TASK,
-        'file' => 'includes/tseq.user.inc',
-        'file path' => drupal_get_path('module', 'tripal_seq'),
-    );
-    
+        
     //Admin: Export the database list
     $items['admin/tripal/extension/tseq/config/export'] = array(
         'title' => 'TSeq Database Export',
@@ -282,6 +274,18 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_NORMAL_ITEM
         );
+
+    // Analysis page
+    $items['user/%/tseq_analysis'] = array (
+        'title' => 'TSeq Analysis',
+        'description' => 'Show results of Diamond or BLAST jobs belonging to the user',
+        'page callback' => 'tseq_user_analysis_page',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+        'type' => MENU_LOCAL_TASK,
+        'file' => 'includes/tseq.user.inc',
+        'file path' => drupal_get_path('module', 'tripal_seq'),
+    );
     
     return $items;
 }
@@ -301,74 +305,12 @@ function tripal_seq_theme()
 }
 
 
-/*
- *  Email to users
- */
+// Email to users
+
 
 /**
- * Listen for notifications from Tripal Remote Job and send email as appropriate
- * Notify Tripal Remote Job of sent status
- * This function is necessary in order to send the user more detailed information than
- * what is possible by having Tripal Remote Job send the message.
- * 
- * 
- * @param integer $job_id Tripal Job ID of the job
- * @param integer $$job_status Status event of the job (started, finished, etc.)
- * 
- * @return integer 1: This module will handle the mail for this event
- *                 0: This module will not handle the mail for this event
- *                -1: This module was unable to send due to other reasons (such as no matching job found)
- *                      or if the drupal mail function failed
- * 
+ * Implements hook_mail
  */
-/*Don't do this since we assume that any mail about a job will be related to start/stop.
- * If this is not the case, implement a system like below
- * function tripal_seq_mail_jobinfo($job_id, $job_status)
-{
-    $result = drupal_mail($module, $key, $to, $language, $params, $from, $send);
-    // Let Tripal Remote Job that the mail was successfully sent and that it does
-    // not have to send its own message
-    //return $mail_sent;
-    
-    // Determine if this module will handle the mail
-    switch ($job_status)
-    {
-        case 'started':
-            // Do the mail and check for errors
-            $result = drupal_mail(tripal_seq, $key, $to, $language, $params, $from, $send);
-            if ($result['result'] != TRUE) {
-                return '-1';
-            }
-            return '1';
-            break;
-        case 'finished':
-            echo "yes";
-            break;
-        default:
-            echo "no";
-            break;
-    }
-    
-    
-    
-    //test
-}
- * 
- */
-    //  seq_query_ty    db_search_ty
-    /*  Query		Target		Program
-        Nucleotide	Protein		blastx	(Diamond)
-        Protein		Protein		blastp	(Diamond)
-        Nucleotide	Nucleotide	blastn  (BLAST)
-        Protein		Nucleotide	tblastn (BLAST)
-      
-        Target           Query           Program
-        Protein          Nucleotide      blastx  (Diamond)
-        Protein          Protein         blastp  (Diamond)
-        Nucleotide       Nucleotide      blastn  (BLAST)
-        Nucleotide       Protein         tblastn (BLAST)          
-     */
-
 function tripal_seq_mail($key, &$message, $params) {
   $site_name = variable_get('site_name', "");
   
