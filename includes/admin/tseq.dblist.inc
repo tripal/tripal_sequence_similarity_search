@@ -1,5 +1,10 @@
     <?php
 
+/**
+ * Implements hook_page_build()
+ *   Builds a page for admin to view and interact with the database list.
+ *   This is the main page that gets shown in the Admin/Config menu.
+ */
 function tseq_config_dblist_page_build()
 {
     // Build the breadcrumb
@@ -76,8 +81,10 @@ function tseq_config_dblist_page_build()
     return $contents;
 }
 
-/*
- * Add a database to the list (form)
+/**
+ * Implements hook_form()
+ *   Generates a form for admins to add a database (target sequence) file
+ *   to the list.
  */
 function tseq_database_add_form($form, &$form_state)
 {
@@ -178,6 +185,10 @@ function tseq_database_add_form($form, &$form_state)
     return $form;
 }
 
+/**
+ * Implements hook_form_validate()
+ *   Validate the form values for the new database to add.
+ */
 function tseq_database_add_form_validate($form, &$form_state)
 {
     //
@@ -200,7 +211,9 @@ function tseq_database_add_form_validate($form, &$form_state)
 }
 
 /**
- * 
+ * Implements hook_form_submit()
+ *   Submits the form, adds the new database to the list 
+ *   (table tseq_db_existing_locations).
  * @todo Move this function (and others like it) to tseq_databases.inc
  */
 function tseq_database_add_form_submit($form, &$form_state)
@@ -228,8 +241,9 @@ function tseq_database_add_form_submit($form, &$form_state)
     drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
 
-/*
- * Edit a database in the list (form)
+/**
+ * Implements hook_form
+ *   Builds a form to edit an existing database.
  */
 function tseq_database_edit_form($form, &$form_state,$db_id)
 {
@@ -323,6 +337,9 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
     return $form;//$rowToUpdate['db_id'].': '.$rowToUpdate['name'].': '.$rowToUpdate['version'];;
 }
 
+/**
+ * Implements hook_form_validate()
+ */
 function tseq_database_edit_form_validate($form, &$form_state)
 {
    /*
@@ -348,6 +365,9 @@ function tseq_database_edit_form_validate($form, &$form_state)
     } 
 }
 
+/**
+ * Implements hook_form_submit()
+ */
 function tseq_database_edit_form_submit($form, &$form_state)
 {    
     $updatedFields = array(
@@ -370,8 +390,9 @@ function tseq_database_edit_form_submit($form, &$form_state)
     drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
 
-/*
- * Delete a database in the list (form)
+/**
+ * Implements hook_form()
+ *   Creates a form for the admin to delete an existing database from the list.
  */
 function tseq_database_delete_form($form, &$form_state,$db_id)
 {
@@ -395,11 +416,18 @@ function tseq_database_delete_form($form, &$form_state,$db_id)
     return $form;
 }
 
+/**
+ * Implements hook_form_validate()
+ * @todo This does nothing, delete?
+ */
 function tseq_database_delete_form_validate($form, &$form_state)
 {
     
 }
 
+/**
+ * Implements hook_form_submit()
+ */
 function tseq_database_delete_form_submit($form, &$form_state)
 {
     /*
@@ -409,6 +437,10 @@ function tseq_database_delete_form_submit($form, &$form_state)
     drupal_goto('/admin/tripal/extension/tseq/config');
 }
 
+/**
+ * Implements hook_form()
+ *   Builds a form to export the database list.
+ */
 function tseq_database_export_form($form, &$form_state)
 {
     $form['Type'] = array(
@@ -430,11 +462,19 @@ function tseq_database_export_form($form, &$form_state)
     return $form;
 }
 
+/**
+ * Implements hook_form_validate()
+ * @todo This does nothing, delete?
+ */
 function tseq_database_export_form_validate($form, &$form_state)
 {
     
 }
 
+/** 
+ * Implements hook_form_submit()
+ *   Initiates the export of the database list.
+ */
 function tseq_database_export_form_submit($form, &$form_state)
 {
     $db = TSeqDatabases::getDatabases('%');
@@ -451,6 +491,10 @@ function tseq_database_export_form_submit($form, &$form_state)
     //$form_state['redirect'] = 'admin/tripal/extension/tseq';
 }
 
+/**
+ * Implements hook_form()
+ *   Builds a form to import a database list.
+ */
 function tseq_database_import_form($form, &$form_state)
 {
     $form['FileSelect'] = array(
@@ -497,7 +541,10 @@ function tseq_database_import_form($form, &$form_state)
     return $form;
 }
 /**
- *
+ * Implements hook_form_validate()
+ *   Ensures that the user uploaded a correct file (CSV format, required 
+ *   headers)
+ * 
  * @todo Notify user of improperly formatted csv
  * @todo Detect improperly formatted csv (bad # columns, no columns
  * @todo Perhaps detect if csv is actually tab-delimited
@@ -567,8 +614,10 @@ function tseq_database_import_form_validate($form, &$form_state)
 
 /**
  * 
+ * Implements hook_form_submit()
  *  This submit function adds any new databases from the imported file.
- *  New databases are added in proper form to the tseq_db_existing_locations table
+ *  New databases are added in proper form to the tseq_db_existing_locations
+ *  table.
  */
 function tseq_database_import_form_submit($form, &$form_state)
 {
