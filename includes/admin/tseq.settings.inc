@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Implements hook_form()
+ *   Builds a form to set TSeq settings (not visible to user).
+ */
 function tseq_configuration_settings_form($form, &$form_state)
 {
     $breadcrumb = array();
@@ -138,10 +142,21 @@ function tseq_configuration_settings_form($form, &$form_state)
     );
     return $form;
 }
+
+/**
+ * Implements hook_form_validate()
+ * 
+ * @todo This does nothing, delete?
+ */
 function tseq_configuration_settings_form_validate($form, &$form_state)
 {  
     //Todo
 }
+
+/**
+ * Implements hook_form_submit
+ *   Submits the new TSeq configuration values to the database
+ */
 function tseq_configuration_settings_form_submit($form, &$form_state)
 {
  $tseq_settings = array(
