@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Implements hook_page()
+ *   Builds a tab that appears within the user's profile and displays a table
+ *   of all their previous TSeq jobs with links to the individual results 
+ *   pages.
+ */
 function tseq_user_analysis_page($uid) {
   
     /*
