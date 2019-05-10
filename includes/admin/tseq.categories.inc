@@ -1,6 +1,8 @@
 <?php
-/*
- *  Build the page to display current categories
+/**
+ * Implements hook_page_build()
+ * 
+ *   Builds the page to display current categories.
  */
 function tseq_config_categories_page_build()
 {
@@ -65,8 +67,10 @@ function tseq_config_categories_page_build()
 }
 
 
-/*
- *  Add a new category
+/**
+ * Implements hook_form()
+ * 
+ *  Create the form that allows admins to create a new category
  */
 function tseq_category_add_form($form, &$form_state)
 {
@@ -105,6 +109,11 @@ function tseq_category_add_form($form, &$form_state)
     return $form;
 }
 
+/**
+ * Implements hook_form_validate()
+ * 
+ *   Ensure that the form to add a new category has been filled out correctly.
+ */
 function tseq_category_add_form_validate($form, &$form_state)
 {
     //
@@ -135,6 +144,11 @@ function tseq_category_add_form_validate($form, &$form_state)
     
 }
 
+/**
+ * Implements hook_form_submit()
+ * 
+ *   Submits the category add form.
+ */
 function tseq_category_add_form_submit($form, &$form_state)
 {
     /*
@@ -154,8 +168,10 @@ function tseq_category_add_form_submit($form, &$form_state)
     drupal_set_message("This database was successfully added");
     drupal_set_message(l('Return to Category list','admin/tripal/extension/tseq/config/categories'));
 }
-/*
- *  Edit an existing category
+/**
+ * Implements hook_form()
+ * 
+ *  Allows the admin to edit categories
  */
 function tseq_category_edit_form($form, &$form_state,$category_id)
 {
@@ -209,6 +225,11 @@ function tseq_category_edit_form($form, &$form_state,$category_id)
     return $form;//$rowToUpdate['db_id'].': '.$rowToUpdate['name'].': '.$rowToUpdate['version'];;
 }
 
+/**
+ * Implements hook_form_validate()
+ * 
+ *   Ensure that the form to edit a category has been filled out correctly.
+ */
 function tseq_category_edit_form_validate($form, &$form_state)
 {
    if (empty($form_state['values']['category_title']))
@@ -217,6 +238,11 @@ function tseq_category_edit_form_validate($form, &$form_state)
     }    
 }
 
+/**
+ * Implements hook_form_submit()
+ * 
+ *   Submits the new values for the category from the form
+ */
 function tseq_category_edit_form_submit($form, &$form_state)
 {    
     $updatedFields = array(
@@ -234,8 +260,10 @@ function tseq_category_edit_form_submit($form, &$form_state)
     drupal_set_message("This category was successfully updated");
     drupal_set_message(l('Return to Category list','admin/tripal/extension/tseq/config/categories'));
 }
-/*
- *  Delete an existing category
+/**
+ * Implements hook_form()
+ *
+ *   Creates a form to delete a category
  */
 function tseq_category_delete_form($form, &$form_state,$category_id)
 {
@@ -259,11 +287,20 @@ function tseq_category_delete_form($form, &$form_state,$category_id)
     return $form;
 }
 
+/**
+ * Implements hook_form_validate()
+ * 
+ * @todo This does nothing, delete?
+ */
 function tseq_category_delete_form_validate($form, &$form_state)
 {
     
 }
 
+/**
+ * Implements hook_form_submit()
+ *   Deletes the specified category.
+ */
 function tseq_category_delete_form_submit($form, &$form_state)
 {
     /*
