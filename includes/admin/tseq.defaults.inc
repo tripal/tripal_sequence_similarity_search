@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Implements hook_form()
+ *   Builds a form for the admin to set configured job defaults such as e_value
+ *   and max_alignments
+ */
 function tseq_configuration_defaults_form($form, &$form_state)
 {
     $breadcrumb = array();
@@ -106,6 +111,12 @@ function tseq_configuration_defaults_form($form, &$form_state)
     );
     return $form;
 }
+
+/**
+ * Implements hook_form_validate()
+ *   Validates the entered values make basic business sense 
+ *   (positive numbers, etc).
+ */
 function tseq_configuration_defaults_form_validate($form, &$form_state)
 {  
     /*
@@ -129,6 +140,11 @@ function tseq_configuration_defaults_form_validate($form, &$form_state)
         form_set_error('max_alignments_selected',t("Make sure the Max Alignments (Default) value is in the Available Max Alignments list."));
     }
 }
+
+/**
+ * Implements hook_form_submit()
+ *   Submits the new values to be used as job defaults
+ */
 function tseq_configuration_defaults_form_submit($form, &$form_state)
 {
  $tseq_defaults = array(
