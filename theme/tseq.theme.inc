@@ -1,6 +1,6 @@
 <?php
 /*
- * Implements Theme Hook
+ * Implements hook_theme_registry_alter()
  */
 function tripal_seq_theme_registry_alter(&$theme_registry) {
   $theme_registry_copy = $theme_registry;
