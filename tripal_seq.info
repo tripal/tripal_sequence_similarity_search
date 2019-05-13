@@ -4,5 +4,4 @@ dependencies[] = tripal_remote_job:tripal_remote_job
 core = 7.x
 configure = admin/tripal/extension/tseq/config
 stylesheets[all][] = theme/tseq.css
-scripts[]          = includes/js/diamond.js
 package = Tripal Extensions
