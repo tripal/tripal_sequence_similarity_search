@@ -437,9 +437,7 @@ function publish_results($job_id)
             $sequence_count = -1;
         }
         
-        /**
-        * Look in the results files to see what has been returned. 
-        */
+        // Look in the results files to see what has been returned.
         $blastXML_filename = '/results_blastxml.txt';
         $pairwise_filename = '/results_pairwise.txt';
         if (file_exists($outputPath.$job_id.$blastXML_filename) && file_exists($outputPath.$job_id.'/STDERR.txt'))
