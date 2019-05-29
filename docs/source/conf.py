@@ -26,7 +26,7 @@ author = u'Sean Buehler'
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
-release = u'1'
+release = u'7.x-1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -39,7 +39,6 @@ release = u'1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
 ]
 

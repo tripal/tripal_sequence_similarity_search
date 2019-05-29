@@ -1,5 +1,5 @@
 .. Tripal Sequence Similarity Search documentation master file, created by
-   sphinx-quickstart on Thu Jan 24 14:09:52 2019.
+   sphinx-quickstart on Wed May 29 10:38:33 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -7,14 +7,21 @@ Welcome to Tripal Sequence Similarity Search's documentation!
 =============================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
-
-
-Indices and tables
+Table of Contents
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+* :ref:`install`
+
+Some other list
+ - One
+ - Two
+ - Three
+   - Three point five
+ - Four
+
