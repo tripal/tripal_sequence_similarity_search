@@ -4,7 +4,7 @@ This module supports sequence similarity search on a Tripal website through a ne
 ## Requirements
 - [Tripal Remote Job](https://gitlab.com/TreeGenes/tripal-remote-job) 
 - [Tripal 3](http://tripal.info/)
-- diamond version 0.9.9 (https://github.com/bbuchfink/diamond)
+- diamond version 0.9.24 (https://github.com/bbuchfink/diamond)
 - NCBI Blast version 2.7.1+ (ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/)
 
 ## Installation / Useful Pages & Info
