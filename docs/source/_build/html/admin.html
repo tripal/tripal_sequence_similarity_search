@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Thingy &#8212; Tripal Sequence Similarity Search 7.x-1.0 documentation</title>
+    <title>2. Administration &#8212; Tripal Sequence Similarity Search 7.x-1.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -16,6 +16,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="1. Introduction" href="intro.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,8 +33,50 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="thingy">
-<h1>Thingy<a class="headerlink" href="#thingy" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="administration">
+<h1>2. Administration<a class="headerlink" href="#administration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisites">
+<h2>2.1. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Installed on the server:</dt>
+<dd><ul class="first last">
+<li><a class="reference external" href="https://github.com/bbuchfink/diamond">Diamond, version 0.9.24</a></li>
+<li><a class="reference external" href="https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&amp;DOC_TYPE=Download">NCBI’s BLAST+</a>, latest</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Drupal Modules:</dt>
+<dd><ul class="first last">
+<li><a class="reference external" href="https://github.com/tripal/tripal_remote_job">Tripal Remote Job</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>2.2. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Install all prerequisites.</li>
+<li>Download/clone the github repository to somewhere within your site’s <code class="docutils literal notranslate"><span class="pre">sites/all/modules</span></code> folder</li>
+<li>If you have Drush installed, run</li>
+</ol>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">drush</span> <span class="pre">pm-enable</span> <span class="pre">tripal_seq</span></code></p>
+<p>If drush is not installed, you can enable the module by navigating to your Modules page and enabling it there</p>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>Thingy</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="configuration">
+<h2>2.3. Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -54,15 +97,21 @@
 
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">1. Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="admin.html">2. Administration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Administration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">2.1. Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">2.2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">2.3. Configuration</a></li>
+</ul>
+</li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="intro.html" title="previous chapter">1. Introduction</a></li>
   </ul></li>
 </ul>
 </div>
@@ -98,7 +147,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/install.rst.txt"
+      <a href="_sources/admin.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

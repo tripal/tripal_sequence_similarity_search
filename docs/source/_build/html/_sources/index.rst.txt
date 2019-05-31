@@ -7,21 +7,11 @@ Welcome to Tripal Sequence Similarity Search's documentation!
 =============================================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :caption: Contents:
+   :numbered:
+   :glob:
 
-Table of Contents
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-* :ref:`install`
-
-Some other list
- - One
- - Two
- - Three
-   - Three point five
- - Four
+   intro
+   admin
 
