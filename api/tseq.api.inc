@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ *  @param int $tripal_job_id The ID of the tripal Job about which to return information
+ * 
+ *  @return array Details from the database about the given job
+ *   
+ */
 function tseq_get_job_information($tripal_job_id)
 {
     $query = "select * from tseq_job_information where tripal_job_id=".$tripal_job_id;
@@ -25,8 +30,13 @@ function tseq_get_job_results($tripal_job_id)
     return $details;
 }
 
-// Retrieve the db_id of one of the stored existing databases (tseq_db_existing_locations)
-// This seems a little dirty since 'location' is not a primary key and there are no uniqueness constraints on it
+/**
+ * Retrieve the database ID of the database whose path is given.
+ * This seems a little dirty since 'location' is not a primary key and there are no uniqueness constraints on it
+ * @param string $location A full path-on-disk to where the file is
+ * 
+ * @return int The ID of the database that has the associated location
+ */
 function tseq_get_db_id_by_location($location)
 {
     $query = "SELECT db_id FROM tseq_db_existing_locations WHERE location = '$location'";
@@ -36,7 +46,12 @@ function tseq_get_db_id_by_location($location)
     return $db_id['db_id'];
 }
 
-// Retrieve information about a given database 
+/**
+ * Retrieve information about a given database
+ * @param int $db_id The database ID of the desired database about which to return info about
+ * 
+ * @return array Details about the database
+ */
 function tseq_get_db_info($db_id)
 {
     $query = "SELECT * FROM tseq_db_existing_locations WHERE db_id = '$db_id'";
@@ -46,7 +61,13 @@ function tseq_get_db_info($db_id)
     return $details;
 }
 
-// Retrieve the number of sequences in the user's query
+/**
+ * Retrieve the number of sequences in the user's query
+ * @param string $query_file Uses simple (hopefully POSIX compliant) shell commands
+ * to fetch the number of sequences in the given $query_file
+ * 
+ * @return int number of sequences
+ */
 function tseq_get_query_sequence_count($query_file)
 {
     $cmd = "grep '>' $query_file | wc -l";
@@ -55,7 +76,12 @@ function tseq_get_query_sequence_count($query_file)
     return $output[0];
 }
 
-// Retrieve the number of matches in the output file
+/**
+ * Retrieve the number of matches in the output file
+ * @param string $output_file The file in which to count the matches
+ * 
+ * @return int The number of matches found (based on line count)
+ */
 function tseq_get_matches_count($output_file)
 {
     $cmd = "wc -l $output_file";
@@ -64,8 +90,12 @@ function tseq_get_matches_count($output_file)
     return $line_count[0];
 }
 
-/*
- *  Are the results for the requested job in the table yet?
+/**
+ * Checks to see if the results for the requested job are in the table yet
+ * @param int $tripal_job_id The job ID
+ * 
+ * @return int A count of the results that exist in the database. 0 indicates none,
+ * i.e. job still not completed, or other error.
  */
 function tseq_results_exist($tripal_job_id)
 {
@@ -78,7 +108,8 @@ function tseq_results_exist($tripal_job_id)
 
 
 /**
- * 
+ * Determines which program to use based on the types of files provided by the user.
+ * Probably deprecated
  * @param string $sequence_query_type
  * @param string $database_search_type
  * @return array Type of job, program name
@@ -125,7 +156,9 @@ function tseq_get_program($sequence_query_type, $database_search_type)
 /**
  * Will add missing headers (numbered) and proper newline formatting to query submissions
  * 
- * @param type $query_text
+ * @param string $query_text
+ * 
+ * @return string A fixed (if applicable) sequence string
  */
 function tseq_fix_query($query_text)
 {
@@ -168,9 +201,13 @@ function tseq_fix_query($query_text)
     return $fixed3;
 }
 
-
-// Validate the user's sequences
-// Returns true on valid sequence
+/**
+ * Checks to see if the user's provided search sequence is valid
+ * @param string $type The type of sequence (nucleotide - "Genomic" or Protein - "Protein)
+ * @param string $sequence The user-submitted sequence to validate
+ * 
+ * @return boolean True if the sequence is valid, false if not
+ */
 function tseq_validate_sequence($type, $sequence)
 {
     // Are we dealing with a nucleotide or a protein?
