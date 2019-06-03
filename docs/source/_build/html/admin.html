@@ -60,22 +60,105 @@
 <div class="section" id="installation">
 <h2>2.2. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><ol class="arabic simple">
-<li>Install all prerequisites.</li>
-<li>Download/clone the github repository to somewhere within your site’s <code class="docutils literal notranslate"><span class="pre">sites/all/modules</span></code> folder</li>
-<li>If you have Drush installed, run</li>
-</ol>
+<div><p>1. Install all prerequisites. Diamond and BLAST executables
+must be on the remote server where jobs will be run.
+2. Download/clone the github repository to somewhere
+within your site’s <code class="docutils literal notranslate"><span class="pre">sites/all/modules</span></code> folder
+3. If you have Drush installed, run</p>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">drush</span> <span class="pre">pm-enable</span> <span class="pre">tripal_seq</span></code></p>
-<p>If drush is not installed, you can enable the module by navigating to your Modules page and enabling it there</p>
+<p>If drush is not installed, you can enable the module
+by navigating to your Modules page and enabling it there</p>
 </div></blockquote>
 <ol class="arabic simple" start="4">
-<li>Thingy</li>
+<li>You may want to clear cache:</li>
 </ol>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">drush</span> <span class="pre">cc</span> <span class="pre">all</span></code></p>
+<p>to be safe.</p>
+</div></blockquote>
 </div></blockquote>
 </div>
 <div class="section" id="configuration">
 <h2>2.3. Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>All configuration is done through the tabs at
+/admin/tripal/extension/tseq/config.</p>
+<p><strong>Available databases</strong>
+Tripal Sequence Similarity Search has the ability to provide searches against
+databases that are provided by the website. The site administrator can make these
+available by adding them to the list on this page. Click “Add an existing database”
+to offer these. The following pieces of information are needed:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Name (a unique name to identify this to the user in a list)</li>
+<li>Type (Protein, Genome, or Gene)</li>
+<li>Category (see below)</li>
+<li>Version (some version info that makes sense for the user)</li>
+<li><dl class="first docutils">
+<dt>The full path on disk to the file. It must be available</dt>
+<dd>on the remote server (See Tripal Remote Job documentation).</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Web location (optional) If the file is available for download</dt>
+<dd>on the website or on an FTP server, provide that URL here.</dd>
+</dl>
+</li>
+<li>Genes, Proteins, or Scaffolds count (optional)</li>
+</ol>
+</div></blockquote>
+<p>From the list view, individual Database file entries can be edited or deleting
+by clicking the appropriate button.</p>
+<p><strong>Categories</strong></p>
+<p>The Categories tab allows the admin to define categories that databases
+can be listed under. Upon installation, the “Standard” category is generated.
+When a user goes to submit a search query, each category will have a drop-down
+menu. Using categories is useful if the admin wants to delineate between
+various sources or methods used to generate the sequence. Whole categories
+can be enabled/disabled.</p>
+<p><strong>Job Settings</strong></p>
+<p>The Job Settings tab lists a number of options for the admin to set based
+on the server settings and capacities.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><dl class="first docutils">
+<dt>Threads - the most important setting. More threads means faster searches.</dt>
+<dd>Make sure your server can handle this many threads. (Default: 1)</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>File Expiration - how long should search results be saved on the server.</dt>
+<dd>Currently not implemented, defaults to 30 days</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Preferred Remote Resource. If you have multiple Remote Servers defined</dt>
+<dd>in Tripal Remote Job, choose which one you want to use for Diamond/BLAST
+jobs.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>BLAST Executable location. Optional - will always look in the Remote User’s</dt>
+<dd>$PATH first. You can use this setting to use a specific version.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Diamond Executable location. Optional - will always look in the Remote User’s</dt>
+<dd>$PATH first. You can use this setting to use a specific version.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Diamond Executable version - This setting is required to meet certain</dt>
+<dd>versions so that additional functionality is provided</dd>
+</dl>
+</li>
+</ol>
+</div></blockquote>
+<p><strong>Submission Defaults</strong></p>
+<p>The Submission Defaults tab allows the admin to set the default
+“Advanced options” for when a user tries to submit a search.
+Some reasonable defaults are provided when the module installs,
+but they may be tweaked.</p>
 </div>
 </div>
 
