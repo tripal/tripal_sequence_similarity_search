@@ -2,6 +2,7 @@ name = Tripal Sequence Similarity Search
 description = Diamond and BLAST+ Module for Tripal
 dependencies[] = tripal_remote_job:tripal_remote_job
 core = 7.x
+version = 7.x-1.0
 configure = admin/tripal/extension/tseq/config
 stylesheets[all][] = theme/tseq.css
 package = Tripal Extensions
