@@ -96,9 +96,9 @@ else if ($status == 'Completed')
                 ->extend('PagerDefault')
                 ->extend('TableSort');
         $select->condition('tripal_job_id',$job_id,'=')
-               ->fields('t',array('query_label','target','percent_identity','alignment_length','mismatches','gap_opens','start_position_query','end_position_query','start_position_database','end_position_database','e_value','bit_score'))
-               ->limit(15)
-               ->orderByHeader($results_data_header);
+                ->fields('t',array('query_label','target','percent_identity','alignment_length','mismatches','gap_opens','start_position_query','end_position_query','start_position_database','end_position_database','e_value','bit_score'))
+                ->limit(15)
+                ->orderByHeader($results_data_header);
         $results_data = $select->execute();
         $results_data_rows = array();
         foreach ($results_data as $row) 
@@ -195,14 +195,14 @@ else if ($status == 'Cancelled')
 else
 {
   // Job evidently not completed. Keep checking
-  $meta = array(
-    '#tag' => 'meta',
-    '#attributes' => array(
-      'http-equiv' => 'refresh',
-      'content' =>  '10',
+    $meta = array(
+        '#tag' => 'meta',
+        '#attributes' => array(
+        'http-equiv' => 'refresh',
+        'content' =>  '10',
     )
-  );
-  drupal_add_html_head($meta, 'tripal_job_status_page');
+    );
+    drupal_add_html_head($meta, 'tripal_job_status_page');
 }
 
 //echo "On the remote server, your job is: ".TripalRemoteSSH::isJobRunning(tripal_get_job($job_id));
