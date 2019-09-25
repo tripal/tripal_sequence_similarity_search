@@ -28,12 +28,12 @@ require_once 'includes/tseq.download.inc';
  * Implements hook_permission
  */
 function tripal_seq_permission() {
-  return array (
-    'administer diamond' => array (
-      'title' => t ( 'Administer Diamond Module' ),
-      'description' => t ( 'Allows a user to modify the list of databases available for the user to Diamond/BLAST against' )
-    ),
-  );
+    return array (
+        'administer diamond' => array (
+        'title' => t ( 'Administer Diamond Module' ),
+        'description' => t ( 'Allows an admin to modify Tripal Sequence Similarity search configuration' )
+        ),
+    );
 }
 
 function tripal_seq_init()
