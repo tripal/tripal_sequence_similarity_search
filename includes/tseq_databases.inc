@@ -46,7 +46,7 @@ class TSeqDatabases
         //Iterate through the returned database 
         for($i = 0; $i< $results->rowCount();$i++)
         {
-          $databases[$i] = $results->fetchAssoc();
+            $databases[$i] = $results->fetchAssoc();
         }
         
         return $databases;
@@ -60,7 +60,7 @@ class TSeqDatabases
         //Iterate through the returned database 
         for($i = 0; $i< $results->rowCount();$i++)
         {
-          $databases[$i] = $results->fetchAssoc();
+            $databases[$i] = $results->fetchAssoc();
         }
         
         return $databases;
@@ -69,14 +69,14 @@ class TSeqDatabases
     public static function getDatabasesByTypeCategory($type, $category)
     {
         $query = "SELECT * FROM tseq_db_existing_locations WHERE type LIKE '$type' and category LIKE '$category' ORDER BY name ASC, version DESC";  
-               
+
         $results = db_query($query);
         $databases = array();
         
         //Iterate through the returned database 
         for($i = 0; $i< $results->rowCount();$i++)
         {
-          $databases[$i] = $results->fetchAssoc();
+            $databases[$i] = $results->fetchAssoc();
         }
         
         return $databases;
@@ -85,14 +85,14 @@ class TSeqDatabases
     public static function getDatabases($type)
     {
         $query = "SELECT * FROM tseq_db_existing_locations WHERE type LIKE '$type' ORDER BY name ASC, version DESC";  
-               
+
         $results = db_query($query);
         $databases = array();
         
         //Iterate through the returned database 
         for($i = 0; $i< $results->rowCount();$i++)
         {
-          $databases[$i] = $results->fetchAssoc();
+            $databases[$i] = $results->fetchAssoc();
         }
         
         return $databases;
