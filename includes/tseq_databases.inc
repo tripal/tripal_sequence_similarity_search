@@ -115,6 +115,43 @@ class TSeqDatabases
          */
         
     }
+
+    /**
+     * Check if the database file exists and is readable.
+     * Keep this as a static function to reduce time and memory usage - we don't need to load
+     *  an instance of every database object just to check a file (which will already introduce
+     *  a time delay to to IO wait)
+     *
+     * @param int $db_id
+     * @return integer
+     *  0 - exists, readable
+     *  1 - exists, unreadable
+     *  2 - doesn't exist
+     *  3 - unknown database ID
+     */
+    public static function db_check($db_id)
+    {
+        $location = TSeqDatabases::getDBInfo($db_id,'location');
+        if (!$location)
+        {
+            return 3;
+        }
+        if (file_exists($location))
+        {
+            if (is_readable($location))
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+        else
+        {
+            return 2;
+        }
+    }
     
     // Update an existing entry
     public static function updateDB()
