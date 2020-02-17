@@ -702,13 +702,12 @@ function tseq_submit_form_submit($form, &$form_state)
     {
         $targetFileType = 'upload';
         $targetFile = file_load($form_state['values']['TargetFile']);
-        if (is_object($targetFile))
-        {
-          $targetFile = drupal_realpath($targetFile->uri);
-          if($debug){drupal_set_message("Target File: ".$targetFile);}
-        }
-        else
-        {
+        if (is_object($targetFile)) {
+            $targetFile = drupal_realpath($targetFile->uri);
+            if ($debug) {
+                drupal_set_message("Target File: ".$targetFile);
+            }
+        } else {
             drupal_set_message("Target File upload failed.");
         }        
     }
