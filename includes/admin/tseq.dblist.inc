@@ -41,8 +41,8 @@ function tseq_config_dblist_page_build()
             ->extend('TableSort');
     
     $select->fields('db',array('db_id','name','version','type','category','location','count','web_location'))
-           ->limit(15)
-           ->orderByHeader($database_header);
+            ->limit(15)
+            ->orderByHeader($database_header);
     $databases = $select->execute();
     $database_list = array();
     foreach($databases as $key => $database)
@@ -57,12 +57,34 @@ function tseq_config_dblist_page_build()
         {
             $web_available = "<abbr title=\"Add one by clicking 'Edit' to the right\">No</abbr>";
         }
+
+        $db_check = TSeqDatabases::db_check($database->db_id);
+        switch ($db_check)
+        {
+            case 0:
+                $db_error = '';
+                break;
+            case 1:
+                $db_error = 'db_unreadable';
+                break;
+            case 2:
+                $db_error = 'db_missing';
+                break;
+            default:
+                $db_error = '';
+        }
+
         $database_list[] = array(
             $database->name,
             $database->version,
             $database->type,
             $database->category,
-            $database->location,
+            array(
+                'data' => $database->location,
+                'class' => array(
+                    $db_error
+                )
+            ),
             $database->count,
             $web_available,
             $edit.' | '.$delete,
