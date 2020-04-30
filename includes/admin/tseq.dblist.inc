@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 /**
  * Implements hook_page_build()
