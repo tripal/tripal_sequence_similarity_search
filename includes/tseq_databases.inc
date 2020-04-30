@@ -136,20 +136,49 @@ class TSeqDatabases
         {
             return 3;
         }
+        // File ID makes sense, check if the file exists
         if (file_exists($location))
         {
+            // File exists, but is it readable?
+            // Yes.
             if (is_readable($location))
             {
                 return 0;
             }
+            // No.
             else
             {
                 return 1;
             }
         }
+        // Indicated file may not exist verbatim, lets fuzzy search
         else
         {
-            return 2;
+            // Specific File might not exist, but we can try a fuzzy search
+            // e.g /some/path/to/file passes the "file exists" test for a directory:
+            //      file.type1
+            //      file.type2
+            //      file.type3
+            // Lets get a list of files that might match, see if they fit the profile
+            //  e.g. blast databases that are comprised of the following files
+            //  - nhr - header
+            //  - nin - index
+            //  - nsq - sequence
+            //  - nog, nsd, nsi
+            
+            // get the directory contents
+            // Get the parent path
+            $parent_path = implode(explode('/',$location,-1),'/');
+            $dir_contents = scandir($parent_path);
+            if ()
+            {
+
+            }
+            // File really doesn't exist
+            else
+            {
+                return 2;
+            }
         }
     }
     
