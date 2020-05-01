@@ -170,7 +170,7 @@ class TSeqDatabases
             // Get the parent path
             $parent_path = implode(explode('/',$location,-1),'/');
             $dir_contents = scandir($parent_path);
-            if ()
+            /*if ()
             {
 
             }
@@ -179,6 +179,7 @@ class TSeqDatabases
             {
                 return 2;
             }
+            */
         }
     }
     
