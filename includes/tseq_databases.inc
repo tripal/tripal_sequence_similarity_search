@@ -136,7 +136,7 @@ class TSeqDatabases
         {
             return 3;
         }
-        // File ID makes sense, check if the file exists
+        // File ID makes sense, check if the file exists. This also checks for dirs
         if (file_exists($location))
         {
             // File exists, but is it readable?
@@ -166,10 +166,40 @@ class TSeqDatabases
             //  - nsq - sequence
             //  - nog, nsd, nsi
             
-            // get the directory contents
-            // Get the parent path
+            // Get the directory contents
+            // Get the parent path and the file name (without blast extensions)
             $parent_path = implode(explode('/',$location,-1),'/');
-            $dir_contents = scandir($parent_path);
+            $file_name_array = explode('/',$location);
+            $file_name = $file_name_array[count($file_name_array) - 1];
+            if (is_dir($parent_path))
+            {
+                $dir_contents = scandir($parent_path);
+                dpm($dir_contents);
+                $matches = 0;
+                foreach($dir_contents as $dir_file)
+                {
+                    // Does a file look like it might match?
+                    // @TODO make this better detect actual blast index extensions
+                    $file_reg = '/\b(\w*'.$file_name.'\w*)\b/';
+                    if(preg_match($file_reg,$dir_file))
+                    {
+                        // @TODO make sure the file is readable
+                        $matches += 1;
+                    }
+                }
+                if($matches == 0)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                return 2;
+            }
             /*if ()
             {
 

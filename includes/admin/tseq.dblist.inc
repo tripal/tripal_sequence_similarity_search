@@ -180,7 +180,8 @@ function tseq_database_add_form($form, &$form_state)
         '#type'         => 'textfield',
         '#title'        => 'File location',
         '#size'         => '120',
-        '#description'  => 'The path to the indexed database on disk (accessible on the remote server)',
+        '#description'  => 'The path to the indexed database on disk (accessible on the remote server). If loading a BLAST index, leave off the extensions like nhr, nin, nog, etc.',
+        '#suffix'       => '',
         '#required'     => true,
     );
     
