@@ -174,7 +174,6 @@ class TSeqDatabases
             if (is_dir($parent_path))
             {
                 $dir_contents = scandir($parent_path);
-                dpm($dir_contents);
                 $matches = 0;
                 foreach($dir_contents as $dir_file)
                 {
