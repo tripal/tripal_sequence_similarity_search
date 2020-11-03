@@ -115,6 +115,102 @@ class TSeqDatabases
          */
         
     }
+
+    /**
+     * Check if the database file exists and is readable.
+     * Keep this as a static function to reduce time and memory usage - we don't need to load
+     *  an instance of every database object just to check a file (which will already introduce
+     *  a time delay to to IO wait)
+     *
+     * @param int $db_id
+     * @return integer
+     *  0 - exists, readable
+     *  1 - exists, unreadable
+     *  2 - doesn't exist
+     *  3 - unknown database ID
+     */
+    public static function db_check($db_id)
+    {
+        $location = TSeqDatabases::getDBInfo($db_id,'location');
+        if (!$location)
+        {
+            return 3;
+        }
+        // File ID makes sense, check if the file exists. This also checks for dirs
+        if (file_exists($location))
+        {
+            // File exists, but is it readable?
+            // Yes.
+            if (is_readable($location))
+            {
+                return 0;
+            }
+            // No.
+            else
+            {
+                return 1;
+            }
+        }
+        // Indicated file may not exist verbatim, lets fuzzy search
+        else
+        {
+            // Specific File might not exist, but we can try a fuzzy search
+            // e.g /some/path/to/file passes the "file exists" test for a directory:
+            //      file.type1
+            //      file.type2
+            //      file.type3
+            // Lets get a list of files that might match, see if they fit the profile
+            //  e.g. blast databases that are comprised of the following files
+            //  - nhr - header
+            //  - nin - index
+            //  - nsq - sequence
+            //  - nog, nsd, nsi
+            
+            // Get the directory contents
+            // Get the parent path and the file name (without blast extensions)
+            $parent_path = implode(explode('/',$location,-1),'/');
+            $file_name_array = explode('/',$location);
+            $file_name = $file_name_array[count($file_name_array) - 1];
+            if (is_dir($parent_path))
+            {
+                $dir_contents = scandir($parent_path);
+                $matches = 0;
+                foreach($dir_contents as $dir_file)
+                {
+                    // Does a file look like it might match?
+                    // @TODO make this better detect actual blast index extensions
+                    $file_reg = '/\b(\w*'.$file_name.'\w*)\b/';
+                    if(preg_match($file_reg,$dir_file))
+                    {
+                        // @TODO make sure the file is readable
+                        $matches += 1;
+                    }
+                }
+                if($matches == 0)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                return 2;
+            }
+            /*if ()
+            {
+
+            }
+            // File really doesn't exist
+            else
+            {
+                return 2;
+            }
+            */
+        }
+    }
     
     // Update an existing entry
     public static function updateDB()
