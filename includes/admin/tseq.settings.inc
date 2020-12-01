@@ -95,8 +95,8 @@ function tseq_configuration_settings_form($form, &$form_state)
         '#size'         =>  '120',
         '#required'     =>  false,
         '#default_value'      =>  t($current_settings['blast_exe_location']),
-        '#field_prefix' => 'Location on the remote resource where the BLAST executable files can be found',
-        '#description'  => 'If not specified, will try to use BLAST from the default $PATH. The trailing slash is not required.',
+        '#field_prefix' => 'Location on the remote resource where the BLAST executable file can be found',
+        '#description'  => 'If not specified, will try to use BLAST from the default $PATH. Include the executable itself: <code>/path/to/bin/blast</code>',
     );
     
     $form['settings']['diamond_exe_location'] = array(
@@ -105,8 +105,8 @@ function tseq_configuration_settings_form($form, &$form_state)
         '#size'         =>  '120',
         '#required'     =>  false,
         '#default_value'      =>  t($current_settings['diamond_exe_location']),
-        '#field_prefix' => 'Location on the remote resource where the Diamond executable files can be found',
-        '#description'  => 'If not specified, will try to use Diamond from the default $PATH. The trailing slash is not required.',
+        '#field_prefix' => 'Location on the remote resource where the Diamond executable file can be found',
+        '#description'  => 'If not specified, will try to use Diamond from the default $PATH. Include the executable itself: <code>/path/to/bin/diamond</code>',
     ); 
     
     $form['settings']['diamond_exe_version'] = array(
