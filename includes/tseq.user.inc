@@ -20,8 +20,8 @@ function tseq_user_analysis_page($uid) {
     
     // Header
     $header = array(
-        array('data' => 'Tripal ID',       'field' => 'd.tseq_unique_id',           'sort' => 'asc'),
-        array('data' => 'Submit Time',  'field' => 'd.submit_time'),
+        array('data' => 'Tripal ID',       'field' => 'd.tseq_unique_id',),
+        array('data' => 'Submit Time',  'field' => 'd.submit_time',             'sort' => 'desc'),
         array('data' => 'Query Type',   'field' => 'd.sequence_query_type'),
         array('data' => 'Search Type',  'field' => 'd.database_search_type'),
         array('data' => 'Link'),
