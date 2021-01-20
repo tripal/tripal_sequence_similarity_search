@@ -80,6 +80,8 @@ function tseq_configuration_settings_form($form, &$form_state)
         '#field_prefix' => 'Define, in days, how long to keep stored files pertaining to submitted jobs',
     );
     
+    // Remove for now, depends on https://github.com/tripal/tripal_remote_job/issues/1
+    /*
     $form['settings']['preferred_remote_resource'] = array(
         '#type'         => 'select',
         '#title'        => 'Preferred Remote Resource',
@@ -88,7 +90,8 @@ function tseq_configuration_settings_form($form, &$form_state)
         '#default_value'      =>  t($current_settings['preferred_remote_resource']),
         '#field_prefix' => 'Select the remote resource to use. Add additional resources in the Tripal Remote Job module. Only supports SSH/standalone servers.',
     );
-    // Todo - make this a dropdown with available remote resources
+    */
+
     $form['settings']['blast_exe_location'] = array(
         '#type'         =>  'textfield',
         '#title'        =>  'BLAST Executable Location',
@@ -165,7 +168,7 @@ function tseq_configuration_settings_form_submit($form, &$form_state)
         'file_expire_time'          => $form_state['values']['expiry'],
         'blast_exe_location'        => $form_state['values']['blast_exe_location'],
         'diamond_exe_location'      => $form_state['values']['diamond_exe_location'],
-        'preferred_remote_resource' => $form_state['values']['preferred_remote_resource'],
+        /*'preferred_remote_resource' => $form_state['values']['preferred_remote_resource'],*/
         'diamond_exe_version'       => $form_state['values']['diamond_exe_version'],
         /*'blast_exe_version'         => $form_state['values']['blast_exe_version'],*/
         'produce_blast_pairwise'    => $form_state['values']['produce_blast_pairwise'],
