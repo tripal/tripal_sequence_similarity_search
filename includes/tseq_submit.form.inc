@@ -809,6 +809,15 @@ function tseq_submit_form_submit($form, &$form_state)
     if (!$prepError)
     {        
         $remote_diamond_job_id = -1;
+        // Get the diamond executable
+        if ($job_options['diamond_exe_location'])
+        {
+            $diamond_executable = $job_options['diamond_exe_location'];
+        }
+        else
+        {
+            $diamond_executable = 'diamond';
+        }
         if ($form_state['values']['TargetDataType'] == 'database')
         {
             //$command_to_run = $blastEquiv." ".$threadsString." 1 --db ".$targetFile." --query ".$queryFileNoPath." --more-sensitive -k ".$maxAlignments." -e ".$eValue." --subject-cover ".$targetCoverage." --query-cover ".$queryCoverage;
@@ -818,7 +827,7 @@ function tseq_submit_form_submit($form, &$form_state)
                 // Do we produce standard output or BLASTXML + Pairwise?
                 if ($job_options['produce_diamond_pairwise'])
                 {
-                    $command_to_run = "diamond ".$blastEquiv                  . " \\" . PHP_EOL .
+                    $command_to_run = $diamond_executable . " " . $blastEquiv . " \\" . PHP_EOL .
                     "    --threads "       . $jobSettings[0]['num_threads']   . " \\" . PHP_EOL .
                     "    --db "            . $targetFile                      . " \\" . PHP_EOL .
                     "    --query "         . $queryFileNoPath                 . " \\" . PHP_EOL .
@@ -833,14 +842,14 @@ function tseq_submit_form_submit($form, &$form_state)
                     $command_to_run .= PHP_EOL; // Nice formatting
 
                     // Take DAA format, create BLAST XML output (regular table) and Pairwise output (for showing alignments)
-                    $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                    $command_to_run .= $diamond_executable . " view"                         . " \\" . PHP_EOL .
                     "    --daa results.daa "                                  . " \\" . PHP_EOL .
                     "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" . " \\" . PHP_EOL .
                     "    --out results_blastxml.txt"                          . " \\" . PHP_EOL ;
 
                     $command_to_run .= PHP_EOL; // Nice formatting
 
-                    $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                    $command_to_run .= $diamond_executable . " view"                         . " \\" . PHP_EOL .
                     "    --daa results.daa "                                  . " \\" . PHP_EOL .
                     "    --outfmt 0 "                                         . " \\" . PHP_EOL .
                     "    --out results_pairwise.txt "                         . " & echo $! > PID" . PHP_EOL ;
@@ -848,7 +857,7 @@ function tseq_submit_form_submit($form, &$form_state)
                 // Just produce regular output (legacy)
                 else
                 {
-                    $command_to_run = "diamond ".$blastEquiv.
+                    $command_to_run = $diamond_executable . " " . $blastEquiv.
                     "    --threads "       . $jobSettings[0]['num_threads']   . " \\" . PHP_EOL .
                     "    --db "            . $targetFile                      . " \\" . PHP_EOL .
                     "    --query "         . $queryFileNoPath                 . " \\" . PHP_EOL .
@@ -905,7 +914,7 @@ function tseq_submit_form_submit($form, &$form_state)
                 // Do we produce standard output or BLASTXML + Pairwise?
                 if ($job_options['produce_diamond_pairwise'])
                 {
-                    $command_to_run = "diamond ".$blastEquiv.
+                    $command_to_run = $diamond_executable . " " . $blastEquiv.
                     "    --threads "         . $jobSettings[0]['num_threads'] . " \\" . PHP_EOL .  
                     "    --db "              . $targetFileNoPath              . " \\" . PHP_EOL .
                     "    --query "           . $queryFileNoPath               . " \\" . PHP_EOL .
@@ -919,13 +928,13 @@ function tseq_submit_form_submit($form, &$form_state)
 
                     // Take DAA format, create BLAST XML output (regular table) and Pairwise output (for showing alignments)
                     $command_to_run .= PHP_EOL;
-                    $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                    $command_to_run .= $diamond_executable . " view"                         . " \\" . PHP_EOL .
                     "    --daa results.daa "                                  . " \\" . PHP_EOL .
                     "    --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore" . " \\" . PHP_EOL .
                     "    --out results_blastxml.txt"                          . " \\" . PHP_EOL ;
 
                     $command_to_run .= PHP_EOL;
-                    $command_to_run .= "diamond view"                         . " \\" . PHP_EOL .
+                    $command_to_run .= $diamond_executable . " view"                         . " \\" . PHP_EOL .
                     "    --daa results.daa "                                  . " \\" . PHP_EOL .
                     "    --outfmt 0 "                                         . " \\" . PHP_EOL .
                     "    --out results_pairwise.txt "                         . " & echo $! > PID" . PHP_EOL ;
@@ -933,7 +942,7 @@ function tseq_submit_form_submit($form, &$form_state)
                 // Just produce regular output (legacy)
                 else
                 {
-                    $command_to_run = "diamond ".$blastEquiv.
+                    $command_to_run = $diamond_executable . " " . $blastEquiv.
                     "    --threads "       . $jobSettings[0]['num_threads']   . " \\" . PHP_EOL .
                     "    --db "            . $targetFileNoPath                      . " \\" . PHP_EOL .
                     "    --query "         . $queryFileNoPath                 . " \\" . PHP_EOL .
