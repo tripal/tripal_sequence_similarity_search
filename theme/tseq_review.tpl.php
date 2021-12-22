@@ -133,7 +133,7 @@ else if ($status == 'Completed')
         {
             $results_data_rows[] = array(
                 $row->query_label,
-                $row->target,
+                "<a href=\"#>" . $row->target . "\">" . $row->target . "</a>",
                 $row->percent_identity,
                 $row->alignment_length,
                 $row->mismatches,
@@ -180,8 +180,14 @@ else if ($status == 'Completed')
         $linecount = 0;
         foreach($pairwise_file as $pairwise_line)
         {
-            if ($linecount < 50) {
-                echo $pairwise_line;
+            if ($linecount < 500) {
+                // Is this a >header line? If so we want to put an anchor tag here so we can navigate here from the table.
+                if (preg_match('/([>]).+/',$pairwise_line)) {
+                    echo "<a name=\"" . trim($pairwise_line) . "\"></a>" . $pairwise_line;
+                }
+                else {
+                    echo $pairwise_line;
+                }
                 $linecount += 1;
             }
             else {
