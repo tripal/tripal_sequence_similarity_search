@@ -177,11 +177,19 @@ else if ($status == 'Completed')
     {
         $pairwise_file = file($pairwise_file_name);
         echo "<pre>";
+        $linecount = 0;
         foreach($pairwise_file as $pairwise_line)
         {
-            echo $pairwise_line;
+            if ($linecount < 50) {
+                echo $pairwise_line;
+                $linecount += 1;
+            }
+            else {
+                echo "</pre>";
+                echo "<p> Rest of alignment view truncated. Download the full text above.</p>";
+                return;
+            }
         }
-        echo "</pre>";
     }
     else
     {
