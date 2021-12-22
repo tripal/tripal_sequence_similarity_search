@@ -176,6 +176,7 @@ else if ($status == 'Completed')
     if (file_exists($pairwise_file_name))
     {
         $pairwise_file = file($pairwise_file_name);
+        echo "<div class=\"ui-widget ui-widget-content\">";
         echo "<pre>";
         $linecount = 0;
         foreach($pairwise_file as $pairwise_line)
@@ -191,7 +192,7 @@ else if ($status == 'Completed')
                 $linecount += 1;
             }
             else {
-                echo "</pre>";
+                echo "</pre></div>";
                 echo "<p> Rest of alignment view truncated. Download the full text above.</p>";
                 return;
             }
