@@ -133,7 +133,7 @@ else if ($status == 'Completed')
         {
             $results_data_rows[] = array(
                 $row->query_label,
-                "<a href=\"#>" . $row->target . "\">" . $row->target . "</a>",
+                "<a href=\"?alignment_view=full#>" . $row->target . "\">" . $row->target . "</a>",
                 $row->percent_identity,
                 $row->alignment_length,
                 $row->mismatches,
@@ -179,9 +179,19 @@ else if ($status == 'Completed')
         echo "<div class=\"ui-widget ui-widget-content\">";
         echo "<pre>";
         $linecount = 0;
+
+        // Are we looking at the full alignment view or a truncated version?
+        // Get the URL parameter 'alignment_view':
+        $truncate_value = 500;
+        $truncated = FALSE;
+        $params = drupal_get_query_parameters();
+        if (array_key_exists('alignment_view',$params) AND $params['alignment_view'] == 'full') {
+            $truncate_value = 2147483647;
+        }
+        
         foreach($pairwise_file as $pairwise_line)
         {
-            if ($linecount < 500) {
+            if ($linecount < $truncate_value) {
                 // Is this a >header line? If so we want to put an anchor tag here so we can navigate here from the table.
                 if (preg_match('/([>]).+/',$pairwise_line)) {
                     echo "<a name=\"" . trim($pairwise_line) . "\"></a>" . $pairwise_line;
@@ -192,10 +202,15 @@ else if ($status == 'Completed')
                 $linecount += 1;
             }
             else {
+                $truncated = TRUE;
                 echo "</pre></div>";
                 echo "<p> Rest of alignment view truncated. Download the full text above.</p>";
                 return;
             }
+        }
+        // Make sure we end this section regardless if we are truncating or not
+        if(!$truncated) {
+            echo "</pre></div>";
         }
     }
     else
