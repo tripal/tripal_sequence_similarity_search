@@ -50,15 +50,20 @@ function tseq_get_db_id_by_location($location)
  * Retrieve information about a given database
  * @param int $db_id The database ID of the desired database about which to return info about
  * 
- * @return array Details about the database
+ * @return array Details about the database or NULL if the database doesn't exist.
  */
 function tseq_get_db_info($db_id)
 {
     $query = "SELECT * FROM tseq_db_existing_locations WHERE db_id = '$db_id'";
-    $results = db_query($query);
+    try {
+        $results = db_query($query);
+        $details = $results->fetchAssoc();
+        return $details;
+    } catch (Exception $e) {
+        echo "Error looking up info for $db_id\n";
+    }
+    return NULL;
     
-    $details = $results->fetchAssoc();
-    return $details;
 }
 
 /**

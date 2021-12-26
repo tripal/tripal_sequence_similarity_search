@@ -72,7 +72,35 @@ else if ($status == 'Completed')
     );
     echo theme('table',$summary_table_vars);
     
+
+    // Download section
+    // Get some relevent info
     
+    $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
+    if($job_information['database_file_type'] == 'database')
+    {
+        $db_info = tseq_get_db_info($tseq_db_id);
+    }
+    echo "<h3>File Downloads</h3>";
+    if($results_details['summary'] != 'error')
+    {
+        echo "<li>Click <a href=\"download/$job_id/results\">here</a> to download these results</li>";
+    }
+    echo "<li>Click <a href=\"download/$job_id/query\">here</a> to download your original query</li>";
+    if ($job_information['database_file_type'] != 'database')
+    {
+        echo "<li>Click <a href=\"download/$job_id/target\">here</a> to download your original target database</li>";
+    }
+    if ($db_info) {
+
+        if( ($job_information['database_file_type'] == 'database') AND ($db_info['web_location'] != '') )
+        {
+            echo " <li>Click <a href=\"".$db_info['web_location']."\">here</a> to download the original sequence</li>";
+        }
+    }    
+    else {
+        echo " <li>There was an issue looking up the database info.</li>";
+    }
     
     // Results Data Table
     if($results_details['summary'] != 'error')
@@ -105,7 +133,7 @@ else if ($status == 'Completed')
         {
             $results_data_rows[] = array(
                 $row->query_label,
-                $row->target,
+                "<a href=\"?alignment_view=full#>" . $row->target . "\">" . $row->target . "</a>",
                 $row->percent_identity,
                 $row->alignment_length,
                 $row->mismatches,
@@ -148,40 +176,46 @@ else if ($status == 'Completed')
     if (file_exists($pairwise_file_name))
     {
         $pairwise_file = file($pairwise_file_name);
+        echo "<div class=\"ui-widget ui-widget-content\">";
         echo "<pre>";
+        $linecount = 0;
+
+        // Are we looking at the full alignment view or a truncated version?
+        // Get the URL parameter 'alignment_view':
+        $truncate_value = 500;
+        $truncated = FALSE;
+        $params = drupal_get_query_parameters();
+        if (array_key_exists('alignment_view',$params) AND $params['alignment_view'] == 'full') {
+            $truncate_value = 2147483647;
+        }
+        
         foreach($pairwise_file as $pairwise_line)
         {
-            echo $pairwise_line;
+            if ($linecount < $truncate_value) {
+                // Is this a >header line? If so we want to put an anchor tag here so we can navigate here from the table.
+                if (preg_match('/([>]).+/',$pairwise_line)) {
+                    echo "<a name=\"" . trim($pairwise_line) . "\"></a>" . $pairwise_line;
+                }
+                else {
+                    echo $pairwise_line;
+                }
+                $linecount += 1;
+            }
+            else {
+                $truncated = TRUE;
+                echo "</pre></div>";
+                echo "<p> Rest of alignment view truncated. Download the full text above.</p>";
+                return;
+            }
         }
-        echo "</pre>";
+        // Make sure we end this section regardless if we are truncating or not
+        if(!$truncated) {
+            echo "</pre></div>";
+        }
     }
     else
     {
         echo "<p>The pairwise alignment results were either not generated or the file could not be found.</p>";
-    }
-    
-
-    // Download section
-    // Get some relevent info
-    
-    $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
-    if($job_information['database_file_type'] == 'database')
-    {
-        $db_info = tseq_get_db_info($tseq_db_id);
-    }
-    echo "<h3>File Downloads</h3>";
-    if($results_details['summary'] != 'error')
-    {
-        echo "<li>Click <a href=\"download/$job_id/results\">here</a> to download these results</li>";
-    }
-    echo "<li>Click <a href=\"download/$job_id/query\">here</a> to download your original query</li>";
-    if ($job_information['database_file_type'] != 'database')
-    {
-        echo "<li>Click <a href=\"download/$job_id/target\">here</a> to download your original target database</li>";
-    }    
-    if( ($job_information['database_file_type'] == 'database') AND ($db_info['web_location'] != '') )
-    {
-        echo " <li>Click <a href=\"".$db_info['web_location']."\">here</a> to download the original sequence";
     }
 }
 else if ($status == 'Error')
