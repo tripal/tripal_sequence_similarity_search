@@ -69,66 +69,6 @@ function tripal_seq_uninstall()
 
 function tripal_seq_schema()
 {
-    $schema['tseq_jobs'] = array(
-        'description' => t('TSeq Jobs'),
-        'fields' => array(
-            'job_id' => array(
-                'description' => t('Primary key'),
-                'type' => 'serial',
-                'unsigned' => true,
-                'not null' => true,
-            ),
-            'tripal_job_id' => array(
-                'description' => t('Tied to Tripal Job ID'),
-                'type' => 'int',
-                'unsigned' => true,
-                'not null' => true,
-            ),
-            'name' => array(
-                'description' => t('name of job'),
-                'type' => 'serial',
-                'unsigned' => true,
-                'not null' => true,
-            ),
-            'submitter' => array(
-                'description' => t('user who submitted the job'),
-                'type' => 'varchar',
-                'length' => 15,
-                'not null' => true,
-            ),
-            'status' => array(
-                'description' => t('status of the job'),
-                'type' => 'varchar',
-                'length' => 15,
-                'not null' => true,
-            ),
-            'last_check' => array(
-                'description' => t('time of last progress check'),
-                'type' => 'int',
-                'unsigned' => true,
-                'not null' => true,
-            ),
-            'progress' => array(
-                'description' => t('progress of job at last check'),
-                'type' => 'varchar',
-                'length' => 15,
-                'not null' => true,
-            ),
-            'start_date' => array(
-                'description' => t('date when the job was initiated'),
-                'type' => 'varchar',
-                'length' => '15',
-                'not null' => true,
-            ),
-            'end_date' => array(
-                'description' => t('date when the job was ended (after last check aka first /complete/ check'),
-                'type' => 'varchar',
-                'length' => 15,
-                'not null' => true,
-            ),
-        ),
-    );
-            
     $schema['tseq_job_information'] = array(
         'description' => t('TSeq Job Information'),
         'fields' => array(
@@ -882,4 +822,29 @@ function tripal_seq_update_7010()
             'not null'      => FALSE,
         )
     );
+}
+
+/**
+ * Drop the tseq_jobs table
+ */
+function tripal_seq_update_7011()
+{
+    if(db_table_exists('tseq_jobs')) 
+    {
+        // Check if the table has rows
+        $count = db_query("SELECT COUNT(*) FROM tseq_jobs")->fetchField();
+        if ($count == 0) 
+        {
+            // No rows, so we can drop the table
+            echo "Dropping tseq_jobs table...\n";
+            db_drop_table('tseq_jobs');
+        }
+        else
+        {
+            echo "there is data in the tseq_jobs table. Not dropping the table.\n";
+            // There are rows, so we can't drop the table
+            return;
+        }
+
+    }
 }
