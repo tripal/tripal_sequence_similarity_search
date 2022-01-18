@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 /**
  *    Let's include some files
  */
-// Admin 
+// Admin
 require_once 'includes/admin/tseq.dblist.inc';
 require_once 'includes/admin/tseq.settings.inc';
 require_once 'includes/admin/tseq.categories.inc';
@@ -46,7 +46,7 @@ function tripal_seq_init()
 function tripal_seq_menu()
 {
     $items = array();
-    
+
     // TSeq Job submission form (for URL)
     $items['TSeq/submit'] = array(
         'title' => 'Sequence Similarity Search: Diamond/BLAST',
@@ -56,7 +56,7 @@ function tripal_seq_menu()
         'access arguments' => array('access content'),
         'type' => MENU_NORMAL_ITEM,
         );
-        
+
     // TSeq Results page
     $items['TSeq/results/%'] = array(
         'title' => 'Diamond Job Results',
@@ -66,7 +66,7 @@ function tripal_seq_menu()
         'access arguments' => array('access content'),
         'type' => MENU_CALLBACK
         );
-    
+
     // TSeq Download page
     $items['TSeq/results/download/%/%'] = array(
         'title' => 'TSeq Job Results Download',
@@ -76,7 +76,7 @@ function tripal_seq_menu()
         'access arguments' => array('access content'),
         'type' => MENU_CALLBACK
         );
-        
+
     // Configuration pages
     // Configuration: Main page
     $items['admin/tripal/extension/tseq/config'] = array(
@@ -89,7 +89,7 @@ function tripal_seq_menu()
         'file path'     =>  drupal_get_path('module','tripal_seq'),
         'access arguments' => array('administer diamond'),
     );
-    
+
     // Configuration: Database list, first page
     $items['admin/tripal/extension/tseq/config/dblist'] = array(
         'title' => 'Available Databases',
@@ -101,7 +101,7 @@ function tripal_seq_menu()
         'file' => 'includes/admin/tseq.dblist.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
         );
-    
+
     // Configuration: Categories Tab
     $items['admin/tripal/extension/tseq/config/categories'] = array(
         'title' => 'Categories',
@@ -114,7 +114,7 @@ function tripal_seq_menu()
         'file' => 'includes/admin/tseq.categories.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
     );
-    
+
     // Configuration: Settings Tab
     $items['admin/tripal/extension/tseq/config/settings'] = array(
         'title' => 'Job Settings',
@@ -127,7 +127,7 @@ function tripal_seq_menu()
         'file' => 'includes/admin/tseq.settings.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
     );
-    
+
     // Configuration: Defaults Tab
     $items['admin/tripal/extension/tseq/config/defaults'] = array(
         'title' => 'Submission Defaults',
@@ -140,7 +140,7 @@ function tripal_seq_menu()
         'file' => 'includes/admin/tseq.defaults.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
     );
-    
+
     //Admin: Genome Browser Link Scheme Tab
     /*$items['admin/tripal/extension/tseq/config/browseLink'] = array(
         'title' => 'Genome Browser Link',
@@ -154,19 +154,19 @@ function tripal_seq_menu()
         'file' => 'includes/admin/tseq.browseLink.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
     );
-     * 
+     *
      */
-    
+
     // Admin: add a new target database
-    $items['admin/tripal/extension/tseq/add_db'] = array(
-        'title' => 'Add Target Database',
+    $items['admin/tripal/extension/tseq/config/add_db'] = array(
+        'title' => 'Add an Existing Database',
         'description' => 'Tripal Diamond Admin Configuration page',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_database_add_form',5),
         'access arguments' => array('administer diamond'),
-        'type' => MENU_CALLBACK,
+        'type' => MENU_LOCAL_ACTION,
         );
-    
+
     // Admin: edit an existing database
     $items['admin/tripal/extension/tseq/edit_db/%'] = array(
         'title' => 'Tripal Diamond Database Edit',
@@ -185,9 +185,9 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
-    
+
     //  Add/Edit/Delete Categories
-     
+
     // Admin: add a new category
     $items['admin/tripal/extension/tseq/add_category'] = array(
         'title' => 'Add Category',
@@ -217,7 +217,7 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
-    
+
     /*
     // Admin: add a new Genome Browser Link Scheme
     $items['admin/tripal/extension/diamond/add_browseLink'] = array(
@@ -229,7 +229,7 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK,
         );
-    
+
     // Admin: edit an existing Genome Browser Link Scheme
     $items['admin/tripal/extension/diamond/edit_browseLink/%'] = array(
         'title' => 'TSeq Genome Browser Link Scheme Edit',
@@ -250,29 +250,29 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
-     * 
+     *
      */
-        
+
     //Admin: Export the database list
     $items['admin/tripal/extension/tseq/config/export'] = array(
-        'title' => 'TSeq Database Export',
+        'title' => 'TSeq Database Export (CSV)',
         'description' => 'Export the database list to a CSV file for backup/transfer',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_database_export_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_NORMAL_ITEM
+        'type' => MENU_LOCAL_ACTION
         );
-    
+
     //Admin: Import a saved database list
     $items['admin/tripal/extension/tseq/config/import'] = array(
-        'title' => 'TSeq Database Import',
+        'title' => 'TSeq Database Import (CSV)',
         'description' => 'Import to the database list from a CSV file',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('tseq_database_import_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_NORMAL_ITEM
+        'type' => MENU_LOCAL_ACTION
         );
 
     // Analysis page
@@ -286,7 +286,7 @@ function tripal_seq_menu()
         'file' => 'includes/tseq.user.inc',
         'file path' => drupal_get_path('module', 'tripal_seq'),
     );
-    
+
     return $items;
 }
 
@@ -313,7 +313,7 @@ function tripal_seq_theme()
  */
 function tripal_seq_mail($key, &$message, $params) {
   $site_name = variable_get('site_name', "");
-  
+
   /*
   * Get information from the job (tseq_job_information)
   */
@@ -323,7 +323,7 @@ function tripal_seq_mail($key, &$message, $params) {
   $job_human_readable = tseq_get_program($job_information['sequence_query_type'],$job_information['database_search_type']);
   global $base_url;
   switch ($key) {
-          
+
     case 'job-started':
         $user = $params['user'];
         $message['subject'] = t("Your Sequence Similary Search Job has started");
@@ -334,9 +334,9 @@ function tripal_seq_mail($key, &$message, $params) {
         $message['body'][] = "Job ID: ".$job_id;
         $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
         //$message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
-        
+
         break;
-    
+
     case 'job-complete':
         $user = $params['user'];
         $message['subject'] = t("Your Sequence Similary Search Job has finished");
@@ -348,9 +348,9 @@ function tripal_seq_mail($key, &$message, $params) {
         $message['body'][] = "Submission date: ".format_date($job_information['submit_time'], 'short');
         $message['body'][] = "Number of sequences submitted: ".$job_results['sequence_count'];
         $message['body'][] = "Number of matches found: ".$job_results['matches'];
-        
+
         break;
-      
+
     case 'job-error':
       $message['subject'] = t("TSeq Job: Error");
       $message['body'][] = "There was an issue with the TSeq job";
@@ -382,14 +382,14 @@ function tripal_seq_trj_notify($tripal_job_id,$key)
 
 /**
  * @param int $job_id Tripal Job ID of the completed job
- * 
+ *
  * Publish the results to the database so they can be viewed on the results page and in email notifications immediately
  */
 function publish_results($job_id)
 {
     // Get the Job information to be used throughout this function
     $job_information = tseq_get_job_information($job_id);
-    
+
     $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
     // Do the results of this job exist in the database?
     $resultsFound = FALSE;
@@ -404,7 +404,7 @@ function publish_results($job_id)
          *  result_type         assume BLAST XML
          *  data                ...
          *  matches             ...
-         *  database_used       
+         *  database_used
          */
         $user_id = $job_information['user_id'];
         $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
@@ -416,10 +416,10 @@ function publish_results($job_id)
         {
             // Make some spaghetti getting this information because the sequence database name isn't stored in the tseq db
             $tseq_db_id = tseq_get_db_id_by_location($job_information['database_file']);
-            $db_info = tseq_get_db_info($tseq_db_id);        
+            $db_info = tseq_get_db_info($tseq_db_id);
             //drupal_set_message("Database used: ".$db_info['name'].", version ".$db_info['version']." (".$db_info['category'].")");
             $database_used = $db_info['name'].", version ".$db_info['version']." (".$db_info['type']." - ".$db_info['category'].")";
-            
+
         }
         else
         {
@@ -436,7 +436,7 @@ function publish_results($job_id)
         {
             $sequence_count = -1;
         }
-        
+
         // Look in the results files to see what has been returned.
         $blastXML_filename = '/results_blastxml.txt';
         $pairwise_filename = '/results_pairwise.txt';
@@ -463,7 +463,7 @@ function publish_results($job_id)
                 // Gather other details
                 //Matches found
                 $matches_found = tseq_get_matches_count($outputPath.$job_id.$blastXML_filename);
-                
+
             }
             else if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
             {
@@ -498,10 +498,10 @@ function publish_results($job_id)
                 foreach ($pairwise_results as $pairwise_result)
             }
         }*/
-                
-        
+
+
         // and finally, insert (if there is anything to insert
-        
+
         // Results details (always insert these)
         $newDB = array(
             'tripal_job_id' => $job_id,
