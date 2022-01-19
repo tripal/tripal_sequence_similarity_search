@@ -552,22 +552,18 @@ function tseq_database_import_form($form, &$form_state)
       ),
     );
     $form['userValidate'] = array(
-        '#type'         => 'checkbox',
-        '#title'        => 'This looks OK',
-        '#description'  => 'Make sure your data is being loaded correctly.',
-        '#disabled'     => FALSE,
-        '#states' => array(
-            'visible' => array(
-                ':input[name="dda"]' => array('d' => 'd'),
-            ),
-        ),
-        '#weight'       => '2',
+      '#type' => 'checkbox',
+      '#title' => 'This looks OK',
+      '#description' => 'Make sure your data is being loaded correctly.',
+      '#weight' => '2',
     );
-
     $form['submit_button'] = array(
         '#type'     => 'submit',
         '#value'    => t('Import'),
         '#weight'   => '3',
+    );
+    $form['#attached']['js'] = array(
+      drupal_get_path('module', 'tripal_seq') . '/js/custom.js',
     );
 
     return $form;
@@ -581,8 +577,7 @@ function tseq_database_import_form($form, &$form_state)
  * @todo Detect improperly formatted csv (bad # columns, no columns
  * @todo Perhaps detect if csv is actually tab-delimited
  */
-function tseq_database_import_form_validate($form, &$form_state)
-{
+function tseq_database_import_form_validate($form, &$form_state){
     $imported_file = file_load($form_state['values']['FileSelect']);
     $imported_file_URI = drupal_realpath($imported_file->uri);
 
