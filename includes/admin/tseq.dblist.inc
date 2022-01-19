@@ -14,15 +14,15 @@ function tseq_config_dblist_page_build()
     $breadcrumb[] = l('Tripal','admin/tripal');
     $breadcrumb[] = l('Extensions', 'admin/tripal/extension');
     $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
-    $breadcrumb[] = l('Available Databases','admin/tripal/extension/tseq/config/dblist');    
+    $breadcrumb[] = l('Available Databases','admin/tripal/extension/tseq/config/dblist');
     drupal_set_breadcrumb($breadcrumb);
-    
+
     // Generate link to add another database
-    $contents['addLink'] = array(
-        '#markup'   => l('Add an existing database','./admin/tripal/extension/tseq/add_db'),
-        '#weight'   => '1',
-    );
-    
+   // $contents['addLink'] = array(
+   //     '#markup'   => l('Add an existing database','./admin/tripal/extension/tseq/add_db'),
+   //     '#weight'   => '1',
+   // );
+
     // Build the table variables
     $database_header = array(
         array('data' => 'Name',     'field' => 'name',        'sort' => 'asc'),
@@ -32,14 +32,14 @@ function tseq_config_dblist_page_build()
         array('data' => 'Location (Remote)',    'field' => 'location'),
         array('data' => 'Count',          'field' => 'count'),
         array('data' => 'Web?',     'field' => 'web_location'),
-        array('data' => 'Actions'),            
+        array('data' => 'Actions'),
     );
-    
+
     // Generate the database query (with sorting and pagination)
     $select = db_select('tseq_db_existing_locations','db')
             ->extend('PagerDefault')
             ->extend('TableSort');
-    
+
     $select->fields('db',array('db_id','name','version','type','category','location','count','web_location'))
             ->limit(15)
             ->orderByHeader($database_header);
@@ -90,16 +90,16 @@ function tseq_config_dblist_page_build()
             $edit.' | '.$delete,
         );
     }
-    
+
     $output = theme('table', array('header' => $database_header, 'rows' => $database_list));
-    
+
     $output .= theme('pager');
-    
+
     $contents['database_list'] = array(
         '#markup'   => $output,
         '#weight'   => '4',
     );
-    
+
     return $contents;
 }
 
@@ -117,29 +117,29 @@ function tseq_database_add_form($form, &$form_state)
     $breadcrumb[] = l('Tripal','admin/tripal');
     $breadcrumb[] = l('Extensions', 'admin/tripal/extension');
     $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
-    $breadcrumb[] = l('Add Target Database','admin/tripal/extension/tseq/config/add_db');    
+    $breadcrumb[] = l('Add Target Database','admin/tripal/extension/tseq/config/add_db');
     drupal_set_breadcrumb($breadcrumb);
-    
+
     /*
      * Getting categories from the database
      */
     $query = 'select * from tseq_categories';
     $results = db_query($query);
-    
+
     $categories = array();
-        
-    //Iterate through the returned database 
+
+    //Iterate through the returned database
     for($i = 0; $i< $results->rowCount();$i++)
     {
       $categories[$i] = $results->fetchAssoc();
     }
-    
+
     //Generate options for select form element
     foreach($categories as $category)
     {
         $categoriesToShow[$category['category_title']] = $category['category_title'];
     }
-    
+
     $form['Name'] = array(
         '#type'         => 'textfield',
         '#title'        => 'Name',
@@ -147,7 +147,7 @@ function tseq_database_add_form($form, &$form_state)
         '#description'  => 'The name of the target database',
         '#required'     => true,
     );
-    
+
     $form['Type'] = array(
         '#type'         => 'select',
         '#title'        => 'Type',
@@ -159,15 +159,15 @@ function tseq_database_add_form($form, &$form_state)
         ),
         '#required'     => true,
     );
-    
+
     $form['Category'] = array(
         '#type'         => 'select',
-        '#title'        => 'Category', 
+        '#title'        => 'Category',
         '#options'      => $categoriesToShow,
         '#description'  => 'The category of the database',
         '#required'     => true,
     );
-    
+
     $form['Version'] = array(
         '#type'         => 'textfield',
         '#title'        => 'Version',
@@ -175,7 +175,7 @@ function tseq_database_add_form($form, &$form_state)
         '#description'  => 'The version of the added database',
         '#required'     => true,
     );
-    
+
     $form['Location'] = array(
         '#type'         => 'textfield',
         '#title'        => 'File location',
@@ -184,7 +184,7 @@ function tseq_database_add_form($form, &$form_state)
         '#suffix'       => '',
         '#required'     => true,
     );
-    
+
     $form['WebLocation'] = array(
         '#type'         => 'textfield',
         '#title'        => 'Web Location (Optional)',
@@ -192,19 +192,19 @@ function tseq_database_add_form($form, &$form_state)
         '#description'  => 'If the original sequence (non-indexed) is publicly available for download, set the URL here (FTP, HTTP)',
         '#required'     => false,
     );
-    
+
     $form['Count'] = array(
         '#type'         => 'textfield',
         '#title'        => 'Genes, Proteins, or Scaffolds (Optional)',
         '#size'         => '10',
         '#description'  => 'How many genes, proteins, or scaffolds the sequence contains'
     );
-    
+
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Add'),
     );
-    
+
     return $form;
 }
 
@@ -219,23 +219,23 @@ function tseq_database_add_form_validate($form, &$form_state)
     {
         form_set_error('Type',t("Please enter the name of the Target database."));
     }
-    
+
     //
     if (empty($form_state['values']['Version']))
     {
         form_set_error('Version',t("Please enter an appropriate version for the Target database"));
     }
-    
+
     if (empty($form_state['values']['Location']))
     {
         form_set_error('Location',t("Please enter the path of the Target database on the filesystem"));
     }
-    
+
 }
 
 /**
  * Implements hook_form_submit()
- *   Submits the form, adds the new database to the list 
+ *   Submits the form, adds the new database to the list
  *   (table tseq_db_existing_locations).
  * @todo Move this function (and others like it) to tseq_databases.inc
  */
@@ -244,7 +244,7 @@ function tseq_database_add_form_submit($form, &$form_state)
     /*
      * Add the new database to the database
      */
-    
+
     $newDB = array(
         'name'          => $form_state['values']['Name'],
         'type'          => $form_state['values']['Type'],
@@ -254,12 +254,12 @@ function tseq_database_add_form_submit($form, &$form_state)
         'web_location'  => $form_state['values']['WebLocation'],
         'count'         => $form_state['values']['Count'],
     );
-    
+
     drupal_write_record('tseq_db_existing_locations', $newDB);
     /* Congratulate the user and let them return to the configuration screen
      * Defaults to staying at current location in case user wants to add
      * another
-     */ 
+     */
     drupal_set_message("This database was successfully added");
     drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
@@ -280,16 +280,16 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
     $breadcrumb[] = l('Available Databases','admin/tripal/extension/tseq/config/db_list');
     $breadcrumb[] = l('Database ID '.$db_id, 'admin/tripal/extension/tseq/edit_db/'.$db_id);
     drupal_set_breadcrumb($breadcrumb);
-    
+
     $query = "SELECT * FROM tseq_db_existing_locations WHERE db_id='$db_id'";
     $results = db_query($query);
-    
+
     $rowToUpdate = $results->fetchAssoc();
-    
+
     //Make the $db_id variable available to validate() and submit()
     //$db_id_s = &drupal_static(__FUNCTION__);
     //$db_id_s = $db_id;
-     
+
    $form['Name'] = array(
         '#type'         =>  'textfield',
         '#title'        =>  'Name',
@@ -299,7 +299,7 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
         '#default_value'      =>  t($rowToUpdate['name']),
         '#prefix'       => '<h2>Current values</h2>'
     );
-    
+
     $form['Type'] = array(
         '#type'         => 'select',
         '#title'        => 'Type',
@@ -311,7 +311,7 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
         ),
         '#default_value'      =>  t($rowToUpdate['type']),
     );
-    
+
     $form['Version'] = array(
         '#type'         =>  'textfield',
         '#title'        =>  'Version',
@@ -320,7 +320,7 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
         '#required'     =>  true,
         '#default_value'      =>  t($rowToUpdate['version']),
     );
-    
+
     $form['Location'] = array(
         '#type'         =>  'textfield',
         '#title'        =>  'Location',
@@ -329,7 +329,7 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
         '#required'     =>  true,
         '#default_value'      =>  t($rowToUpdate['location']),
     );
-    
+
     $form['WebLocation'] = array(
         '#type'         =>  'textfield',
         '#title'        =>  'Web Location (Optional)',
@@ -338,7 +338,7 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
         '#required'     =>  false,
         '#default_value'      =>  t($rowToUpdate['web_location']),
     );
-    
+
     $form['Count'] = array(
         '#type'         => 'textfield',
         '#title'        => 'Sequence Count (Optional)',
@@ -346,17 +346,17 @@ function tseq_database_edit_form($form, &$form_state,$db_id)
         '#description'  => 'How many genes, proteins, or scaffolds the sequence contains',
         '#default_value'    => t($rowToUpdate['count']),
     );
-    
+
     $form['db_id'] = array(
         '#type'         =>  'value',
         '#value'        =>  $db_id,
     );
-    
+
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Update values'),
     );
- 
+
     return $form;//$rowToUpdate['db_id'].': '.$rowToUpdate['name'].': '.$rowToUpdate['version'];;
 }
 
@@ -368,31 +368,31 @@ function tseq_database_edit_form_validate($form, &$form_state)
    /*
     * Basic validation (form empty?)
     * Todo: Check whether the entry already exists (key: name, version)
-    * 
+    *
     */
-    
-    
+
+
    if (empty($form_state['values']['Type']))
     {
         form_set_error('Type',t("Please enter the name of the Target database."));
     }
-    
+
     if (empty($form_state['values']['Version']))
     {
         form_set_error('Version',t("Please enter an appropriate version for the Target database"));
     }
-    
+
     if (empty($form_state['values']['Location']))
     {
         form_set_error('Location',t("Please enter the path of the Target database on the filesystem"));
-    } 
+    }
 }
 
 /**
  * Implements hook_form_submit()
  */
 function tseq_database_edit_form_submit($form, &$form_state)
-{    
+{
     $updatedFields = array(
         'db_id'         => $form_state['values']['db_id'],
         'name'          => $form_state['values']['Name'],
@@ -402,11 +402,11 @@ function tseq_database_edit_form_submit($form, &$form_state)
         'web_location'  => $form_state['values']['WebLocation'],
         'count'         => $form_state['values']['Count'],
     );
-    
+
     drupal_write_record('tseq_db_existing_locations', $updatedFields, 'db_id');
-    
-    
-    
+
+
+
     //Remove the $db_id variable from &drupal_static
     //drupal_static_reset();
     drupal_set_message("This database was successfully updated");
@@ -425,17 +425,17 @@ function tseq_database_delete_form($form, &$form_state,$db_id)
         '#collapsible'  => FALSE,
         '#description'  => t('This will only delete the entry, it will not delete the file from the server'),
     );
-    
+
     $form['db_id'] = array(
         '#type'         => 'value',
         '#value'        => $db_id
     );
-    
+
     $form['submit_button'] = array(
         '#type' => 'submit',
         '#value' => t('Delete'),
     );
-    
+
     return $form;
 }
 
@@ -445,7 +445,7 @@ function tseq_database_delete_form($form, &$form_state,$db_id)
  */
 function tseq_database_delete_form_validate($form, &$form_state)
 {
-    
+
 }
 
 /**
@@ -476,12 +476,12 @@ function tseq_database_export_form($form, &$form_state)
             'xlsx'      => t('Excel XLSX (2007-Current)'),
         ),
     );
-    
+
     $form['submit_button'] = array(
         '#type'     => 'submit',
         '#value'    => t('Export'),
     );
-    
+
     return $form;
 }
 
@@ -491,26 +491,26 @@ function tseq_database_export_form($form, &$form_state)
  */
 function tseq_database_export_form_validate($form, &$form_state)
 {
-    
+
 }
 
-/** 
+/**
  * Implements hook_form_submit()
  *   Initiates the export of the database list.
  */
 function tseq_database_export_form_submit($form, &$form_state)
 {
     $db = TSeqDatabases::getDatabases('%');
-    
+
     if (tseq_db_export($db, $form_state['values']['Type']))
     {
-       drupal_set_message("Databases successfully exported"); 
+       drupal_set_message("Databases successfully exported");
     }
     else
     {
         drupal_set_message("Database list failed to export.", 'error');
     }
-    
+
     //$form_state['redirect'] = 'admin/tripal/extension/tseq';
 }
 
@@ -530,7 +530,7 @@ function tseq_database_import_form($form, &$form_state)
             'file_validate_extensions' => array('csv xls xlsx'),
         ),
     );
-    
+
     $form['fileHasHeaders'] = array(
         '#type'         => 'checkbox',
         '#title'        => 'This data has headers',
@@ -540,43 +540,47 @@ function tseq_database_import_form($form, &$form_state)
                 ':input[name="FileSelect"]' => array('value' => 'upload'),
             ),
         ),
-    ); 
-    
-    $form['userValidate'] = array(
-        '#type'         => 'checkbox',
-        '#title'        => 'This looks OK',
-        '#description'  => 'Make sure your data is being loaded correctly.',
-        '#disabled'     => FALSE,
-        '#states' => array(
-            'visible' => array(
-                ':input[name="dda"]' => array('d' => 'd'),
-            ),
-        ),
-        '#weight'       => '2',
     );
-    
+    $form['truncate_table'] = array(
+      '#type'         => 'checkbox',
+      '#title'        => t('Truncate Table & Import as new data.'),
+      '#description' => t('Click this to truncate table and import it as new data.'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="FileSelect"]' => array('value' => 'upload'),
+        ),
+      ),
+    );
+    $form['userValidate'] = array(
+      '#type' => 'checkbox',
+      '#title' => 'This looks OK',
+      '#description' => 'Make sure your data is being loaded correctly.',
+      '#weight' => '2',
+    );
     $form['submit_button'] = array(
         '#type'     => 'submit',
         '#value'    => t('Import'),
         '#weight'   => '3',
-    );    
-    
+    );
+    $form['#attached']['js'] = array(
+      drupal_get_path('module', 'tripal_seq') . '/js/custom.js',
+    );
+
     return $form;
 }
 /**
  * Implements hook_form_validate()
- *   Ensures that the user uploaded a correct file (CSV format, required 
+ *   Ensures that the user uploaded a correct file (CSV format, required
  *   headers)
- * 
+ *
  * @todo Notify user of improperly formatted csv
  * @todo Detect improperly formatted csv (bad # columns, no columns
  * @todo Perhaps detect if csv is actually tab-delimited
  */
-function tseq_database_import_form_validate($form, &$form_state)
-{    
+function tseq_database_import_form_validate($form, &$form_state){
     $imported_file = file_load($form_state['values']['FileSelect']);
     $imported_file_URI = drupal_realpath($imported_file->uri);
-    
+
     if ($imported_file_handle = fopen($imported_file_URI, 'r'))
     {
         $k = 0;
@@ -585,9 +589,9 @@ function tseq_database_import_form_validate($form, &$form_state)
             $file_lines[$k] = fgetcsv($imported_file_handle);
             $k++;
         }
-        // Close the file 
+        // Close the file
         fclose($imported_file_handle);
-        
+
         // Save values to form
         $form_state['values']['file_lines'] = $file_lines;
 
@@ -603,32 +607,20 @@ function tseq_database_import_form_validate($form, &$form_state)
         $table .= "<tr>";
         // generate table from ingested thingy
         // Check if the user specified that there are headers
-        if ($form_state['values']['fileHasHeaders'])
-        {
-            $i = 1;
-        }
-        else
-        {
-            $i = 0;
-        }
-        for ($i; $i < count($file_lines);$i++)
-        {
-            $table .="<tr>";
-            for ($j = 0; $j < count($file_lines[$i]);$j++)
-            {
-                $table .="<td>".trim($file_lines[$i][$j])."</td>";
+        $i = ($form_state['values']['fileHasHeaders']) ? 1 : 0;
+        for ($i; $i < count($file_lines);$i++) {
+          $table .="<tr>";
+          if (is_array($file_lines[$i]) && !empty($file_lines[$i])) {
+            for ($j =  0; $j < count($file_lines[$i]); $j++) {
+              $table .= "<td>" . trim($file_lines[$i][$j]) . "</td>";
             }
-            $table .="</tr>";
-            //}
-            /*else
-            {
-            $table .= "<td>".$fileLines[$i]."</td>";
-            }*/
+          }
+          $table .="</tr>";
         }
         $table .= "</table>";
         drupal_set_message($table);
     }
-    
+
     if (empty($form_state['values']['userValidate']))
     {
         form_set_error('userValidate',t("Make sure the data above is correct, then click Import"));
@@ -636,37 +628,51 @@ function tseq_database_import_form_validate($form, &$form_state)
 }
 
 /**
- * 
+ *
  * Implements hook_form_submit()
  *  This submit function adds any new databases from the imported file.
  *  New databases are added in proper form to the tseq_db_existing_locations
  *  table.
  */
-function tseq_database_import_form_submit($form, &$form_state)
-{
-    $file_lines = $form_state['values']['file_lines'];
-    if ($form_state['values']['fileHasHeaders'])
-    {
-        $i = 1;
-    }
-    else
-    {
-        $i = 0;
-    }
-    for ($i; $i < count($file_lines);$i++)
-    {
-        $new_db = array(
-            'name'          => $file_lines[$i][1],
-            'type'          => $file_lines[$i][0],
-            'version'       => $file_lines[$i][2],
-            'location'      => $file_lines[$i][3],
-            'category'      => $file_lines[$i][4],
-            'web_location'  => $file_lines[$i][5],
-            'count'         => $file_lines[$i][6]
-        );
+function tseq_database_import_form_submit($form, &$form_state) {
+  $file_lines = $form_state['values']['file_lines'];
+  $i = ($form_state['values']['fileHasHeaders']) ? 1 : 0;
+  // Truncate table if checkbox if checked.
+  if ($form_state['values']['truncate_table']) {
+    db_truncate('tseq_db_existing_locations')->execute();
+  }
+  for ($i; $i < count($file_lines);$i++) {
+    // Make sure database name is not empty.
+    if ($file_lines[$i][1] != '') {
+      $new_db = array(
+        'name' => $file_lines[$i][1],
+        'type' => $file_lines[$i][0],
+        'version' => $file_lines[$i][2],
+        'location' => $file_lines[$i][3],
+        'category' => $file_lines[$i][4],
+        'web_location' => $file_lines[$i][5],
+        'count' => $file_lines[$i][6]
+      );
+      // Check if we need to update a record or create a new record.
+      $query = db_select('tseq_db_existing_locations', 'tdl')
+        ->fields('tdl', array('db_id'))
+        ->condition('tdl.name', $new_db['name'])
+        ->condition('tdl.location', $new_db['location'])
+        ->condition('tdl.version', $new_db['version']);
+      $result = $query->execute()->fetchCol();
+      if (!empty($result)) {
+        foreach ($result as $db_id) {
+          db_update('tseq_db_existing_locations')
+            ->fields($new_db)
+            ->condition('db_id', $db_id)
+            ->execute();
+        }
+      } else {
         drupal_write_record('tseq_db_existing_locations', $new_db);
+      }
     }
-    drupal_set_message("List of databases has been successfully imported.");
+  }
+  drupal_set_message("List of databases has been successfully imported.");
 }
 
 
