@@ -11,7 +11,7 @@ Extended documentation for this module lives here on [Read The Docs](https://tri
 
 
 ## Requirements
-- [Tripal Remote Job](https://gitlab.com/TreeGenes/tripal-remote-job) 
+- [Tripal Remote Job](https://github.com/tripal/tripal_remote_job) 
 - [Tripal 3](http://tripal.info/)
 - diamond version 0.9.24 (https://github.com/bbuchfink/diamond)
 - NCBI Blast version 2.7.1+ (ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/)
