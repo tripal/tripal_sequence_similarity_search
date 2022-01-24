@@ -95,7 +95,13 @@ function tseq_config_dblist_page_build()
 
     $output .= theme('pager');
 
-    $output .= "<p>Key: <span class=\"db_unreadable\">Unreadable (Check permissions)</span>, <span class=\"db_missing\">Database file missing</span>";
+    $output .= "<p>
+                Key:
+                    <ul>
+                        <li><span class=\"db_unreadable\">Unreadable (Check permissions)</span></li>
+                        <li><span class=\"db_missing\">Database file missing</span></li>
+                    </ul>
+                </p>";
 
     $contents['database_list'] = array(
         '#markup'   => $output,
