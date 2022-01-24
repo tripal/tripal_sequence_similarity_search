@@ -174,7 +174,7 @@ class TSeqDatabases
             $file_name = $file_name_array[count($file_name_array) - 1];
             if (is_dir($parent_path))
             {
-                // Test if the directory is even readable by the 
+                // Test if the directory is even readable by the webserver
                 if (!is_readable($parent_path))
                 {
                     return 1;
