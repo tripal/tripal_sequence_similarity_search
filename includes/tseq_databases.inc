@@ -151,7 +151,8 @@ class TSeqDatabases
                 return 1;
             }
         }
-        // Indicated file may not exist verbatim, lets fuzzy search
+        // Indicated file may not exist verbatim, lets fuzzy search. It could also
+        // not be readable by the webserver.
         else
         {
             // Specific File might not exist, but we can try a fuzzy search
@@ -173,6 +174,11 @@ class TSeqDatabases
             $file_name = $file_name_array[count($file_name_array) - 1];
             if (is_dir($parent_path))
             {
+                // Test if the directory is even readable by the 
+                if (!is_readable($parent_path))
+                {
+                    return 1;
+                }
                 $dir_contents = scandir($parent_path);
                 $matches = 0;
                 foreach($dir_contents as $dir_file)
