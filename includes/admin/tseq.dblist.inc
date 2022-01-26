@@ -40,11 +40,20 @@ function tseq_config_dblist_page_build()
             ->extend('PagerDefault')
             ->extend('TableSort');
 
-    $select->fields('db',array('db_id','name','version','type','category','location','count','web_location'))
+    $select->fields('db',array('db_id','name','version','type','category','location','count','web_location','status'))
             ->limit(15)
             ->orderByHeader($database_header);
     $databases = $select->execute();
     $database_list = array();
+
+    // Create an array to keep a count of the number of each database status 'errors'
+    $error = array(
+        'no_issues'     => 0,
+        'db_unreadable' => 0,
+        'db_missing'    => 0,
+        'db_status_unknown' => 0,
+    );
+
     foreach($databases as $key => $database)
     {
         $edit = l('Edit','admin/tripal/extension/tseq/edit_db/'.$database->db_id);
@@ -58,17 +67,24 @@ function tseq_config_dblist_page_build()
             $web_available = "<abbr title=\"Add one by clicking 'Edit' to the right\">No</abbr>";
         }
 
-        $db_check = TSeqDatabases::db_check($database->db_id);
-        switch ($db_check)
+        //$db_check = TSeqDatabases::db_check($database->db_id);
+        switch ($database->status)
         {
             case 0:
                 $db_error = '';
+                $error['no_issues'] += 1;
                 break;
             case 1:
                 $db_error = 'db_unreadable';
+                $error['db_unreadable'] += 1;
                 break;
             case 2:
                 $db_error = 'db_missing';
+                $error['db_missing'] += 1;
+                break;
+            case -1:
+                $db_error = 'db_status_unknown';
+                $error['db_status_unknown'] += 1;
                 break;
             default:
                 $db_error = '';
@@ -98,8 +114,10 @@ function tseq_config_dblist_page_build()
     $output .= "<p>
                 Key:
                     <ul>
-                        <li><span class=\"db_unreadable\">Unreadable (Check permissions)</span></li>
-                        <li><span class=\"db_missing\">Database file missing</span></li>
+                        <li><span class=\"\">(" . $error['no_issues'] . ") No issues</span></li>
+                        <li><span class=\"db_unreadable\">(" . $error['db_unreadable'] . ") Unreadable (Check permissions)</span></li>
+                        <li><span class=\"db_missing\">(" . $error['db_missing'] . ") Database file missing</span></li>
+                        <li><span class=\"db_status_unknown\">(" . $error['db_status_unknown'] . ") Database status unknown</span></li>
                     </ul>
                 </p>";
 
