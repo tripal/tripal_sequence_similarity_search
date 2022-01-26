@@ -541,5 +541,25 @@ function publish_results($job_id)
                 drupal_write_record('tseq_results_data',$job_results_data[$key]);
             }
         }
-    }}
+    }
+}
 
+/**
+ * Update existing db location status
+ */
+function tripal_seq_update_db_status() {
+    // Get the list of databases stored in the database
+    $databases = tseq_get_all_dbs();
+    $status = array();
+    foreach($databases as $database) {
+        $status[$database->db_id] = [$database->db_id, TSeqDatabases::db_check($database->db_id, $database->location)];
+    }
+    foreach($status as $update) {
+        db_update('tseq_db_existing_locations')
+            ->fields(array(
+                'status' => $update[1],
+            ))
+            ->condition('db_id', $update[0], '=')
+            ->execute();
+        }
+    }
