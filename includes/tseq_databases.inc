@@ -129,9 +129,11 @@ class TSeqDatabases
      *  2 - doesn't exist
      *  3 - unknown database ID
      */
-    public static function db_check($db_id)
+    public static function db_check($db_id, $location="")
     {
-        $location = TSeqDatabases::getDBInfo($db_id,'location');
+        if($location == ""){
+            $location = TSeqDatabases::getDBInfo($db_id,'location');
+        }
         if (!$location)
         {
             return 3;
