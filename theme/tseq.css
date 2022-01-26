@@ -78,3 +78,9 @@
     color:red;
     font-weight:bold;
 }
+
+.db_status_unknown
+{
+    color:#999999;
+    font-style:italic;
+}
