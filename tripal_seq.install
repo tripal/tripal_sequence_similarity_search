@@ -196,6 +196,12 @@ function tripal_seq_schema()
                 'length'        => 15,
                 'not null'      => FALSE,
             ),
+            'status' => array(
+                'description'   => 'Status of the readability of the file on disk',
+                'type'          => 'int',
+                'length'        => 7,
+                'not null'      => FALSE
+            ),
         ),
     );
     
@@ -847,4 +853,22 @@ function tripal_seq_update_7011()
         }
 
     }
+}
+
+/**
+ * Add status field to tseq_db_existing_locations table
+ */
+function tripal_seq_update_7012()
+{
+    db_add_field(
+        'tseq_db_existing_locations',
+        'status',
+        array(
+            'description'   => t('Status of the readability of the file on disk'),
+            'type'          => 'int',
+            'size'          => 'tiny',
+            'default'       => 0,
+            'not null'      => FALSE,
+        )
+    );
 }
