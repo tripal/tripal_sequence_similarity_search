@@ -4,8 +4,11 @@
  * Implements hook_page_build()
  *   Builds a page for admin to view and interact with the database list.
  *   This is the main page that gets shown in the Admin/Config menu.
+ * 
+ * @param $filter string human readable representation of the status by which
+ * to filter results 
  */
-function tseq_config_dblist_page_build()
+function tseq_config_dblist_page_build($filter)
 {
     // Build the breadcrumb
     $breadcrumb = array();
@@ -35,6 +38,27 @@ function tseq_config_dblist_page_build()
         array('data' => 'Actions'),
     );
 
+    if ($filter) {
+        switch($filter) {
+            // No issues (0)
+            case 'no_issues':
+                $filter_code = 0;
+            // db_unreadable (1)
+            case 'db_unreadable':
+                $filter_code = 1;
+                break;
+            // db_missing (2)
+            case 'db_missing':
+                $filter_code = 2;
+                break;
+            case 'db_status_unknown':
+                $filter_code = -1;
+                break;
+            default:
+                break;
+        }
+    }
+
     // Generate the database query (with sorting and pagination)
     $select = db_select('tseq_db_existing_locations','db')
             ->extend('PagerDefault')
@@ -43,6 +67,10 @@ function tseq_config_dblist_page_build()
     $select->fields('db',array('db_id','name','version','type','category','location','count','web_location','status'))
             ->limit(15)
             ->orderByHeader($database_header);
+    // Filter by status, if applicable
+    if (isset($filter_code)) {
+        $select->condition('status', $filter_code, '=');
+    }
     $databases = $select->execute();
     $database_list = array();
 
@@ -112,12 +140,12 @@ function tseq_config_dblist_page_build()
     $output .= theme('pager');
 
     $output .= "<p>
-                Key:
+                Key: (click any of these to filter the results above)
                     <ul>
                         <li><span class=\"\">(" . $error['no_issues'] . ") No issues</span></li>
-                        <li><span class=\"db_unreadable\">(" . $error['db_unreadable'] . ") Unreadable (Check permissions)</span></li>
-                        <li><span class=\"db_missing\">(" . $error['db_missing'] . ") Database file missing</span></li>
-                        <li><span class=\"db_status_unknown\">(" . $error['db_status_unknown'] . ") Database status unknown</span></li>
+                        <li><span class=\"db_unreadable\">(" . $error['db_unreadable'] . ") Unreadable, possible permissions issue (" . l('Click to filter', 'admin/tripal/extension/tseq/config/dblist/filter/db_unreadable') . ")</span></li>
+                        <li><span class=\"db_missing\">(" . $error['db_missing'] . ") Database file missing (" . l('Click to filter', 'admin/tripal/extension/tseq/config/dblist/filter/db_missing') . ")</span></li>
+                        <li><span class=\"db_status_unknown\">(" . $error['db_status_unknown'] . ") Database status unknown (" . l('Click to filter', 'admin/tripal/extension/tseq/config/dblist/filter/db_status_unknown') . ")</span></li>
                     </ul>
                 </p>";
 
