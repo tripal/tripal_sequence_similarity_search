@@ -70,13 +70,11 @@
 .db_unreadable
 {
     color:orange;
-    font-weight:bold;
 }
 
 .db_missing
 {
     color:red;
-    font-weight:bold;
 }
 
 .db_status_unknown
