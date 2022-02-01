@@ -262,7 +262,8 @@ function tripal_seq_menu()
         'page arguments' => array('tseq_database_export_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_LOCAL_ACTION
+        'type' => MENU_LOCAL_ACTION,
+        'weight' => 1,
         );
 
     //Admin: Import a saved database list
@@ -273,7 +274,20 @@ function tripal_seq_menu()
         'page arguments' => array('tseq_database_import_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_LOCAL_ACTION
+        'type' => MENU_LOCAL_ACTION,
+        'weight' => 2,
+        );
+
+    //Admin: Refresh the database list
+    $items['admin/tripal/extension/tseq/config/refresh'] = array(
+        'title' => 'Refresh this list',
+        'description' => 'Check every database file to update the status.',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tseq_database_list_refresh_form'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_LOCAL_ACTION,
+        'weight' => 3,
         );
 
     // Analysis page

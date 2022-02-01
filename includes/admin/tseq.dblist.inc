@@ -126,7 +126,7 @@ function tseq_config_dblist_page_build()
     $output .= theme('pager');
 
     if ($error['db_status_unknown'] > 0) {
-        $output .= 'Databases with unknown status detected. Click here to refresh immediately';
+        $output .= 'Databases with unknown status detected. Use the button above to refresh';
     }
 
     $contents['database_list'] = array(
@@ -707,6 +707,47 @@ function tseq_database_import_form_submit($form, &$form_state) {
     }
   }
   drupal_set_message("List of databases has been successfully imported.");
+}
+
+/**
+ * Implements hok_form()
+ * Builds a very simple form to make sure the admin wants to refresh
+ * the database list (because it may take a while).
+ */
+function tseq_database_list_refresh_form($form, &$form_state)
+{
+    $form['Instructions'] = array(
+        '#type'         => 'fieldset',
+        '#title'        => 'Are you sure?',
+        '#collapsible'  => FALSE,
+        '#description'  => t('This will refresh the database list. It may take a while.'),
+    );
+    
+    $form['submit_button'] = array(
+        '#type'     => 'submit',
+        '#value'    => t('Refresh list'),
+    );
+
+    return $form;
+}
+
+/**
+ * Implements hook_form_validate()
+ */
+function tseq_database_list_refresh_form_validate($form, &$form_state)
+{
+    // Nothing to validate.
+}
+
+/**
+ * Implements hook_form_submit()
+ * Simply calls the refresh function.
+ */
+function tseq_database_list_refresh_form_submit($form, &$form_state) {
+    // Refresh the database list.
+    tripal_seq_update_db_status();
+    drupal_set_message("Database list has been successfully refreshed.");
+    drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
 
 
