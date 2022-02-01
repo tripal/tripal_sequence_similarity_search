@@ -8,7 +8,7 @@
  * @param $filter string human readable representation of the status by which
  * to filter results 
  */
-function tseq_config_dblist_page_build($filter)
+function tseq_config_dblist_page_build()
 {
     // Build the breadcrumb
     $breadcrumb = array();
@@ -33,31 +33,11 @@ function tseq_config_dblist_page_build($filter)
         array('data' => 'Type',     'field' => 'type'),
         array('data' => 'Category', 'field' => 'category'),
         array('data' => 'Location (Remote)',    'field' => 'location'),
+        array('data' => 'Status',   'field' => 'status'),
         array('data' => 'Count',          'field' => 'count'),
         array('data' => 'Web?',     'field' => 'web_location'),
         array('data' => 'Actions'),
     );
-
-    if ($filter) {
-        switch($filter) {
-            // No issues (0)
-            case 'no_issues':
-                $filter_code = 0;
-            // db_unreadable (1)
-            case 'db_unreadable':
-                $filter_code = 1;
-                break;
-            // db_missing (2)
-            case 'db_missing':
-                $filter_code = 2;
-                break;
-            case 'db_status_unknown':
-                $filter_code = -1;
-                break;
-            default:
-                break;
-        }
-    }
 
     // Generate the database query (with sorting and pagination)
     $select = db_select('tseq_db_existing_locations','db')
@@ -100,22 +80,27 @@ function tseq_config_dblist_page_build($filter)
         {
             case 0:
                 $db_error = '';
+                $db_error_human = 'OK';
                 $error['no_issues'] += 1;
                 break;
             case 1:
                 $db_error = 'db_unreadable';
+                $db_error_human = 'Unreadable';
                 $error['db_unreadable'] += 1;
                 break;
             case 2:
                 $db_error = 'db_missing';
+                $db_error_human = 'Missing';
                 $error['db_missing'] += 1;
                 break;
             case -1:
                 $db_error = 'db_status_unknown';
+                $db_error_human = 'Status unknown';
                 $error['db_status_unknown'] += 1;
                 break;
             default:
                 $db_error = '';
+                $db_error_human = '';
         }
 
         $database_list[] = array(
@@ -129,6 +114,7 @@ function tseq_config_dblist_page_build($filter)
                     $db_error
                 )
             ),
+            $db_error_human,
             $database->count,
             $web_available,
             $edit.' | '.$delete,
@@ -139,15 +125,9 @@ function tseq_config_dblist_page_build($filter)
 
     $output .= theme('pager');
 
-    $output .= "<p>
-                Key: (click any of these to filter the results above)
-                    <ul>
-                        <li><span class=\"\">(" . $error['no_issues'] . ") No issues</span></li>
-                        <li><span class=\"db_unreadable\">(" . $error['db_unreadable'] . ") Unreadable, possible permissions issue (" . l('Click to filter', 'admin/tripal/extension/tseq/config/dblist/filter/db_unreadable') . ")</span></li>
-                        <li><span class=\"db_missing\">(" . $error['db_missing'] . ") Database file missing (" . l('Click to filter', 'admin/tripal/extension/tseq/config/dblist/filter/db_missing') . ")</span></li>
-                        <li><span class=\"db_status_unknown\">(" . $error['db_status_unknown'] . ") Database status unknown (" . l('Click to filter', 'admin/tripal/extension/tseq/config/dblist/filter/db_status_unknown') . ")</span></li>
-                    </ul>
-                </p>";
+    if ($error['db_status_unknown'] > 0) {
+        $output .= 'Databases with unknown status detected. Click here to refresh immediately';
+    }
 
     $contents['database_list'] = array(
         '#markup'   => $output,

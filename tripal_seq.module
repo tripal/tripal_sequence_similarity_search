@@ -89,19 +89,6 @@ function tripal_seq_menu()
         'file path'     =>  drupal_get_path('module','tripal_seq'),
         'access arguments' => array('administer diamond'),
     );
-    
-    // Configuration: Database list, status filter
-    $items['admin/tripal/extension/tseq/config/dblist/filter/%'] = array(
-        'title' => 'Available Databases',
-        'description' => 'Tripal Sequence Similarity Search Admin Configuration Page',
-        'page callback' => 'tseq_config_dblist_page_build',
-        'page arguments' => array(7),
-        'access callback' => TRUE,
-        'access arguments' => array('administer diamond'),
-        'type' => MENU_LOCAL_TASK,
-        'file' => 'includes/admin/tseq.dblist.inc',
-        'file path' => drupal_get_path('module', 'tripal_seq'),
-    );
 
     // Configuration: Database list, first page
     $items['admin/tripal/extension/tseq/config/dblist'] = array(
