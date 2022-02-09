@@ -52,7 +52,15 @@ class TSeqDatabases
         return $databases;
     }
     
-    public static function getDatabasesSpecific($query)
+    /**
+     * getDatabasesSpecific
+     * A function to allow specifying any SQL statement. This 
+     * may be a security issue. Commenting for now, not used anywhere.
+     *
+     * @param string $query A full SQL statement to run. Pretty generic.
+     * @return associative array representation of resutls from the query
+     */
+    /*public static function getDatabasesSpecific($query)
     {
         $results = db_query($query);
         $databases = array();
@@ -64,8 +72,8 @@ class TSeqDatabases
         }
         
         return $databases;
-    }
-    
+    }*/
+
     public static function getDatabasesByTypeCategory($type, $category)
     {
         $query = "SELECT * FROM tseq_db_existing_locations WHERE type LIKE '$type' and category LIKE '$category' ORDER BY name ASC, version DESC";  
