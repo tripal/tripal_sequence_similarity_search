@@ -74,9 +74,30 @@ class TSeqDatabases
         return $databases;
     }*/
 
-    public static function getDatabasesByTypeCategory($type, $category)
+    /**
+     * getDatabasesByTypeCategory
+     * Allows the calling code to specify the type and category of the
+     * database(s) of interest.
+     * 
+     * By default, this function will only return databases that do
+     * not have any file accessibility issues. Call function with 
+     * $available = FALSE to include all databases that match the
+     * other criteria.
+     *
+     * @param string $type
+     * @param string $category
+     * @param bool $available
+     * @return array representation of databases that match the specified
+     * type and category. 
+     */
+    public static function getDatabasesByTypeCategory($type, $category, $available = TRUE)
     {
-        $query = "SELECT * FROM tseq_db_existing_locations WHERE type LIKE '$type' and category LIKE '$category' ORDER BY name ASC, version DESC";  
+        if ($available) {
+            $query = "SELECT * FROM tseq_db_existing_locations WHERE type LIKE '$type' and category LIKE '$category' AND status = '0' ORDER BY name ASC, version DESC";  
+        }
+        else {
+            $query = "SELECT * FROM tseq_db_existing_locations WHERE type LIKE '$type' and category LIKE '$category' ORDER BY name ASC, version DESC";  
+        }
 
         $results = db_query($query);
         $databases = array();
