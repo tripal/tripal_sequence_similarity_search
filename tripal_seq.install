@@ -290,6 +290,13 @@ function tripal_seq_schema()
                 'default'       => 0,
                 'not null'      => FALSE,
             ),
+            'db_last_refresh' => array(
+                'description'   => t('When the list of database files was last refreshed'),
+                'type'          => 'int',
+                'size'          => 'big',
+                'default'       => 0,
+                'not null'      => FALSE,
+            ),
         ),
     );
     
@@ -869,6 +876,25 @@ function tripal_seq_update_7012()
             'type'          => 'int',
             'size'          => 'tiny',
             'default'       => -1,
+            'not null'      => FALSE,
+        )
+    );
+}
+
+/**
+ * Continue to overload this silly table
+ */
+function tripal_seq_update_7013()
+{
+    # Add last_refreshed to settings table
+    db_add_field(
+        'tseq_settings',
+        'db_last_refresh',
+        array(
+            'description'   => t('When the list of database files was last refreshed'),
+            'type'          => 'int',
+            'size'          => 'big',
+            'default'       => 0,
             'not null'      => FALSE,
         )
     );
