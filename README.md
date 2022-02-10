@@ -19,11 +19,17 @@ Extended documentation for this module lives here on [Read The Docs](https://tri
 ## Installation / Useful Pages & Info
 1. Visit /admin/tripal/extension/tseq/config to set up databases and other options
 2. Permission role 'administer diamond' created for site admins
+3. It is **strongly** recommended to use the [Tripal Daemon](https://tripal.readthedocs.io/en/latest/user_guide/job_management.html) to automate the tasks within
+for this module. Using the daemon ensures that new jobs are launched in a timely and
+consistent manner. It is especially important that this system be used to reduce any
+problems that may arise from file permission issues.
 
-- TSeq                                  Main Page
-- TSeq/submit                           Main Submission Page
-- TSeq/results/#                        Job results page (# is the Tripal Job ID)
-- admin/tripal/extension/tseq/config    Tripal Seq Module Administration
+| Path                               | Description                               |
+|------------------------------------|-------------------------------------------|
+| TSeq                               | Main Page                                 |
+| TSeq/submit                        | Search submission page                    |
+| TSeq/results/#                     | Job results page (# is the Tripal Job ID) |
+| admin/tripal/extension/tseq/config | Module administration page                |
 
 ## Status
 - [x] Submit Form
