@@ -93,7 +93,7 @@ function tripal_seq_menu()
     // Configuration: Database list, first page
     $items['admin/tripal/extension/tseq/config/dblist'] = array(
         'title' => 'Available Databases',
-        'description' => 'Tripal Diamond Admin Configuration page',
+        'description' => 'Tripal Sequence Similarity Search Admin Configuration page',
         'page callback' => 'tseq_config_dblist_page_build',
         'page arguments' => array('tseq_config_dblist_page'),
         'access arguments' => array('administer diamond'),
@@ -101,6 +101,7 @@ function tripal_seq_menu()
         'file' => 'includes/admin/tseq.dblist.inc',
         'file path' => drupal_get_path ('module', 'tripal_seq')
         );
+
 
     // Configuration: Categories Tab
     $items['admin/tripal/extension/tseq/config/categories'] = array(
@@ -261,7 +262,8 @@ function tripal_seq_menu()
         'page arguments' => array('tseq_database_export_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_LOCAL_ACTION
+        'type' => MENU_LOCAL_ACTION,
+        'weight' => 1,
         );
 
     //Admin: Import a saved database list
@@ -272,7 +274,20 @@ function tripal_seq_menu()
         'page arguments' => array('tseq_database_import_form'),
         'access callback' => TRUE,
         'access arguments' => array('administer diamond'),
-        'type' => MENU_LOCAL_ACTION
+        'type' => MENU_LOCAL_ACTION,
+        'weight' => 2,
+        );
+
+    //Admin: Refresh the database list
+    $items['admin/tripal/extension/tseq/config/refresh'] = array(
+        'title' => 'Refresh this list',
+        'description' => 'Check every database file to update the status.',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('tseq_database_list_refresh_form'),
+        'access callback' => TRUE,
+        'access arguments' => array('administer diamond'),
+        'type' => MENU_LOCAL_ACTION,
+        'weight' => 3,
         );
 
     // Analysis page
@@ -541,5 +556,45 @@ function publish_results($job_id)
                 drupal_write_record('tseq_results_data',$job_results_data[$key]);
             }
         }
-    }}
+    }
+}
 
+/**
+ * Update existing db location status
+ */
+function tripal_seq_update_db_status() {
+// Get the list of databases stored in the database
+$databases = tseq_get_all_dbs();
+$status = array();
+foreach($databases as $database) {
+    $status[$database->db_id] = [$database->db_id, TSeqDatabases::db_check($database->db_id, $database->location)];
+}
+foreach($status as $update) {
+    db_update('tseq_db_existing_locations')
+        ->fields(array(
+            'status' => $update[1],
+        ))
+        ->condition('db_id', $update[0], '=')
+        ->execute();
+    }
+
+// Save the current time in the settings table (tseq_settings.db_last_refresh)
+$now = time();
+db_update('tseq_settings')
+    ->fields(array(
+        'db_last_refresh' => $now,
+    ))
+    ->condition('settings_id', 0, '=')
+    ->execute();
+}
+
+/**
+ * Implements hook_cron()
+ */
+function tripal_seq_cron() {
+    $args = [];
+    $includes = [];
+
+    tripal_add_job('Cron: Checking TSeq database file status',
+        'tripal_seq', 'tripal_seq_update_db_status', $args, 0, 1, $includes, TRUE);
+}

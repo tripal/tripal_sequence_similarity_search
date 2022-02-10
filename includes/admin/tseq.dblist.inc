@@ -4,6 +4,9 @@
  * Implements hook_page_build()
  *   Builds a page for admin to view and interact with the database list.
  *   This is the main page that gets shown in the Admin/Config menu.
+ * 
+ * @param $filter string human readable representation of the status by which
+ * to filter results 
  */
 function tseq_config_dblist_page_build()
 {
@@ -30,6 +33,7 @@ function tseq_config_dblist_page_build()
         array('data' => 'Type',     'field' => 'type'),
         array('data' => 'Category', 'field' => 'category'),
         array('data' => 'Location (Remote)',    'field' => 'location'),
+        array('data' => 'Status',   'field' => 'status'),
         array('data' => 'Count',          'field' => 'count'),
         array('data' => 'Web?',     'field' => 'web_location'),
         array('data' => 'Actions'),
@@ -40,11 +44,24 @@ function tseq_config_dblist_page_build()
             ->extend('PagerDefault')
             ->extend('TableSort');
 
-    $select->fields('db',array('db_id','name','version','type','category','location','count','web_location'))
+    $select->fields('db',array('db_id','name','version','type','category','location','count','web_location','status'))
             ->limit(15)
             ->orderByHeader($database_header);
+    // Filter by status, if applicable
+    if (isset($filter_code)) {
+        $select->condition('status', $filter_code, '=');
+    }
     $databases = $select->execute();
     $database_list = array();
+
+    // Create an array to keep a count of the number of each database status 'errors'
+    $error = array(
+        'no_issues'     => 0,
+        'db_unreadable' => 0,
+        'db_missing'    => 0,
+        'db_status_unknown' => 0,
+    );
+
     foreach($databases as $key => $database)
     {
         $edit = l('Edit','admin/tripal/extension/tseq/edit_db/'.$database->db_id);
@@ -58,20 +75,32 @@ function tseq_config_dblist_page_build()
             $web_available = "<abbr title=\"Add one by clicking 'Edit' to the right\">No</abbr>";
         }
 
-        $db_check = TSeqDatabases::db_check($database->db_id);
-        switch ($db_check)
+        //$db_check = TSeqDatabases::db_check($database->db_id);
+        switch ($database->status)
         {
             case 0:
                 $db_error = '';
+                $db_error_human = 'OK';
+                $error['no_issues'] += 1;
                 break;
             case 1:
                 $db_error = 'db_unreadable';
+                $db_error_human = 'Unreadable';
+                $error['db_unreadable'] += 1;
                 break;
             case 2:
                 $db_error = 'db_missing';
+                $db_error_human = 'Missing';
+                $error['db_missing'] += 1;
+                break;
+            case -1:
+                $db_error = 'db_status_unknown';
+                $db_error_human = 'Status unknown';
+                $error['db_status_unknown'] += 1;
                 break;
             default:
                 $db_error = '';
+                $db_error_human = '';
         }
 
         $database_list[] = array(
@@ -85,6 +114,7 @@ function tseq_config_dblist_page_build()
                     $db_error
                 )
             ),
+            $db_error_human,
             $database->count,
             $web_available,
             $edit.' | '.$delete,
@@ -95,13 +125,19 @@ function tseq_config_dblist_page_build()
 
     $output .= theme('pager');
 
-    $output .= "<p>
-                Key:
-                    <ul>
-                        <li><span class=\"db_unreadable\">Unreadable (Check permissions)</span></li>
-                        <li><span class=\"db_missing\">Database file missing</span></li>
-                    </ul>
-                </p>";
+    // Display the last time the database list was refreshed
+    $query = "select db_last_refresh from tseq_settings";
+    $results = db_query($query);
+    $last_refresh = $results->fetchField();
+    //Convert last_refresh from SSE to human readable date
+    $last_refresh = date('F j, Y, g:i a', $last_refresh);
+    $output .= "<p>Last refreshed: ".$last_refresh."</p>";
+
+
+
+    if ($error['db_status_unknown'] > 0) {
+        $output .= 'Databases with unknown status detected. Use the button above to refresh';
+    }
 
     $contents['database_list'] = array(
         '#markup'   => $output,
@@ -681,6 +717,50 @@ function tseq_database_import_form_submit($form, &$form_state) {
     }
   }
   drupal_set_message("List of databases has been successfully imported.");
+}
+
+/**
+ * Implements hok_form()
+ * Builds a very simple form to make sure the admin wants to refresh
+ * the database list (because it may take a while).
+ */
+function tseq_database_list_refresh_form($form, &$form_state)
+{
+    $form['Instructions'] = array(
+        '#type'         => 'fieldset',
+        '#title'        => 'Are you sure?',
+        '#collapsible'  => FALSE,
+        '#description'  => t('This will refresh the database list. It may take a while.'),
+    );
+    
+    $form['submit_button'] = array(
+        '#type'     => 'submit',
+        '#value'    => t('Refresh list'),
+    );
+
+    return $form;
+}
+
+/**
+ * Implements hook_form_validate()
+ */
+function tseq_database_list_refresh_form_validate($form, &$form_state)
+{
+    // Nothing to validate.
+}
+
+/**
+ * Implements hook_form_submit()
+ * Simply calls the refresh function.
+ */
+function tseq_database_list_refresh_form_submit($form, &$form_state) {
+    // Refresh the database list by adding a task to the Tripal Job list
+    $args = [];
+    $includes = [];
+    tripal_add_job('Manually refresh TSeq database file status',
+        'tripal_seq', 'tripal_seq_update_db_status', $args, 0, 1, $includes, TRUE);
+    drupal_set_message("Database list has been successfully refreshed.");
+    drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
 
 

@@ -67,6 +67,19 @@ function tseq_get_db_info($db_id)
 }
 
 /**
+ * Get the list of databases stored in the database
+ * (table: tseq_db_existing_locations)
+ */
+function tseq_get_all_dbs()
+{
+    $query = "SELECT * FROM tseq_db_existing_locations";
+    $results = db_query($query);
+
+    $databases = $results->fetchAll();
+    return $databases;
+}
+
+/**
  * Retrieve the number of sequences in the user's query
  * @param string $query_file Uses simple (hopefully POSIX compliant) shell commands
  * to fetch the number of sequences in the given $query_file

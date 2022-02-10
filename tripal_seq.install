@@ -196,6 +196,13 @@ function tripal_seq_schema()
                 'length'        => 15,
                 'not null'      => FALSE,
             ),
+            'status' => array(
+                'description'   => 'Status of the readability of the file on disk',
+                'type'          => 'int',
+                'length'        => 7,
+                'not null'      => FALSE,
+                'default'       => -1,
+            ),
         ),
     );
     
@@ -280,6 +287,13 @@ function tripal_seq_schema()
                 'description'   => t('Produce pairwise alignment view for Diamond jobs'),
                 'type'          => 'int',
                 'size'          => 'tiny',
+                'default'       => 0,
+                'not null'      => FALSE,
+            ),
+            'db_last_refresh' => array(
+                'description'   => t('When the list of database files was last refreshed'),
+                'type'          => 'int',
+                'size'          => 'big',
                 'default'       => 0,
                 'not null'      => FALSE,
             ),
@@ -847,4 +861,41 @@ function tripal_seq_update_7011()
         }
 
     }
+}
+
+/**
+ * Add status field to tseq_db_existing_locations table
+ */
+function tripal_seq_update_7012()
+{
+    db_add_field(
+        'tseq_db_existing_locations',
+        'status',
+        array(
+            'description'   => t('Status of the readability of the file on disk'),
+            'type'          => 'int',
+            'size'          => 'tiny',
+            'default'       => -1,
+            'not null'      => FALSE,
+        )
+    );
+}
+
+/**
+ * Continue to overload this silly table
+ */
+function tripal_seq_update_7013()
+{
+    # Add last_refreshed to settings table
+    db_add_field(
+        'tseq_settings',
+        'db_last_refresh',
+        array(
+            'description'   => t('When the list of database files was last refreshed'),
+            'type'          => 'int',
+            'size'          => 'big',
+            'default'       => 0,
+            'not null'      => FALSE,
+        )
+    );
 }
