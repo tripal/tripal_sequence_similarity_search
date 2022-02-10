@@ -563,18 +563,38 @@ function publish_results($job_id)
  * Update existing db location status
  */
 function tripal_seq_update_db_status() {
-    // Get the list of databases stored in the database
-    $databases = tseq_get_all_dbs();
-    $status = array();
-    foreach($databases as $database) {
-        $status[$database->db_id] = [$database->db_id, TSeqDatabases::db_check($database->db_id, $database->location)];
+// Get the list of databases stored in the database
+$databases = tseq_get_all_dbs();
+$status = array();
+foreach($databases as $database) {
+    $status[$database->db_id] = [$database->db_id, TSeqDatabases::db_check($database->db_id, $database->location)];
+}
+foreach($status as $update) {
+    db_update('tseq_db_existing_locations')
+        ->fields(array(
+            'status' => $update[1],
+        ))
+        ->condition('db_id', $update[0], '=')
+        ->execute();
     }
-    foreach($status as $update) {
-        db_update('tseq_db_existing_locations')
-            ->fields(array(
-                'status' => $update[1],
-            ))
-            ->condition('db_id', $update[0], '=')
-            ->execute();
-        }
-    }
+
+// Save the current time in the settings table (tseq_settings.db_last_refresh)
+$now = time();
+db_update('tseq_settings')
+    ->fields(array(
+        'db_last_refresh' => $now,
+    ))
+    ->condition('settings_id', 0, '=')
+    ->execute();
+}
+
+/**
+ * Implements hook_cron()
+ */
+function tripal_seq_cron() {
+    $args = [];
+    $includes = [];
+
+    tripal_add_job('Cron: Checking TSeq database file status',
+        'tripal_seq', 'tripal_seq_update_db_status', $args, 0, 1, $includes, TRUE);
+}
