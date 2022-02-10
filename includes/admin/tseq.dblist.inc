@@ -125,6 +125,16 @@ function tseq_config_dblist_page_build()
 
     $output .= theme('pager');
 
+    // Display the last time the database list was refreshed
+    $query = "select db_last_refresh from tseq_settings";
+    $results = db_query($query);
+    $last_refresh = $results->fetchField();
+    //Convert last_refresh from SSE to human readable date
+    $last_refresh = date('F j, Y, g:i a', $last_refresh);
+    $output .= "<p>Last refreshed: ".$last_refresh."</p>";
+
+
+
     if ($error['db_status_unknown'] > 0) {
         $output .= 'Databases with unknown status detected. Use the button above to refresh';
     }
@@ -744,8 +754,11 @@ function tseq_database_list_refresh_form_validate($form, &$form_state)
  * Simply calls the refresh function.
  */
 function tseq_database_list_refresh_form_submit($form, &$form_state) {
-    // Refresh the database list.
-    tripal_seq_update_db_status();
+    // Refresh the database list by adding a task to the Tripal Job list
+    $args = [];
+    $includes = [];
+    tripal_add_job('Manually refresh TSeq database file status',
+        'tripal_seq', 'tripal_seq_update_db_status', $args, 0, 1, $includes, TRUE);
     drupal_set_message("Database list has been successfully refreshed.");
     drupal_set_message(l('Return to Database list','admin/tripal/extension/tseq/config'));
 }
