@@ -36,7 +36,7 @@ else if ($status == 'Completed')
 {
     publish_results($job_id);
     
-    // At this point, the results should be in the datgobaase in some form
+    // At this point, the results should be in the database in some form
     // Get the results details from the database
     $job_information = tseq_get_job_information($job_id);
     
@@ -57,7 +57,23 @@ else if ($status == 'Completed')
     }
     if ($results_details['summary'] == 'error')
     {
-        $summary_rows[3] = array('Error',$results_details['data']);
+        //$summary_rows[3] = array('Error',$results_details['data']);
+        // Get the STDERR from the file and not the database. This lets us
+        // print it out slightly nicer.
+        // Get it from the db in case the file is gone.
+        $STDERR_file_name = $outputPath . $job_id . "/STDERR.txt";
+        $STDERR = '';
+        if (file_exists($STDERR_file_name))
+        {
+            $STDERR_file = file($STDERR_file_name);
+            foreach ($STDERR_file as $line) {
+                $STDERR .= $line . '</br>';
+            }
+            $summary_rows[3] = array('Error',$STDERR);
+        }
+        else {
+            $summary_rows[3] = array('Error',$results_details['data']);
+        }
     }
     $summary_attributes = array(
         'class' => array(
