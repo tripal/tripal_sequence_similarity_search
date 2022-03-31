@@ -102,11 +102,6 @@ function tseq_get_query_sequence_count($query_file)
  */
 function tseq_get_matches_count($output_file)
 {
-    //$cmd = "wc -l $output_file";
-    //exec($cmd, $output);
-    //$line_count = explode(' ', $output[0]);
-    //return $line_count[0];
-
     $matches = intval(exec("wc -l '$output_file'"));
     return $matches;
 }
@@ -190,34 +185,34 @@ function tseq_fix_query($query_text)
     #
     # Step 1: Find instances of 2 newline characters and no headers
     #
-    $pattern = '/([\n]{2})([A-Z])/';	
-    $fixed = preg_replace_callback($pattern, 'step1', $contents);
-
     function step1($matches){
             global $sequenceNo;
             return "\n\n>ADDEDSEQUENCE_TYPE1 " . $sequenceNo++ . "\n" . $matches[2];
     }
+    $pattern = '/([\n]{2})([A-Z])/';	
+    $fixed = preg_replace_callback($pattern, 'step1', $query_text);
+
     #	
     # Step 2: Make sure at least the first sequence has a header
     #
-    $pattern2 = '/(^[A-Z])/';
-    $fixed2 = preg_replace_callback($pattern2, 'step2', $fixed);
-
     function step2($matches){
             global $sequenceNo;
             return ">ADDEDSEQUENCE_TYPE2 " . $sequenceNo++ . "\n" . $matches[0];
     }
+    $pattern2 = '/(^[A-Z])/';
+    $fixed2 = preg_replace_callback($pattern2, 'step2', $fixed);
+
 	
 	
     #
     # Step 3: Put a newline between the end of a sequence and the header of the next
     #
-    $pattern3 ='/([A-z])(\n{1})(>)/';
-    $fixed3 = preg_replace_callback($pattern3, 'step3', $fixed2);
-
     function step3($matches){
             return $matches[1] . "\n" . $matches[2] . $matches[3];
     }
+    $pattern3 ='/([A-z])(\n{1})(>)/';
+    $fixed3 = preg_replace_callback($pattern3, 'step3', $fixed2);
+
         
     return $fixed3;
 }
