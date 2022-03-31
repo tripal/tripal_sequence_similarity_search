@@ -458,14 +458,16 @@ function publish_results($job_id)
         if (file_exists($outputPath.$job_id.$blastXML_filename) && file_exists($outputPath.$job_id.'/STDERR.txt'))
         {
             //Prepare output if there is any data to show in $blastXML_filename
-            if (filesize($outputPath.$job_id.$blastXML_filename) > 0)
+            if (filesize($outputPath.$job_id.'/STDERR.txt') > 0)
             {
-                $jobResults = file($outputPath.$job_id.$blastXML_filename);
+                $jobResults = file($outputPath.$job_id.'/STDERR.txt');
                 $resultsFound = TRUE;
                 foreach($jobResults as $resultLine)
                 {
-                    if ($resultLine == "***** No hits found *****")
-                    {   $resultsFound = FALSE;
+                    // Check to see if there were any matches.
+                    if (strcmp($resultLine, "0 queries aligned.") == 0)
+                    {   
+                        $resultsFound = FALSE;
                         $summary = "no results found";
                         $data = "no results found";
                     }
@@ -515,7 +517,7 @@ function publish_results($job_id)
         }*/
 
 
-        // and finally, insert (if there is anything to insert
+        // and finally, insert (if there is anything to insert)
 
         // Results details (always insert these)
         $newDB = array(
@@ -530,6 +532,9 @@ function publish_results($job_id)
             'database_used' => $database_used,
         );
         drupal_write_record('tseq_results', $newDB); // Insert the job details
+
+        // Get the actual results file, not the STDOUT file
+        $jobResults = file($outputPath.$job_id.$blastXML_filename);
 
         // Results data (Insert these only if they exist)
         if ($resultsFound)

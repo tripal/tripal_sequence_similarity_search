@@ -607,7 +607,7 @@ function tseq_submit_form_validate($form, &$form_state)
             // pass its contents through validation
             if(!tseq_validate_sequence($form_state['values']['QueryType'],$querySequence))
             {
-                form_set_error('QueryFile','The file you uploaded has invalid '
+                form_set_error('QueryFile','The query file you uploaded has invalid '
                         . 'syntax. Please check your file and reupload.');
             }
             // Close the file
@@ -629,7 +629,7 @@ function tseq_submit_form_validate($form, &$form_state)
         // pass it through validation
         if(!tseq_validate_sequence($form_state['values']['QueryType'],$querySequence))
             {
-                form_set_error('QueryPaste','The file you uploaded has invalid '
+                form_set_error('QueryPaste','The query file you uploaded has invalid '
                         . 'syntax. Please check your file and reupload.');
             }
     }

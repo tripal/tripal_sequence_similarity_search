@@ -91,7 +91,7 @@ function tseq_get_query_sequence_count($query_file)
     $cmd = "grep '>' $query_file | wc -l";
     exec($cmd, $output);
     
-    return $output[0];
+    return trim($output[0]);
 }
 
 /**
@@ -102,10 +102,13 @@ function tseq_get_query_sequence_count($query_file)
  */
 function tseq_get_matches_count($output_file)
 {
-    $cmd = "wc -l $output_file";
-    exec($cmd, $output);
-    $line_count = explode(' ', $output[0]);
-    return $line_count[0];
+    //$cmd = "wc -l $output_file";
+    //exec($cmd, $output);
+    //$line_count = explode(' ', $output[0]);
+    //return $line_count[0];
+
+    $matches = intval(exec("wc -l '$output_file'"));
+    return $matches;
 }
 
 /**
@@ -139,7 +142,7 @@ function tseq_get_program($sequence_query_type, $database_search_type)
         Protein		Protein		blastp	(Diamond)
         Nucleotide	Nucleotide	blastn  (BLAST)
         Protein		Nucleotide	tblastn (BLAST)
-      
+
         Target           Query           Program
         Protein          Nucleotide      blastx  (Diamond)
         Protein          Protein         blastp  (Diamond)
