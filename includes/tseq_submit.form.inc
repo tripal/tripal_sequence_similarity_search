@@ -675,8 +675,8 @@ function tseq_submit_form_submit($form, &$form_state)
         $queryFile = file_load($form_state['values']['QueryFile']);
         if (is_object($queryFile))
         {
-          $queryFile = drupal_realpath($queryFile->uri);
-          if($debug){drupal_set_message("Query File: ".$queryFile);}
+            $queryFile = drupal_realpath($queryFile->uri);
+            if($debug){drupal_set_message("Query File: ".$queryFile);}
         }
         else
         {
@@ -792,7 +792,7 @@ function tseq_submit_form_submit($form, &$form_state)
     $query = 'select num_threads, blast_exe_location, diamond_exe_location, produce_blast_pairwise, produce_diamond_pairwise from tseq_settings';
     $results = db_query($query);
     $job_options = $results->fetchAssoc();
-     
+
     // TODO Remove this, replace this usage throughout with variables from above
     $query = "select num_threads,blast_exe_location, diamond_exe_location from tseq_settings";
     $results = db_query($query);
@@ -800,11 +800,11 @@ function tseq_submit_form_submit($form, &$form_state)
     $jobSettings = array();
     for($i = 0; $i < $results->rowCount(); $i++)
         {
-          $jobSettings[$i] = $results->fetchAssoc();
+            $jobSettings[$i] = $results->fetchAssoc();
         }
     if($debug){dpm($jobSettings);}
     
-     
+
     // Check if there were preperation errors
     if (!$prepError)
     {        
