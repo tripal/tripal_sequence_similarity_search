@@ -24,10 +24,19 @@ error_reporting(E_ALL);
 function tseq_submit_form($form, &$form_state)
 {
     global $user;
+    // The user is required to be logged in.
     if (!$user->uid) {
         $loginPage = $GLOBALS['base_url'].'/user';
         drupal_set_message("In order to execute a search, you must be logged into the database. "
                 . "Click <a href=\"$loginPage\">here</a> to log in.",'error');
+    }
+
+    // Make sure the local Tripal working directory is writable
+    if (tseq_check_local_directories()) {
+        drupal_set_message("The local working directory for Tripal jobs is not writable. Report this to an administrator using the Contact form.", 'error', FALSE);
+
+        // Report it on the logs as well.
+        tripal_report_error("tripal_sequence_similarity_search", "TRIPAL_ERROR", "The local working directory for Tripal jobs is not writable: sites/default/files/tripal/jobs");
     }
     
     $form['Overview'] = array(
