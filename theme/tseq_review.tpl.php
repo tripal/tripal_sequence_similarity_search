@@ -98,16 +98,21 @@ else if ($status == 'Completed')
         $db_info = tseq_get_db_info($tseq_db_id);
     }
     echo "<h3>File Downloads</h3>";
-    if($results_details['summary'] != 'error')
+
+    // Link to the regular results files.
+    if($results_details['summary'] != 'error' & $results_details['matches'] > 0)
     {
-        echo "<li>Click <a href=\"download/$job_id/results\">here</a> to download these results</li>";
+        echo "<li>Click <a href=\"download/$job_id/blast_results\">here</a> to download these results (BLAST XML)</li>";
+        echo "<li>Click <a href=\"download/$job_id/pairwise_results\">here</a> to download these results (Pairwise)</li>";
     }
+
+    // Other files related to the job
     echo "<li>Click <a href=\"download/$job_id/query\">here</a> to download your original query</li>";
     if ($job_information['database_file_type'] != 'database')
     {
         echo "<li>Click <a href=\"download/$job_id/target\">here</a> to download your original target database</li>";
     }
-    if ($db_info) {
+    else if ($db_info) {
 
         if( ($job_information['database_file_type'] == 'database') AND ($db_info['web_location'] != '') )
         {
@@ -117,9 +122,16 @@ else if ($status == 'Completed')
     else {
         echo " <li>There was an issue looking up the database info.</li>";
     }
+
+    // Link to the STDERR file.
+    if ($results_details['summary'] == 'error')
+    {
+        // Show a link to for STDERR.txt
+        echo "<li>Click <a href=\"download/$job_id/stderr\">here</a> to download the STDERR (standard error) output.</li>";
+    }
     
     // Results Data Table
-    if($results_details['summary'] != 'error')
+    if($results_details['summary'] != 'error' && $results_details['summary'] != 'no results found')
     {
         echo "<h3>Search Results</h3>";
         $results_data_header = array(
@@ -184,54 +196,61 @@ else if ($status == 'Completed')
     
     // Alignments view Section
     // Basic version currently - just display the text file inline
-    $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
-    $outputPath .= $job_id;
-    echo "<h3>Alignment View</h3>";
-
-    $pairwise_file_name = $outputPath . "/results_pairwise.txt";
-    if (file_exists($pairwise_file_name))
+    if ($results_details['matches'] == 0)
     {
-        $pairwise_file = file($pairwise_file_name);
-        echo "<div class=\"ui-widget ui-widget-content\">";
-        echo "<pre>";
-        $linecount = 0;
-
-        // Are we looking at the full alignment view or a truncated version?
-        // Get the URL parameter 'alignment_view':
-        $truncate_value = 500;
-        $truncated = FALSE;
-        $params = drupal_get_query_parameters();
-        if (array_key_exists('alignment_view',$params) AND $params['alignment_view'] == 'full') {
-            $truncate_value = 2147483647;
-        }
-        
-        foreach($pairwise_file as $pairwise_line)
+        echo "<h3>Alignment View</h3>";
+        echo "There were no matches found, so there is no alignment view to display.";
+    }
+    else {
+        $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
+        $outputPath .= $job_id;
+        echo "<h3>Alignment View</h3>";
+    
+        $pairwise_file_name = $outputPath . "/results_pairwise.txt";
+        if (file_exists($pairwise_file_name))
         {
-            if ($linecount < $truncate_value) {
-                // Is this a >header line? If so we want to put an anchor tag here so we can navigate here from the table.
-                if (preg_match('/([>]).+/',$pairwise_line)) {
-                    echo "<a name=\"" . trim($pairwise_line) . "\"></a>" . $pairwise_line;
+            $pairwise_file = file($pairwise_file_name);
+            echo "<div class=\"ui-widget ui-widget-content\">";
+            echo "<pre>";
+            $linecount = 0;
+    
+            // Are we looking at the full alignment view or a truncated version?
+            // Get the URL parameter 'alignment_view':
+            $truncate_value = 500;
+            $truncated = FALSE;
+            $params = drupal_get_query_parameters();
+            if (array_key_exists('alignment_view',$params) AND $params['alignment_view'] == 'full') {
+                $truncate_value = 2147483647;
+            }
+            
+            foreach($pairwise_file as $pairwise_line)
+            {
+                if ($linecount < $truncate_value) {
+                    // Is this a >header line? If so we want to put an anchor tag here so we can navigate here from the table.
+                    if (preg_match('/([>]).+/',$pairwise_line)) {
+                        echo "<a name=\"" . trim($pairwise_line) . "\"></a>" . $pairwise_line;
+                    }
+                    else {
+                        echo $pairwise_line;
+                    }
+                    $linecount += 1;
                 }
                 else {
-                    echo $pairwise_line;
+                    $truncated = TRUE;
+                    echo "</pre></div>";
+                    echo "<p> Rest of alignment view truncated. Download the full text above.</p>";
+                    return;
                 }
-                $linecount += 1;
             }
-            else {
-                $truncated = TRUE;
+            // Make sure we end this section regardless if we are truncating or not
+            if(!$truncated) {
                 echo "</pre></div>";
-                echo "<p> Rest of alignment view truncated. Download the full text above.</p>";
-                return;
             }
         }
-        // Make sure we end this section regardless if we are truncating or not
-        if(!$truncated) {
-            echo "</pre></div>";
+        else
+        {
+            echo "<p>The pairwise alignment results were either not generated or the file could not be found.</p>";
         }
-    }
-    else
-    {
-        echo "<p>The pairwise alignment results were either not generated or the file could not be found.</p>";
     }
 }
 else if ($status == 'Error')
