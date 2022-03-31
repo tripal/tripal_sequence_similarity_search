@@ -26,13 +26,22 @@ function tseq_download($job_id, $type)
     // Get the job details for the job to provide accurate file links below
     $outputPath = DRUPAL_ROOT.'/sites/default/files/tripal/jobs/';
     $job_details = tseq_get_job_information($job_id);
-    
     switch ($type)
     {
         case "results":
             $file = drupal_realpath('public://')."/tripal/jobs/$job_id/STDOUT.txt";
             break;
         
+        // The specific blast_xml results file
+        case "blast_results":
+            $file = drupal_realpath('public://')."/tripal/jobs/$job_id/results_blastxml.txt";
+            break;
+        
+        // The specific pairwise results file
+        case "pairwise_results":
+            $file = drupal_realpath('public://')."/tripal/jobs/$job_id/results_pairwise.txt";
+            break;
+
         // The original query provided by the user
         case "query":
             $query_file_no_path = explode('/',$job_details['sequence_file']);
@@ -61,6 +70,10 @@ function tseq_download($job_id, $type)
         case "original":
             $file = drupal_realpath('public://')."/tripal/jobs/$job_id/gurp.dmnd";
             break;
+        // Standard error download
+        case "stderr":
+            $file = drupal_realpath('public://')."/tripal/jobs/$job_id/STDERR.txt";
+            break;
         default:
             echo "The download you requested could not be fulfilled: erroneous type of file.";
     }
@@ -69,7 +82,7 @@ function tseq_download($job_id, $type)
     {
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="'.$job_details['tseq_unique_id'].'"');
+        header('Content-Disposition: attachment; filename="' . $job_details['tseq_unique_id'] . '_' . $type . '.txt"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
@@ -79,7 +92,7 @@ function tseq_download($job_id, $type)
     }
     else
     {
-        echo "The file ".$file." no longer exists or could not be found.";
+        echo "The file " . $file . " no longer exists or could not be found.";
     }
     
 }
