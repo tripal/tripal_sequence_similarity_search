@@ -32,7 +32,7 @@ function tseq_submit_form($form, &$form_state)
     }
 
     // Make sure the local Tripal working directory is writable
-    if (tseq_check_local_directories()) {
+    if (!tseq_check_local_directories()) {
         drupal_set_message("The local working directory for Tripal jobs is not writable. Report this to an administrator using the Contact form.", 'error', FALSE);
 
         // Report it on the logs as well.
@@ -75,7 +75,7 @@ function tseq_submit_form($form, &$form_state)
         Protein		Protein		blastp	(Diamond)
         Nucleotide	Nucleotide	blastn  (BLAST)
         Protein		Nucleotide	tblastn (BLAST)
-      
+
         Target           Query           Program
         Protein          Nucleotide      blastx  (Diamond)
         Protein          Protein         blastp  (Diamond)
@@ -124,8 +124,8 @@ function tseq_submit_form($form, &$form_state)
      */
     
     $form['Query'] = array(
-      '#type'           => 'container',
-      '#prefix'         => '<h2>Provide/load Query Sequence</h2>',
+        '#type'           => 'container',
+        '#prefix'         => '<h2>Provide/load Query Sequence</h2>',
     );
     
     $form['Query']['QueryPaste'] = array(
@@ -152,9 +152,9 @@ function tseq_submit_form($form, &$form_state)
      */
     
     $form['Target'] = array(
-      '#type'           => 'container',
-      '#prefix'         => '<hr><h2>Target/Database Selection</h2><div id="targetContainer" style="padding-left:15px;">',
-      '#suffix'         => '</div>',
+        '#type'           => 'container',
+        '#prefix'         => '<hr><h2>Target/Database Selection</h2><div id="targetContainer" style="padding-left:15px;">',
+        '#suffix'         => '</div>',
     );
     /*
      * Prepare the categories to show for each type (Protein/Nucleotide)
@@ -165,11 +165,11 @@ function tseq_submit_form($form, &$form_state)
     
     $categories = array();
     $types = array();
-       
+
     //Iterate through the returned categories 
     for($i = 0; $i< $results->rowCount();$i++)
     {
-      $categories[$i] = $results->fetchAssoc();
+        $categories[$i] = $results->fetchAssoc();
     }
     
     //Get distinct types of available databases (should be any combination of Gene, Genome, and Protein)
@@ -181,7 +181,7 @@ function tseq_submit_form($form, &$form_state)
         $types[$j] = $results->fetchAssoc();
     }
     
-     
+
     $databaseListToShow = array();
     $databaseCount = array();
     $listsToVerify = array();
@@ -194,7 +194,6 @@ function tseq_submit_form($form, &$form_state)
             $query = "select count(db_id) from tseq_db_existing_locations where type='".$type['type']."' and category='".$category['category_title']."'";
             $results = db_query($query);
             $databaseCount[$type['type']][$category['category_title']] = $results->fetchAssoc();
-                       
         }
     }
     
@@ -286,9 +285,7 @@ function tseq_submit_form($form, &$form_state)
                         ),
                     );
                 }
-                    
-                 
-                 
+
             }
             //dpm($form['Target'][$listName]);
             //dpm($databaseCount[$type['type']][$category['category_title']]);
@@ -302,11 +299,11 @@ function tseq_submit_form($form, &$form_state)
     );
     
     $form['Target']['OtherTarget'] = array(
-      '#type'           => 'fieldset',
-      '#title'          => 'Upload your own database/target',
-      '#collapsible'    => TRUE,
-      '#collapsed'      => TRUE,
-      '#prefix'         => '<br />',
+        '#type'           => 'fieldset',
+        '#title'          => 'Upload your own database/target',
+        '#collapsible'    => TRUE,
+        '#collapsed'      => TRUE,
+        '#prefix'         => '<br />',
     );
     
     $form['Target']['OtherTarget']['TargetDataType'] = array(
@@ -413,7 +410,7 @@ function tseq_submit_form($form, &$form_state)
         '#options'      =>  $max_alignment_to_show,
         '#default_value'      => $advanced_options['defaults_max_alignments_selected'],
     );
-           
+
     if ($user->uid) {
         $form['submit_button'] = array(
         '#type' => 'submit',
