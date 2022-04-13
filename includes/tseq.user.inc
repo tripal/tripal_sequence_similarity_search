@@ -7,7 +7,7 @@
  *   pages.
  */
 function tseq_user_analysis_page($uid) {
-  
+
     /*
      * Get the jobs belonging to this user (do not rely on the URL)
      */
