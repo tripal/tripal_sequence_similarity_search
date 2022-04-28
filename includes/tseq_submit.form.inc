@@ -1041,11 +1041,7 @@ function tseq_submit_form_submit($form, &$form_state)
             $tripal_daemon_status = drushd_is_daemon_running('tripal_daemon');
             $estimate_string = '';
             if ($tripal_daemon_status != FALSE) {
-                $estimate_string = " Your job should begin within 20 seconds.";
-            }
-            else {
-                // For debugging purposes only
-                $estimate_string = " the Tripal Job Daemon is not running.";
+                $estimate_string = ". Your job should begin within 20 seconds.";
             }
             drupal_set_message("Your job has been queued on the system with unique ID: ".$tseq_unique_id . $estimate_string);
         
