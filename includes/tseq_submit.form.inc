@@ -57,16 +57,17 @@ function tseq_submit_form($form, &$form_state)
     );
 
     $form['QueryType'] = array (
-        '#type'         => 'radios',
+        '#type'          => 'radios',
         //'#title'        => t('Select sequence search type:'),
         //'#description'  => t('Choose the type of query'),
-        '#options'      => array(
+        '#default_value' => 'Protein',
+        '#options'       => array(
             'Protein'       => t('Protein'),
             'Genomic'       => t('Nucleotide (coding or whole genome)')
             #'Genomic'       => t('Genomic (coding or non-coding)'),
             #'Genome'    => t('Genome'),
         ),
-        '#prefix'           => '<hr><h2>Sequence Query Type</h2>',
+        '#title'        => t('Query Type'),
         //'#field_prefix'       => 'To get started, choose your search type:',
     );
     
@@ -123,9 +124,19 @@ function tseq_submit_form($form, &$form_state)
      *  Query Input Section
      */
     
+    $form['QueryLabel'] = array(
+        '#type'           => 'item',
+        '#title'          => 'Query',
+        '#prefix'         => '<hr>',
+    );
+    
     $form['Query'] = array(
         '#type'           => 'container',
-        '#prefix'         => '<h2>Provide/load Query Sequence</h2>',
+        '#prefix'         => 'Either paste in your FASTA sequence(s) or upload them as a file.',
+        '#attributes'     => array(
+            'class' => array(
+                'tseq_submit_form_major_section'),
+            ),
     );
     
     $form['Query']['QueryPaste'] = array(
@@ -151,12 +162,33 @@ function tseq_submit_form($form, &$form_state)
      * Target
      */
     
+    $form['TargetLabel'] = array(
+        '#type'           => 'item',
+        '#title'          => 'Target/Database Selection',
+        '#prefix'         => '<hr>',
+    );
+    
     $form['Target'] = array(
         '#type'           => 'container',
-        '#prefix'         => '<hr><h2>Target/Database Selection</h2><div id="targetContainer" style="padding-left:15px;">',
-        '#suffix'         => '</div>',
+        '#attributes'     => array(
+            'class' => array(
+                'tseq_submit_form_major_section'),
+            ),
     );
-    /*
+
+    $form['Target']['OtherTarget']['TargetDataType'] = array(
+        '#type'         => 'radios',
+        '#title'        => t('Choose how you will provide your target/database:'),
+        //'#description'  => t('Select the database target type'),
+        '#default_value'=> 'database',
+        '#options'      => array(
+            'database' => t('Select from an existing database on this site'),
+            'upload' => t('Upload a File'),
+            'paste' => t('Type or paste manually'),
+            ),
+    );
+    
+        /*
      * Prepare the categories to show for each type (Protein/Nucleotide)
      */
     //Get Enabled Categories
@@ -246,7 +278,7 @@ function tseq_submit_form($form, &$form_state)
                                     ':input[name="BlastEquivNuc"]' => array('value' => 'blastx'),
                                 ),
                             ),
-                            'disabled' => array(
+                            'invisible' => array(
                                 array(
                                     array(':input[name="TargetDataType"]' => array('value' => 'upload')),
                                     'or',
@@ -298,25 +330,13 @@ function tseq_submit_form($form, &$form_state)
         '#value'        =>  $listsToVerify,
     );
     
-    $form['Target']['OtherTarget'] = array(
+    /*$form['Target']['OtherTarget'] = array(
         '#type'           => 'fieldset',
         '#title'          => 'Upload your own database/target',
         '#collapsible'    => TRUE,
         '#collapsed'      => TRUE,
         '#prefix'         => '<br />',
-    );
-    
-    $form['Target']['OtherTarget']['TargetDataType'] = array(
-        '#type'         => 'radios',
-        '#title'        => t('Provide/Select search database:'),
-        //'#description'  => t('Select the database target type'),
-        '#default_value'=> 'database',
-        '#options'      => array(
-            'database' => t('Select from an existing database'),
-            'upload' => t('Upload a File'),
-            'paste' => t('Type or paste manually'),
-            ),
-    );
+    );*/
 
     $form['Target']['OtherTarget']['TargetPaste'] = array(
         '#type'         => 'textarea',
@@ -357,11 +377,11 @@ function tseq_submit_form($form, &$form_state)
     $advanced_options = $results->fetchAssoc();
     
     $form['Advanced'] = array(
-      '#type'           => 'fieldset',
-      '#title'          => 'Advanced Options',
-      '#collapsible'    => TRUE,
-      '#collapsed'      => TRUE,
-      '#prefix'         => '<hr>',
+        '#type'           => 'fieldset',
+        '#title'          => 'Advanced Options',
+        '#collapsible'    => TRUE,
+        '#collapsed'      => TRUE,
+        '#prefix'         => '<hr>',
     );
     
     
@@ -516,11 +536,11 @@ function tseq_submit_form_validate($form, &$form_state)
             form_set_error('Target',t("Please choose only 1 protein target."));
             /*if ($form_state['values']['TargetDBProtein'] != 'default')
             {
-               form_set_error('TargetDBProtein');
+                form_set_error('TargetDBProtein');
             }
             if ($form_state['values']['TargetDBUnigenePro'] != 'default')
             {
-               form_set_error('TargetDBUnigenePro');
+                form_set_error('TargetDBUnigenePro');
             }
              *
              */
@@ -538,15 +558,15 @@ function tseq_submit_form_validate($form, &$form_state)
             form_set_error('Target',t("Please choose only 1 nucleotide target."));
             /*if ($form_state['values']['TargetDBGene'] != 'default')
             {
-               form_set_error('TargetDBGene');
+                form_set_error('TargetDBGene');
             }
             if ($form_state['values']['TargetDBGenome'] != 'default')
             {
-               form_set_error('TargetDBGenome');
+                form_set_error('TargetDBGenome');
             }
             if ($form_state['values']['TargetDBUnigeneNuc'] != 'default')
             {
-              form_set_error('TargetDBUnigeneNuc');
+                form_set_error('TargetDBUnigeneNuc');
             }
              * 
              */
@@ -671,7 +691,7 @@ function tseq_submit_form_submit($form, &$form_state)
         $queryFileWrite = file_put_contents($queryFile, $form_state['values']['QueryPaste']);
         if ($queryFileWrite === FALSE){$prepError = TRUE;}
     }
- 
+
     
     //Get information for uploaded files
     //Query Upload
@@ -681,8 +701,8 @@ function tseq_submit_form_submit($form, &$form_state)
         $queryFile = file_load($form_state['values']['QueryFile']);
         if (is_object($queryFile))
         {
-          $queryFile = drupal_realpath($queryFile->uri);
-          if($debug){drupal_set_message("Query File: ".$queryFile);}
+            $queryFile = drupal_realpath($queryFile->uri);
+            if($debug){drupal_set_message("Query File: ".$queryFile);}
         }
         else
         {
@@ -798,7 +818,7 @@ function tseq_submit_form_submit($form, &$form_state)
     $query = 'select num_threads, blast_exe_location, diamond_exe_location, produce_blast_pairwise, produce_diamond_pairwise from tseq_settings';
     $results = db_query($query);
     $job_options = $results->fetchAssoc();
-     
+
     // TODO Remove this, replace this usage throughout with variables from above
     $query = "select num_threads,blast_exe_location, diamond_exe_location from tseq_settings";
     $results = db_query($query);
@@ -806,11 +826,10 @@ function tseq_submit_form_submit($form, &$form_state)
     $jobSettings = array();
     for($i = 0; $i < $results->rowCount(); $i++)
         {
-          $jobSettings[$i] = $results->fetchAssoc();
+            $jobSettings[$i] = $results->fetchAssoc();
         }
     if($debug){dpm($jobSettings);}
     
-     
     // Check if there were preperation errors
     if (!$prepError)
     {        
@@ -1013,11 +1032,12 @@ function tseq_submit_form_submit($form, &$form_state)
             $sequence_count = tseq_get_query_sequence_count($queryFile);
             
             $tseq_unique_id = "TUI_".$remote_diamond_job_id."_".$sequence_count."seqs_".$tool_type."_".format_date($submit_time, 'custom', 'Ymd_His');
-            drupal_set_message("New unique ID: ".$tseq_unique_id);
+            drupal_set_message("Your job has been queued on the system with unique ID: ".$tseq_unique_id);
         
-        //drupal_set_message("Thank you for submitting. An email will be sent to you when the job has finished. You will be able to see the results <a href=\"".$baseP."Diamond/results/$remote_diamond_job_id\"'>here</a>");
-        drupal_set_message("Thank you for submitting. You will be able to see the results <a href=\"".$baseP."TSeq/results/$tseq_unique_id\"'>here</a>");
-        drupal_set_message("You can submit another job below.");
+        global $user;
+        drupal_set_message("<a href=\"" . $baseP . "TSeq/results/$tseq_unique_id\">Click here to see the status and results of your job.</a>");
+        drupal_set_message("<a href=\"" . $baseP . "user/$user->uid/tseq_analysis/\">Click here to see your previous jobs.</a>");
+        drupal_set_message("You can submit your next job at any time below.");
     }
     else
     {
