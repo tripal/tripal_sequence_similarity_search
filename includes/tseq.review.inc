@@ -23,7 +23,7 @@ function tseq_review($jobID)
   //if ($jobInfo->start_time === NULL AND $jobInfo->end_time == NULL)
   if ($jobInfo->status == 'Waiting')
   {
-    return theme('tseq_results', array('status_code' => 0, 'status' => 'Pending. It may take up to 20 seconds to process', 'job_id' => $jobID));
+    return theme('tseq_results', array('status_code' => 0, 'status' => 'Pending. It may take up to 20 seconds to begin', 'job_id' => $jobID));
   }
   // 2) Job has been Cancelled
   elseif ($jobInfo->status == 'Cancelled')
