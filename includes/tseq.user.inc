@@ -7,17 +7,24 @@
  *   pages.
  */
 function tseq_user_analysis_page($uid) {
-  
+
     /*
-     * Get the jobs belonging to this user
+     * Get the jobs belonging to this user (do not rely on the URL)
      */
     global $user;
     $user_id = $user->uid;
-        
+
+    // Tell the user that a different user's page was requested but we will not show it.
+    if ($uid != $user_id) {
+        drupal_set_message("A different user ID was given in the URL than yours. However, this page still reflects your results. 
+        If you want to view the results of another user, please contact them directly. Click " . 
+        l("here", "user/" . $user_id . "/tseq_analysis") . " to get your direct URL.","warning");
+    }
+
     /*
      *  Build the Table
      */
-    
+
     // Header
     $header = array(
         array('data' => 'Tripal ID',       'field' => 'd.tseq_unique_id',),
@@ -65,14 +72,14 @@ function tseq_user_analysis_page($uid) {
             $job->status,
         );
     }
-    
+
     // Give the table a class if styling is desired 
     $job_table_attributes = array(
         'class' => array(
             'jobTable',
         ),
     );
-    
+
     // Let the users know they can sort the columns
     $job_table_caption = 'Sort columns by clicking on a header';
     
@@ -83,15 +90,9 @@ function tseq_user_analysis_page($uid) {
             'attributes'    => $job_table_attributes,
             'caption'       => $job_table_caption
         );
-    
+
     $content = theme('table',$job_table_vars);
     $content .= theme('pager');
-    /* Debug
-    dpm($user_id);
-    dpm($header);
-    dpm($userJobs);
-    */
-    
-    
+
     return $content;
 }

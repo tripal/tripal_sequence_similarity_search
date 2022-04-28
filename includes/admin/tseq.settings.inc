@@ -14,6 +14,16 @@ function tseq_configuration_settings_form($form, &$form_state)
     $breadcrumb[] = l('TSeq', 'admin/tripal/extension/tseq/config');
     $breadcrumb[] = l('Job Settings','admin/tripal/extension/tseq/config/settings');
     drupal_set_breadcrumb($breadcrumb);
+
+    // Display a warning if the local working dir is not writable
+    if (!tseq_check_local_directories())
+    {
+        // Display the error on this page
+        drupal_set_message("The local working directory for Tripal jobs is not writable: sites/default/files/tripal/jobs", 'error', FALSE);
+
+        // Report it as a Tripal error as well
+        tripal_report_error("tripal_sequence_similarity_search", "TRIPAL_ERROR", "The local working directory for Tripal jobs is not writable: sites/default/files/tripal/jobs");
+    }
     /*
      * Get the currently saved settings (or substitute in defaults
      */
