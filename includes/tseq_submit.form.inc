@@ -178,7 +178,7 @@ function tseq_submit_form($form, &$form_state)
 
     $form['Target']['OtherTarget']['TargetDataType'] = array(
         '#type'         => 'radios',
-        '#title'        => t('Choose how you will provide your target/database:'),
+        '#prefix'        => t('Choose how you will provide your target/database:'),
         //'#description'  => t('Select the database target type'),
         '#default_value'=> 'database',
         '#options'      => array(
