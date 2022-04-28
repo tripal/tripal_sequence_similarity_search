@@ -610,14 +610,16 @@ function tseq_submit_form_validate($form, &$form_state)
     }
     if ($querysProvided > 1)
     {
-        form_set_error('Query',t("Please only provide one sequence."));
         $queryType = NULL;
+        form_set_error('Query',t("Please only provide one sequence (paste or upload)."));
+        form_set_error('QueryPaste');
+        form_set_error('QueryFile');
     }
     else if ($querysProvided < 1)
     {
         form_set_error('Query',t("Please provide a sequence to query."));
-        form_set_error('QueryFile');
         form_set_error('QueryPaste');
+        form_set_error('QueryFile');
     }
     
     // Validate the user's query
@@ -633,8 +635,8 @@ function tseq_submit_form_validate($form, &$form_state)
             // pass its contents through validation
             if(!tseq_validate_sequence($form_state['values']['QueryType'],$querySequence))
             {
-                form_set_error('QueryFile','The query file you uploaded has invalid '
-                        . 'syntax. Please check your file and reupload.');
+                form_set_error('QueryFile','The query sequence you uploaded has invalid '
+                        . 'syntax. Please check your sequence and resubmit.');
             }
             // Close the file
             fclose($queryFileHandle);
