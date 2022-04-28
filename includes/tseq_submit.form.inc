@@ -1034,7 +1034,20 @@ function tseq_submit_form_submit($form, &$form_state)
             $sequence_count = tseq_get_query_sequence_count($queryFile);
             
             $tseq_unique_id = "TUI_".$remote_diamond_job_id."_".$sequence_count."seqs_".$tool_type."_".format_date($submit_time, 'custom', 'Ymd_His');
-            drupal_set_message("Your job has been queued on the system with unique ID: ".$tseq_unique_id);
+
+            // Get thte status of the Tripal daemon. Then tell the user that their job will launch within 20 seconds.
+            // Depending on the server configuration, this may always return FALSE, so we only say anything to the
+            // user if it is NOT FALSE.
+            $tripal_daemon_status = drushd_is_daemon_running('tripal_daemon');
+            $estimate_string = '';
+            if ($tripal_daemon_status != FALSE) {
+                $estimate_string = " Your job should begin within 20 seconds.";
+            }
+            else {
+                // For debugging purposes only
+                $estimate_string = " the Tripal Job Daemon is not running.";
+            }
+            drupal_set_message("Your job has been queued on the system with unique ID: ".$tseq_unique_id . $estimate_string);
         
         global $user;
         drupal_set_message("<a href=\"" . $baseP . "TSeq/results/$tseq_unique_id\">Click here to see the status and results of your job.</a>");
