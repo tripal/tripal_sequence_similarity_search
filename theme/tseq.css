@@ -14,6 +14,11 @@
     color:blueviolet;
 }
 
+.tseq_submit_form_major_section
+{
+    margin-left:30px;
+}
+
 #edit-targetdatatype .form-radio
 {
     display:inline;
@@ -53,7 +58,7 @@
 
 #advancedArea
 {
-    background-color:FFA;
+    background-color:#FFA;
     position:inherit;
     width:100%;
     float:left;
@@ -61,7 +66,7 @@
 
 #submitArea
 {
-    background-color:AFF;
+    background-color:#AFF;
     position:inherit;
     width:100%;
     float:left;
