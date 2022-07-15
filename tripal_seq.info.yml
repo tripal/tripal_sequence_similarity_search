@@ -1,0 +1,11 @@
+name: "Tripal Sequence Similarity Search"
+type: module
+description: 'Diamond and BLAST+ Module for Tripal'
+core_version_requirement: ^8.8 || ^9
+version: 9.x-2.0
+package: 'Tripal Extensions'
+
+configure:
+
+#dependencies:
+#  - tripal_remote_job:tripal_remote_job
