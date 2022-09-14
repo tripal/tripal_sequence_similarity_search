@@ -1,0 +1,6 @@
+tripal-seq:
+  css:
+    theme:
+      theme/tseq.css
+  js:
+    js/tripal_seq.js
