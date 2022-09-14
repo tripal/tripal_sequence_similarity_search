@@ -17,7 +17,7 @@ require_once 'api/tseq.api.inc';
 require_once 'includes/tseq_submit.form.inc';
 
 // Theme
-require_once 'theme/tseq.theme.inc';
+//require_once 'theme/tseq.theme.inc';
 
 // Output
 require_once 'includes/tseq.review.inc';
@@ -57,6 +57,7 @@ function tripal_seq_menu()
         );
 
     // TSeq Results page
+    /* Updated to D9 Routing API
     $items['TSeq/results/%'] = array(
         'title' => 'Diamond Job Results',
         'page callback' => 'tseq_review',
@@ -65,8 +66,10 @@ function tripal_seq_menu()
         'access arguments' => array('access content'),
         'type' => MENU_CALLBACK
         );
+    */
 
     // TSeq Download page
+    /* Updated to D9 Routing API
     $items['TSeq/results/download/%/%'] = array(
         'title' => 'TSeq Job Results Download',
         'page callback' => 'tseq_download',
@@ -75,6 +78,7 @@ function tripal_seq_menu()
         'access arguments' => array('access content'),
         'type' => MENU_CALLBACK
         );
+    */
 
     // Configuration pages
     // Configuration: Main page
@@ -168,6 +172,7 @@ function tripal_seq_menu()
         );
 
     // Admin: edit an existing database
+    /* Updated to D9 Routing API
     $items['admin/tripal/extension/tseq/edit_db/%'] = array(
         'title' => 'Tripal Diamond Database Edit',
         'description' => 'Tripal Diamond Admin Configuration page',
@@ -176,7 +181,10 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
+    */
+
     // Admin: delete an existing database
+    /* Updated to D9 Routing API
     $items['admin/tripal/extension/tseq/delete_db/%'] = array(
         'title' => 'Tripal Diamond Database Delete',
         'description' => 'Tripal Diamond Admin Configuration page',
@@ -185,10 +193,12 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
+    */
 
     //  Add/Edit/Delete Categories
 
     // Admin: add a new category
+    /* Updated to D9 Routing API
     $items['admin/tripal/extension/tseq/add_category'] = array(
         'title' => 'Add Category',
         'description' => 'Tripal Diamond Admin Configuration page',
@@ -217,6 +227,7 @@ function tripal_seq_menu()
         'access arguments' => array('administer diamond'),
         'type' => MENU_CALLBACK
         );
+    */
 
     /*
     // Admin: add a new Genome Browser Link Scheme
