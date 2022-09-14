@@ -1,0 +1,67 @@
+# TSeq Results Page
+tripal_seq.results:
+  path: '/TSeq/results/{job_id}'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Controller\Tripal_SeqResultsController::results'
+    _title: 'Tripal Sequence Similarity Search Results'
+  requirements:
+    _permission: 'access content' # TODO Is this Drupal or TSeq based? Should it have better naming if TSeq based?
+
+# TSeq Download page
+tripal_seq.results.download:
+  path: '/TSeq/results/download/{job_id}{type}'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Controller\Tripal_SeqResultsController::download'
+    _title: 'Downloads'
+  requirements:
+    _permission: 'access content'
+
+
+##
+# Admin
+##
+
+# Edit form for existing database
+tripal_seq.admin.db.edit:
+  path: '/admin/tripal/extensions/tseq/edit_db/{db_id}'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::edit_db'
+    _title: 'Edit database entry'
+  requirements:
+    _permission: 'administer tseq'
+
+# Delete form for existing database
+tripal_seq.admin.db.delete:
+  path: '/admin/tripal/extensions/tseq/delete_db/{db_id}'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::delete_db'
+    _title: 'Delete database entry'
+  requirements:
+    _permission: 'administer tseq'
+
+# Add form for Categories
+tripal_seq.admin.category.add:
+  path: '/admin/tripal/extensions/tseq/add_category'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::add_category'
+    _title: 'Add category'
+  requirements:
+    _permission:  'administer tseq'
+
+# Edit form for Categories
+tripal_seq.admin.category.edit:
+  path: '/admin/tripal/extensions/tseq/edit_category'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::edit_category'
+    _title: 'Edit category'
+  requirements:
+    _permission:  'administer tseq'
+
+# Delete form for Categories
+tripal_seq.admin.category.delete:
+  path: '/admin/tripal/extensions/tseq/delete_category'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::delete_category'
+    _title: 'Delete category'
+  requirements:
+    _permission:  'administer tseq'

@@ -1,0 +1,17 @@
+# TSeq Submissions
+tripal_seq.submit:
+  path: '/TSeq/submit'
+  defaults:
+    _controller: '\Drupal\tripal_sequence_similarity_search\Form\Tripal_SeqSubmitController::Tripal_SeqSubmissionForm'
+    _title: 'Tripal Sequence Similarity Search: Submit'
+  requirements:
+    _permission:  'access content'
+
+# TSeq Configuration Page (primary - Existing Database configuration)
+tripal_seq.config:
+  path: 'admin/tripal/extension/tseq/config'
+  defaults:
+    _controller: '\Drupal\tripal_sequence_similarity_search\config\'
+    _title: 'Tripal Sequence Similarity Search: Configuration'
+  requirements:
+    _permissions: 'administer tseq'
