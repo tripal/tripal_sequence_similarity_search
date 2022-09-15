@@ -25,7 +25,7 @@ tripal_seq.results.download:
 tripal_seq.admin.db.edit:
   path: '/admin/tripal/extensions/tseq/edit_db/{db_id}'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::edit_db'
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::edit_db'
     _title: 'Edit database entry'
   requirements:
     _permission: 'administer tseq'
@@ -34,7 +34,7 @@ tripal_seq.admin.db.edit:
 tripal_seq.admin.db.delete:
   path: '/admin/tripal/extensions/tseq/delete_db/{db_id}'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::delete_db'
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::delete_db'
     _title: 'Delete database entry'
   requirements:
     _permission: 'administer tseq'
@@ -43,7 +43,7 @@ tripal_seq.admin.db.delete:
 tripal_seq.admin.category.add:
   path: '/admin/tripal/extensions/tseq/add_category'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::add_category'
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::add_category'
     _title: 'Add category'
   requirements:
     _permission:  'administer tseq'
@@ -52,7 +52,7 @@ tripal_seq.admin.category.add:
 tripal_seq.admin.category.edit:
   path: '/admin/tripal/extensions/tseq/edit_category'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::edit_category'
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::edit_category'
     _title: 'Edit category'
   requirements:
     _permission:  'administer tseq'
@@ -61,7 +61,7 @@ tripal_seq.admin.category.edit:
 tripal_seq.admin.category.delete:
   path: '/admin/tripal/extensions/tseq/delete_category'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminController::delete_category'
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::delete_category'
     _title: 'Delete category'
   requirements:
     _permission:  'administer tseq'

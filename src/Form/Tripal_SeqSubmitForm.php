@@ -6,9 +6,9 @@ use Drupal;
 use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\FormStateInterface;
 
-class Tripal_SeqSubmitController implements FormInterface{
+class Tripal_SeqSubmitForm implements FormInterface{
 
-    public function buildForm(array $form, $FormStateInterface $form_state) {
+    public function buildForm(array $form, FormStateInterface $form_state) {
         // Build the form
     }
 

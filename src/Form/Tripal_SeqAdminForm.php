@@ -6,7 +6,7 @@ use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal;
 
-class Tripal_SeqAdminController {
+class Tripal_SeqAdminForm {
 
     /**
      * Database entries
