@@ -1,0 +1,12 @@
+##
+# Admin
+##
+
+# tripal_seq.config.db.add:
+#   path: '/admin/tripal/extension/tseq/add_db/'
+#   defaults:
+#     _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::add_db'
+#     _title: 'Add database entry'
+#   requirements:
+#     _permission: 'administer tseq'
+
