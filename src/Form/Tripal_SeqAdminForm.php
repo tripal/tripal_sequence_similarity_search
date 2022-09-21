@@ -11,31 +11,49 @@ class Tripal_SeqAdminForm {
     /**
      * Database entries
      */
-    function add_db() {
+    function tripal_seq_db_add() {
         return 0;
     }
     
-    function edit_db($db_id) {
+    function tripal_seq_db_edit($db_id) {
         return 0;
     }
 
-    function delete_db($db_id) {
+    function tripal_seq_db_delete($db_id) {
         return 0;
     }
 
+    /**
+     * Handle import/export of the Diamond and BLAST database list.
+     */
+    function tripal_seq_db_import() {
+
+    }
+
+    function tripal_seq_db_export() {
+
+    }
 
     /**
      * Category entries
      */
-    function add_category() {
+    function tripal_seq_category_add() {
         return 0;
     }
 
-    function edit_category() {
+    function tripal_seq_category_edit($category_id) {
         return 0;
     }
 
-    function delete_category() {
+    function tripal_seq_category_delete($category_id) {
+        return 0;
+    }
+
+    function tripal_seq_categories_import() {
+        return 0;
+    }
+
+    function tripal_seq_categories_export() {
         return 0;
     }
 }
