@@ -1,0 +1,77 @@
+##
+# Configuration
+##
+
+# TSeq Configuration Page (primary - Existing Database configuration)
+tripal_seq.config:
+  title: 'Tripal Sequence Similarity Search Config'
+  route_name: tripal_seq.config
+  base_route: tripal_seq.config
+  description: 'Configure Tripal Sequence Similarity Search'
+  parent: tripal.admin
+  weight: 50
+
+# TSeq Configuration Page: Categories
+tripal_seq.config.categories:
+  title: 'Categories'
+  route_name: tripal_seq.config.categories
+  base_route: tripal_seq.config
+  description: 'Manage categories'
+  weight: 51
+
+###########################################################
+#            Diamond & BLAST Database handling            #
+###########################################################
+
+# Add database
+tripal_seq.config.db.add:
+  route_name: 'tripal_seq.config.db.add'
+  title: 'Add TSeq Database'
+  appears_on:
+    - tripal_seq.config
+  parent_id: 'tripal_seq.config' 
+
+# Export database list
+tripal_seq.config.db.export:
+  route_name: 'tripal_seq.config.db.export'
+  title: 'Export this list'
+  appears_on:
+    - tripal_seq.config
+  parent_id: 'tripal_seq.config'
+
+# Import database list
+tripal_seq.config.db.import:
+  route_name: 'tripal_seq.config.db.import'
+  title: 'Import database list'
+  appears_on:
+    - tripal_seq.config
+  parent_id: 'tripal_seq.config'
+
+
+###########################################################
+#                   Category handling                     #
+###########################################################
+
+# Add category
+tripal_seq.config.categories.add:
+  route_name: 'tripal_seq.config.categories.add'
+  title: 'Add Category'
+  appears_on:
+    - tripal_seq.config.categories
+  parent_id: 'tripal_seq.config.categories'
+
+# Import categories
+tripal_seq.config.categories.import:
+  route_name: 'tripal_seq.config.categories.import'
+  title: 'Import Categories'
+  appears_on:
+    - tripal_seq.config
+  parent_id: 'tripal_seq.config.categories'
+
+# Export categories
+tripal_seq.config.categories.export:
+  route_name: 'tripal_seq.config.categories.export'
+  title: 'Export Categories'
+  appears_on:
+    - tripal_seq.config
+  parent_id: 'tripal_seq.config.categories'
