@@ -67,4 +67,40 @@ class Tripal_SeqConfig {
         */
         return $output;
     }
+
+    function tripal_seq_config_categories() {
+
+        // basic table
+        $header = array(
+            array('data' => 'Category Title',   'field' => 'tseq_cat.category_title', 'sort' => 'asc'),
+            array('data' => 'Enabled',          'field' => 'tseq_cat.enabled'),
+            array('data' => 'Actions'),
+        );
+
+        $db = \Drupal::database();
+
+        $table_name = 'tseq_categories';
+        $query = $db->select($table_name,'tseq_cat')
+                ->extend('\Drupal\Core\Database\Query\TableSortExtender')
+                ->fields('tseq_cat');
+
+        $results = $query->orderByHeader($header)
+                ->execute();
+        $rows = [];
+        while(($result = $results->fetchObject())) {
+            $rows[] = [
+                $result->category_title,
+                $result->enabled,
+                'some actions',
+            ];
+        }
+
+        $output = [
+            '#type' => 'table',
+            '#header' => $header,
+            '#rows' => $rows,
+        ];
+
+        return $output;
+    }
 }
