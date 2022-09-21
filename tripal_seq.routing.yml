@@ -18,50 +18,116 @@ tripal_seq.results.download:
 
 
 ##
-# Admin
+# Config
 ##
 
-# Edit form for existing database
-tripal_seq.admin.db.edit:
-  path: '/admin/tripal/extensions/tseq/edit_db/{db_id}'
+# TSeq Configuration Page (primary - Existing Database configuration)
+tripal_seq.config:
+  path: 'admin/tripal/extension/tseq/config'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::edit_db'
+    _controller: '\Drupal\tripal_seq\Controller\Tripal_SeqConfig::tripal_seq_config'
+    _title: 'Tripal Sequence Similarity Search: Configuration'
+  requirements:
+    _permission: 'access content'
+
+# Add form for existing databases
+tripal_seq.config.db.add:
+  path: '/admin/tripal/extension/tseq/add_db'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_db_add'
+    _title: 'Add Tripal Sequence Similarity Search database'
+    _description: Make an existing Diamond or BLAST database available to Tripal Sequence Similarity Search
+  options:
+    _admin_route: 'TRUE'
+  requirements:
+    _permission: administer tseq'
+
+# Edit form for existing databases
+tripal_seq.config.db.edit:
+  path: '/admin/tripal/extension/tseq/edit_db/{db_id}'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_db_edit'
     _title: 'Edit database entry'
   requirements:
     _permission: 'administer tseq'
 
-# Delete form for existing database
-tripal_seq.admin.db.delete:
-  path: '/admin/tripal/extensions/tseq/delete_db/{db_id}'
+# Delete form for existing databases
+tripal_seq.config.db.delete:
+  path: '/admin/tripal/extension/tseq/delete_db/{db_id}'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::delete_db'
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_db_delete'
     _title: 'Delete database entry'
   requirements:
     _permission: 'administer tseq'
 
-# Add form for Categories
-tripal_seq.admin.category.add:
-  path: '/admin/tripal/extensions/tseq/add_category'
+# Categories: default page
+tripal_seq.config.categories:
+  path: '/admin/tripal/extension/tripal_seq/categories'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::add_category'
+    _controller: '\Drupal\tripal_seq\Controller\Tripal_SeqConfig::tripal_seq_config_categories'
+    _title: 'Manage Tripal Seq Categories'
+  requirements:
+    _permission: 'administer tseq'
+
+# Categories: add form
+tripal_seq.config.categories.add:
+  path: '/admin/tripal/extension/tripal_seq/categories/add'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_category_add'
     _title: 'Add category'
   requirements:
     _permission:  'administer tseq'
 
-# Edit form for Categories
-tripal_seq.admin.category.edit:
-  path: '/admin/tripal/extensions/tseq/edit_category'
+# Categories: edit form
+tripal_seq.config.categories.edit:
+  path: '/admin/tripal/extension/tripal_seq/categories/edit/{category_id}'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::edit_category'
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_category_edit'
     _title: 'Edit category'
   requirements:
     _permission:  'administer tseq'
 
-# Delete form for Categories
-tripal_seq.admin.category.delete:
-  path: '/admin/tripal/extensions/tseq/delete_category'
+# Categories: delete form
+tripal_seq.config.categories.delete:
+  path: '/admin/tripal/extension/tripal_seq/categories/delete/{category_id}'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::delete_category'
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_category_delete'
     _title: 'Delete category'
   requirements:
     _permission:  'administer tseq'
+
+# Categories: import
+tripal_seq.config.categories.import:
+  path: '/admin/tripal/extension/tripal_seq/categories/import'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_categories_import'
+    _title: 'Import category list'
+  requirements:
+    _permission: 'administer tseq'
+
+# Categories: export
+tripal_seq.config.categories.export:
+  path: '/admin/tripal/extension/tripal_seq/categories/export'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_categories_export'
+    _title: 'Export category list'
+  requirements:
+    _permission: 'administer tseq'
+
+# Import database list
+tripal_seq.config.db.import:
+  path: '/admin/tripal/extension/tseq/import_list'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_db_import'
+    _title: 'import Tripal Sequence Similarity Search list'
+  requirements:
+    _permission: 'administer tseq'
+
+# Export database list
+tripal_seq.config.db.export:
+  path: '/admin/tripal/extension/tseq/export_list'
+  defaults:
+    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_db_export'
+    _title: 'Export Tripal Sequence Similarity Search list'
+  requirements:
+    _permission: 'administer tseq'
