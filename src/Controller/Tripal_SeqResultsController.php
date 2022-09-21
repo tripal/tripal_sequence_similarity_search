@@ -3,7 +3,7 @@
 namespace Drupal\tripal_seq\Controller;
 
 Use Drupal;
-use Drupal\Core\Controller\ControllerBase;
+Use Drupal\Core\Controller\ControllerBase;
 /**
  * This controller handles Results and everything to do with them
  *  - displaying the results
