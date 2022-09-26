@@ -2,18 +2,18 @@
 
 namespace Drupal\tripal_seq\Form;
 
-use Drupal\Core\Form\FormInterface;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal;
 
-class Tripal_SeqAdminAddDBForm implements FormInterface {
+class Tripal_SeqAdminDBAddForm extends FormBase {
     /**
      * Form ID.
      * 
      * @return string
      */
     function getFormID() {
-        return 'tripal_seq_admin_add_db_form';
+        return 'tripal_seq_admin_db_add_form';
     }
 
     /**
@@ -44,13 +44,13 @@ class Tripal_SeqAdminAddDBForm implements FormInterface {
         // Fields for this form
         $form['Name'] = [
             '#type' => 'textfield',
-            '#title' => 'Name',
+            '#title' => $this->t('Name'),
             '#description' => 'The name of the target database.',
         ];
 
         $form['Type'] = [
             '#type' => 'select',
-            '#title' => 'Type',
+            '#title' => $this->t('Type'),
             '#options' => [
                 'Protein'   => 'Protein',
                 'Genome'    => 'Genome',
@@ -60,13 +60,13 @@ class Tripal_SeqAdminAddDBForm implements FormInterface {
 
         $form['Category'] = [
             '#type' => 'select',
-            '#title' => 'Category',
+            '#title' => $this->t('Category'),
             '#options' => $category_options,
         ];
         
         $form['Version'] = [
             '#type'         => 'textfield',
-            '#title'        => 'Version',
+            '#title'        => $this->t('Version'),
             '#size'         => '7',
             '#description'  => 'The version of the added database',
             '#required'     => true,
@@ -74,7 +74,7 @@ class Tripal_SeqAdminAddDBForm implements FormInterface {
     
         $form['Location'] = [
             '#type'         => 'textfield',
-            '#title'        => 'File location',
+            '#title'        => $this->t('File location'),
             '#size'         => '120',
             '#description'  => 'The path to the indexed database on disk (accessible on the remote server). If loading a BLAST index, leave off the extensions like nhr, nin, nog, etc.',
             '#suffix'       => '',
@@ -83,7 +83,7 @@ class Tripal_SeqAdminAddDBForm implements FormInterface {
     
         $form['WebLocation'] = [
             '#type'         => 'textfield',
-            '#title'        => 'Web Location (Optional)',
+            '#title'        => $this->t('Web Location (Optional)'),
             '#size'         => '120',
             '#description'  => 'If the original sequence (non-indexed) is publicly available for download, set the URL here (FTP, HTTP)',
             '#required'     => false,
@@ -91,7 +91,7 @@ class Tripal_SeqAdminAddDBForm implements FormInterface {
     
         $form['Count'] = [
             '#type'         => 'textfield',
-            '#title'        => 'Genes, Proteins, or Scaffolds (Optional)',
+            '#title'        => $this->t('Genes, Proteins, or Scaffolds (Optional)'),
             '#size'         => '10',
             '#description'  => 'How many genes, proteins, or scaffolds the sequence contains'
         ];
@@ -100,7 +100,7 @@ class Tripal_SeqAdminAddDBForm implements FormInterface {
         $form['actions']['#type'] = 'actions';
         $form['actions']['submit'] = [
             '#type' => 'submit',
-            '#value' => 'Add',
+            '#value' => $this->t('Add'),
             '#button_type' => 'primary',
         ];
 
@@ -114,7 +114,7 @@ class Tripal_SeqAdminAddDBForm implements FormInterface {
         // placeholder because required by FormInterface definition (not documented)
         /**
          * Validations
-         *  [Name, Type] must be unique and not in the database
+         *  [Name, Version, Type] must be unique and not in the database
          *  File location is accessible to whichever user (this is tricky)
          */
     }

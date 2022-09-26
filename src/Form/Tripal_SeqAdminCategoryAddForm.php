@@ -6,14 +6,14 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal;
 
-class Tripal_SeqAdminAddCategoryForm extends FormBase {
+class Tripal_SeqAdminCategoryAddForm extends FormBase {
     /**
      * Form ID.
      * 
      * @return string
      */
     function getFormID() {
-        return 'tripal_seq_admin_add_category_form';
+        return 'tripal_seq_admin_category_add_form';
     }
 
     /**
