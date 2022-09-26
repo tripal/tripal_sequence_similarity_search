@@ -26,7 +26,7 @@ tripal_seq.config:
   path: 'admin/tripal/extension/tseq/config'
   defaults:
     _controller: '\Drupal\tripal_seq\Controller\Tripal_SeqConfig::tripal_seq_config'
-    _title: 'Tripal Sequence Similarity Search: Configuration'
+    _title: 'Tripal Sequence Similarity Search: Available Databases'
   requirements:
     _permission: 'access content'
 
@@ -34,7 +34,7 @@ tripal_seq.config:
 tripal_seq.config.db.add:
   path: '/admin/tripal/extension/tseq/add_db'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_db_add'
+    _form: '\Drupal\tripal_seq\Form\Tripal_SeqAdminAddDBForm'
     _title: 'Add Tripal Sequence Similarity Search database'
     _description: Make an existing Diamond or BLAST database available to Tripal Sequence Similarity Search
   options:
@@ -65,7 +65,7 @@ tripal_seq.config.categories:
   path: '/admin/tripal/extension/tripal_seq/categories'
   defaults:
     _controller: '\Drupal\tripal_seq\Controller\Tripal_SeqConfig::tripal_seq_config_categories'
-    _title: 'Manage Tripal Seq Categories'
+    _title: 'Tripal Sequence Similarity Search: Categories'
   requirements:
     _permission: 'administer tseq'
 
@@ -73,7 +73,7 @@ tripal_seq.config.categories:
 tripal_seq.config.categories.add:
   path: '/admin/tripal/extension/tripal_seq/categories/add'
   defaults:
-    _controller: '\Drupal\tripal_seq\Form\Tripal_SeqAdminForm::tripal_seq_category_add'
+    _form: '\Drupal\tripal_seq\Form\Tripal_SeqAdminAddCategoryForm'
     _title: 'Add category'
   requirements:
     _permission:  'administer tseq'
