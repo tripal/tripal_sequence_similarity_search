@@ -4,7 +4,7 @@
 
 # TSeq Configuration Page (primary - Existing Database configuration)
 tripal_seq.config:
-  title: 'Tripal Sequence Similarity Search Config'
+  title: 'Available Databases'
   route_name: tripal_seq.config
   base_route: tripal_seq.config
   description: 'Configure Tripal Sequence Similarity Search'
