@@ -78,7 +78,7 @@ class Tripal_SeqAdminDBDeleteForm extends FormBase {
         $db = \Drupal::database();
 
         $deleted = $db->delete('tseq_db_existing_locations')
-            ->condition('db_id', $form_state->getValue['db_id'])
+            ->condition('db_id', $form_state->getValue('db_id'))
             ->execute();
         $this->messenger = \Drupal::messenger();
         $this->messenger->addMessage('Database successfully deleted. Use the link in the breadcrumb above to return to the Database list.', 'status');
