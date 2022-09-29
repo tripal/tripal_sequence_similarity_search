@@ -4,6 +4,8 @@ namespace Drupal\tripal_seq\Controller;
 
 Use Drupal;
 Use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * This controller handles configuration for Tripal Sequence Similarity Search
@@ -38,9 +40,20 @@ class Tripal_SeqConfig {
 
         $results = $query->orderByHeader($header)
                 ->execute();
-                
+        
+
         $rows = [];
         while(($result = $results->fetchObject())) {
+            // Prepare the actions
+            $edit_url = Url::fromRoute('tripal_seq.config.db.edit', array('db_id' => $result->db_id));
+            $edit_link = Link::fromTextAndUrl(t('Edit'), $edit_url)->toString();
+            $edit_link = render($edit_link);
+
+            $delete_url = Url::fromRoute('tripal_seq.config.db.delete', array('db_id' => $result->db_id));
+            $delete_link = Link::fromTextAndUrl(t('Delete'), $delete_url)->toString();
+            $delete_link = render($delete_link);
+            $link_concat = ['#markup' => $edit_link . ' | ' . $delete_link];
+
             $rows[] = [
                 $result->name,
                 $result->version,
@@ -50,7 +63,7 @@ class Tripal_SeqConfig {
                 $result->status,
                 $result->count,
                 $result->web_location,
-                'some actions'
+                \Drupal::service('renderer')->render($link_concat),
             ];
         }
         
