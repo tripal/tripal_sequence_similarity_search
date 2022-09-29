@@ -19,6 +19,4 @@ class Tripal_SeqSubmitForm implements FormInterface{
     public function submitForm(array &$form, FormStateInterface $form_state) {
         // Submit the form and perform other functions related to submissions
     }
-
-
 }

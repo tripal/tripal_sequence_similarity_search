@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\tripal_seq\Form;
+namespace Drupal\tripal_seq\Form\Categories;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;

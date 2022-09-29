@@ -1,28 +1,42 @@
 <?php
 
-namespace Drupal\tripal_seq\Form;
+namespace Drupal\tripal_seq\Form\Database;
 
+use Drupal;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal;
+use Drupal\Core\Link;
+use Drupal\Core\Messenger\MessengerInterface;
 
-class Tripal_SeqAdminDBAddForm extends FormBase {
+class Tripal_SeqAdminDBEditForm extends FormBase {
     /**
      * Form ID.
      * 
      * @return string
      */
     function getFormID() {
-        return 'tripal_seq_admin_db_add_form';
+        return 'tripal_seq_admin_db_edit_form';
     }
 
     /**
      * Build the form
      */
-    function buildForm(array $form, FormStateInterface $form_state) {
+    function buildForm(array $form, FormStateInterface $form_state, String $db_id = NULL) {
+        /**
+         * Get the current values from the database for this... database
+         */
+        $db = \Drupal::database();
+        $table_name = 'tseq_db_existing_locations';
+        $query = $db->select($table_name, 'tseq_db')
+                ->fields('tseq_db')
+                ->condition('tseq_db.db_id',$db_id);
+        
+        $results = $query->execute();
+        $current_value = $results->fetchObject();
 
         /**
-         * Get the default/current values from the database
+         * Get the current list of categories from the database
+         * @todo make this into a function because it is reused
          */
         // Categories
         $db = \Drupal::database();
@@ -41,11 +55,15 @@ class Tripal_SeqAdminDBAddForm extends FormBase {
             }
         }
 
-        // Fields for this form
+        // Put a link back to the categories list 
+        /**
+         * Lay out the form fields
+         */
         $form['Name'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Name'),
             '#description' => 'The name of the target database.',
+            '#default_value' => $current_value->name,
         ];
 
         $form['Type'] = [
@@ -56,12 +74,14 @@ class Tripal_SeqAdminDBAddForm extends FormBase {
                 'Genome'    => 'Genome',
                 'Gene'      => 'Gene',
             ],
+            '#default_value' => $current_value->type,
         ];
 
         $form['Category'] = [
             '#type' => 'select',
             '#title' => $this->t('Category'),
             '#options' => $category_options,
+            '#default_value' => $current_value->category,
         ];
         
         $form['Version'] = [
@@ -70,6 +90,7 @@ class Tripal_SeqAdminDBAddForm extends FormBase {
             '#size'         => '7',
             '#description'  => 'The version of the added database',
             '#required'     => true,
+            '#default_value' => $current_value->version,
         ];
     
         $form['Location'] = [
@@ -79,6 +100,7 @@ class Tripal_SeqAdminDBAddForm extends FormBase {
             '#description'  => 'The path to the indexed database on disk (accessible on the remote server). If loading a BLAST index, leave off the extensions like nhr, nin, nog, etc.',
             '#suffix'       => '',
             '#required'     => true,
+            '#default_value' => $current_value->location,
         ];
     
         $form['WebLocation'] = [
@@ -87,46 +109,44 @@ class Tripal_SeqAdminDBAddForm extends FormBase {
             '#size'         => '120',
             '#description'  => 'If the original sequence (non-indexed) is publicly available for download, set the URL here (FTP, HTTP)',
             '#required'     => false,
+            '#default_value' => $current_value->web_location,
         ];
     
         $form['Count'] = [
             '#type'         => 'textfield',
             '#title'        => $this->t('Genes, Proteins, or Scaffolds (Optional)'),
             '#size'         => '10',
-            '#description'  => 'How many genes, proteins, or scaffolds the sequence contains'
+            '#description'  => 'How many genes, proteins, or scaffolds the sequence contains',
+            '#default_value' => $current_value->count,
         ];
 
-        // and finally, submit
+        // Store the db_id in the form for validation and submission
+        $form['db_id'] = [
+            '#type'         =>  'value',
+            '#value'        =>  $db_id,
+        ];
+
+        // and finally, submit changes
         $form['actions']['#type'] = 'actions';
         $form['actions']['submit'] = [
             '#type' => 'submit',
-            '#value' => $this->t('Add'),
+            '#value' => $this->t('Save'),
             '#button_type' => 'primary',
         ];
-
         return $form;
     }
 
-    /**
-     * Validate!
-     */
-    public function validateForm(array &$form, FormStateInterface $form_state) {
-        // placeholder because required by FormInterface definition (not documented)
-        /**
-         * Validations
-         *  [Name, Version, Type] must be unique and not in the database
-         *  File location is accessible to whichever user (this is tricky)
-         */
+    function validateForm(array &$form, FormStateInterface $form_state) {
+
     }
 
     /**
      * Submit
      */
     function submitForm(array &$form, FormStateInterface $form_state) {
-        // If we got here, we must have passed validation. Let's store the values in the database.
         $db = \Drupal::database();
 
-        $result = $db->insert('tseq_db_existing_locations')
+        $result = $db->update('tseq_db_existing_locations')
                 ->fields(
                     [
                         'type' => $form_state->getValue('Type'),
@@ -139,62 +159,16 @@ class Tripal_SeqAdminDBAddForm extends FormBase {
                         'status' => 1,
                     ]
                 )
+                ->condition('db_id', $form_state->getValue('db_id'))
                 ->execute();
-    }
-}
 
-/**
- * This is not how to do it. Keeping it around so stuff doesn't break immediately.
- * Delete this as it gets replace. PUMPKIN
- */
-class Tripal_SeqAdminForm {
-
-    /**
-     * Database entries
-     */
-    function tripal_seq_db_add() {
-        return 0;
-    }
-    
-    function tripal_seq_db_edit($db_id) {
-        return 0;
-    }
-
-    function tripal_seq_db_delete($db_id) {
-        return 0;
-    }
-
-    /**
-     * Handle import/export of the Diamond and BLAST database list.
-     */
-    function tripal_seq_db_import() {
-
-    }
-
-    function tripal_seq_db_export() {
-
-    }
-
-    /**
-     * Category entries
-     */
-    function tripal_seq_category_add() {
-        return 0;
-    }
-
-    function tripal_seq_category_edit($category_id) {
-        return 0;
-    }
-
-    function tripal_seq_category_delete($category_id) {
-        return 0;
-    }
-
-    function tripal_seq_categories_import() {
-        return 0;
-    }
-
-    function tripal_seq_categories_export() {
-        return 0;
+        $this->messenger = \Drupal::messenger();
+        // Craft link for returning to the Database list
+        /* Rely on the breadcrumb for now
+            $return_link = Link::createFromRoute('here', 'tripal_seq.config')
+                ->toString()
+                ->getGeneratedLink();
+         */
+        $this->messenger->addMessage('Database successfully saved. Use the link in the breadcrumb above to return to the Database list.', 'status');
     }
 }
