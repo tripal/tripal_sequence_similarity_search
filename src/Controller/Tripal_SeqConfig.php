@@ -101,10 +101,20 @@ class Tripal_SeqConfig {
                 ->execute();
         $rows = [];
         while(($result = $results->fetchObject())) {
+            // Prepare the actions
+            $edit_url = Url::fromRoute('tripal_seq.config.categories.edit', array('category_id' => $result->category_id));
+            $edit_link = Link::fromTextAndUrl(t('Edit'), $edit_url)->toString();
+            $edit_link = render($edit_link);
+
+            $delete_url = Url::fromRoute('tripal_seq.config.categories.delete', array('category_id' => $result->category_id));
+            $delete_link = Link::fromTextAndUrl(t('Delete'), $delete_url)->toString();
+            $delete_link = render($delete_link);
+            $link_concat = ['#markup' => $edit_link . ' | ' . $delete_link];
+
             $rows[] = [
                 $result->category_title,
                 $result->enabled,
-                'some actions',
+                \Drupal::service('renderer')->render($link_concat),
             ];
         }
 
