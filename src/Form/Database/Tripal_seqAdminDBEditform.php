@@ -55,7 +55,7 @@ class Tripal_SeqAdminDBEditForm extends FormBase {
             }
         }
 
-        // Put a link back to the categories list 
+        // Put a link back to the database list 
         /**
          * Lay out the form fields
          */
@@ -169,6 +169,6 @@ class Tripal_SeqAdminDBEditForm extends FormBase {
                 ->toString()
                 ->getGeneratedLink();
          */
-        $this->messenger->addMessage('Database successfully saved. Use the link in the breadcrumb above to return to the Database list.', 'status');
+        $this->messenger->addMessage('Database successfully updated. Use the link in the breadcrumb above to return to the Database list.', 'status');
     }
 }
