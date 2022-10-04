@@ -3,7 +3,7 @@ namespace Drupal\tripal_seq\Form\Settings;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal; # is this useful or wasteful? PUMPKIN
+use Drupal;
 
 class Tripal_SeqAdminSettingsForm extends FormBase {
     /**
