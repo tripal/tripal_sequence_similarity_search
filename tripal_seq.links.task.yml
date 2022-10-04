@@ -19,6 +19,22 @@ tripal_seq.config.categories:
   description: 'Manage categories'
   weight: 51
 
+# TSeq Configuration Page: Settings
+tripal_seq.config.settings:
+  title: 'Settings'
+  route_name: tripal_seq.config.settings
+  base_route: tripal_seq.config
+  description: 'Manage settings'
+  weight: 52
+
+# TSeq Configuration Page: Defaults
+tripal_seq.config.defaults:
+  title: 'Defaults'
+  route_name: tripal_seq.config.defaults
+  base_route: tripal_seq.config
+  description: 'Manage default values for submission'
+  weight: 53
+
 ###########################################################
 #            Diamond & BLAST Database handling            #
 ###########################################################
@@ -34,7 +50,7 @@ tripal_seq.config.db.add:
 # Export database list
 tripal_seq.config.db.export:
   route_name: 'tripal_seq.config.db.export'
-  title: 'Export this list'
+  title: 'Export database list'
   appears_on:
     - tripal_seq.config
   parent_id: 'tripal_seq.config'
