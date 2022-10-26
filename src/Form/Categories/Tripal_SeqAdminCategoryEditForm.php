@@ -9,14 +9,13 @@ use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 
 class Tripal_SeqAdminCategoryEditForm extends FormBase {
-    /**
-     * Form ID.
-     * 
-     * @return string
-     */
-    function getFormID() {
-        return 'tripal_seq_admin_category_edit_form';
-    }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'tripal_seq_admin_category_edit_form';
+  }
 
     /**
      * Build the form

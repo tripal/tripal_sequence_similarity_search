@@ -6,14 +6,13 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 class Tripal_SeqAdminDBDeleteForm extends FormBase {
-    /**
-     * Form ID.
-     * 
-     * @return string
-     */
-    function getFormID() {
-        return 'tripal_seq_admin_db_delete_form';
-    }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'tripal_seq_admin_db_delete_form';
+  }
 
     /**
      * Build the form

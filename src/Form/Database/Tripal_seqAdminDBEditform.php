@@ -9,14 +9,13 @@ use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 
 class Tripal_SeqAdminDBEditForm extends FormBase {
-    /**
-     * Form ID.
-     * 
-     * @return string
-     */
-    function getFormID() {
-        return 'tripal_seq_admin_db_edit_form';
-    }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'tripal_seq_admin_db_edit_form';
+  }
 
     /**
      * Build the form

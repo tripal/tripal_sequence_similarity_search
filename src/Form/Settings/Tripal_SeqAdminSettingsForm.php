@@ -6,14 +6,13 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal;
 
 class Tripal_SeqAdminSettingsForm extends FormBase {
-    /**
-     * Form ID.
-     * 
-     * @return string
-     */
-    function getFormID() {
-        return 'tripal_seq_admin_settings_form';
-    }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'tripal_seq_admin_settings_form';
+  }
 
     /**
      * Build the form
