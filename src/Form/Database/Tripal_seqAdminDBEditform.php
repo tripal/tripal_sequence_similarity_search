@@ -47,10 +47,10 @@ class Tripal_SeqAdminDBEditForm extends FormBase {
         $category_options = [];
         while(($result = $results->fetchObject())) {
             if ($result->enabled == 1) {
-                $category_options[$result->category_id] = $result->category_title; 
+                $category_options[$result->category_title] = $result->category_title; 
             }
             else {
-                $category_options[$result->category_id] = $result->category_title . ' (disabled)'; 
+                $category_options[$result->category_title] = $result->category_title . ' (disabled)'; 
             }
         }
 
