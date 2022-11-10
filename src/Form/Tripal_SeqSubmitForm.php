@@ -365,7 +365,7 @@ class Tripal_SeqSubmitForm implements FormInterface{
     $form['submit_button'] = [
       '#type' => 'submit',
       '#value' => t('Submit'),
-      'description' => t($submit_description),
+      '#suffix' => t($submit_description),
     ];
 
     return $form;
