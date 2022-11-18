@@ -3,11 +3,12 @@
 namespace Drupal\tripal_seq\Form;
 
 use Drupal;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\tripal_seq\api;
 
-class Tripal_SeqSubmitForm implements FormInterface{
+class Tripal_SeqSubmitForm extends FormBase{
 
   /**
    * {@inheritdoc}
@@ -55,26 +56,27 @@ class Tripal_SeqSubmitForm implements FormInterface{
 
     $form['QueryType'] = [
       '#type'          => 'radios',
-      '#default_value' => 'Protein',
       '#options'       => [
-          'Protein'       => t('Protein'),
-          'Genomic'       => t('Nucleotide (coding or whole genome)')
+        'Protein'       => t('Protein'),
+        'Genomic'       => t('Nucleotide (coding or whole genome)'),
       ],
+      '#default_value' => 'Protein',
       '#title'        => t('Query Type'),
       '#attributes' => [
         'name' => 'QueryType',
       ],
     ];
 
-    // Database search type (Protein. Depends on QueryType selection.
+    // Database search type (Protein). Depends on QueryType selection.
     $form['BlastEquivNuc'] = [
       '#type'         => 'select',
-      '#title'        => t('Database Search Type'),
+      '#title'        => t('Database Search Type (Nucleotide)'),
+      '#empty_value' => '',
+      '#default_value' => NULL,
       '#options'      => [
         'blastx' => t('BLASTx (Translated nucleotide query versus protein database)'),
         'blastn'  => t('BLASTn (Nucleotide query versus nucleotide database)'),
       ],
-      '#default_value' => 'blastn',
       '#attributes' => [
         'name' => 'BlastEquivNuc',
       ],
@@ -85,15 +87,16 @@ class Tripal_SeqSubmitForm implements FormInterface{
       ],
     ];
 
-    // Database serach type (Nucleic). Depends on QueryType selection.
+    // Database search type (Nucleic). Depends on QueryType selection.
     $form['BlastEquivPro'] = [
       '#type'         => 'select',
-      '#title'        => t('Database Search Type'),
+      '#title' => t('Database Search Type (Protein)'),
+      '#empty_value' => '',
+      '#default_value' => NULL,
       '#options'      => [
         'blastp' => t('BLASTp (Protein query versus protein database)'),
         'tblastn' => t('tBLASTn (Protein query versus translated nucleotide database)'),
       ],
-      '#default_value' => 'tblastn',
       '#attributes' => [
         'name' => 'BlastEquivPro',
       ],
@@ -222,6 +225,12 @@ class Tripal_SeqSubmitForm implements FormInterface{
               ['value' => 'paste'],
               ['value' => 'upload'],
             ],
+            [
+              ':input[name="BlastEquivPro"]' => ['value' => NULL],
+            ],
+            [
+              ':input[name="BlastEquivNuc"]' => ['value' => NULL],
+            ],
           ];
         }
         // Visibility rules, Genome/Gene.
@@ -241,6 +250,12 @@ class Tripal_SeqSubmitForm implements FormInterface{
             ':input[name="TargetDataType"]' => [
               ['value' => 'paste'],
               ['value' => 'upload'],
+            ],
+            [
+              ':input[name="BlastEquivPro"]' => ['value' => NULL],
+            ],
+            [
+              ':input[name="BlastEquivNuc"]' => ['value' => NULL],
             ],
           ];
         }
@@ -262,7 +277,7 @@ class Tripal_SeqSubmitForm implements FormInterface{
       }
     }
 
-    // managed_files can't be hidden I guess. Put it in a container.
+    // managed_files can't be hidden. Put it in a container.
     $form['Target']['OtherTarget']['TargetFileContainer'] = [
       '#type' => 'container',
       '#states' => [
@@ -371,11 +386,60 @@ class Tripal_SeqSubmitForm implements FormInterface{
     return $form;
   }
 
-    public function validateForm(array &$form, FormStateInterface $form_state) {
-        // Validate the submitted values and the general form state
+  /**
+   * Validate the submission form.
+   *
+   *   There are basic validatiosn to be made.
+   *   - Ensure each set of required fields has a value.
+   *   - Ensure only one choice is made when there are multiple
+   *     options.
+   *
+   *   There are also advanced validations to be made.
+   *   - FASTA format for submitted queries is proper.
+   *   - User uploaded proper type (gene/genome vs protein)
+   *
+   * @param array $form
+   *   The form.
+   * @param FormStateInterface $form_state 
+   *   The form state.
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+
+    // Basic validation: QueryType has been chosen.
+    if ($form_state->getValue('QueryType') == NULL) {
+      $form_state->setErrorByName('QueryType', $this->t('Please choose the type of query.'));
     }
 
-    public function submitForm(array &$form, FormStateInterface $form_state) {
-        // Submit the form and perform other functions related to submissions
+    // Basic validation: Database Search Type (BlastEquivNuc or BlastEquivPro) has been chosen.
+    if ($form_state->getValue('QueryType') == 'Protein') {
+      // Check that BlastEquivPro has a value.
+      if (!$form_state->getValue('BlastEquivPro')) {
+        $form_state->setErrorByName('BlastEquivPro', $this->t('Please choose the database search type.'));
+      }
     }
+    elseif ($form_state->getvalue('QueryType') == 'Genomic') {
+      // Check that BlastEquivNuc has a value.
+      if (!$form_state->getValue('BlastEquivNuc')) {
+        $form_state->setErrorByName('BlastEquivNuc', $this->t('Please choose the type of query.'));
+      }
+    }
+
+    // Basic validation: User has submitted a FASTA query (paste or upload)
+    if (!$form_state->getValue('QueryPaste') && !$form_state->getValue('QueryFile')) {
+      $form_state->setErrorByName('QueryPaste', $this->t('Please paste or upload a query sequence.'));
+      $form_state->setErrorByName('QueryFile', $this->t('Please paste or upload a query sequence.'));
+    }
+  }
+
+  /**
+   * Submit the Diamond/BLAST submission form.
+   *
+   * @param array $form
+   *   The form.
+   * @param FormStateInterface $form_state
+   *   The form state.
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Submit the form and perform other functions related to submissions.
+  }
 }
