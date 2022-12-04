@@ -2,10 +2,12 @@
 
 namespace Drupal\tripal_seq\Form;
 
-use Drupal;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\File\FileInterface;
+use Drupal\Core\File\FileRepositoryInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\tripal_seq\api;
 
 class Tripal_SeqSubmitForm extends FormBase{
@@ -31,6 +33,9 @@ class Tripal_SeqSubmitForm extends FormBase{
       $this->messenger->addError('The local working directory for Tripal jobs is not writable. Report this to an administrator using the Contact form.');
     }
 
+    // Allow managed_file fields to have values. https://www.drupal.org/project/drupal/issues/2647812#comment-11683961
+    $form_state->disableCache();
+
     $description = 'Sequence similarity search is supported against genes, '
       . 'proteins, and full genomes.  Nucleotide searches are executed '
       . 'with BLAST (BLASTN) while protein or translated protein searches are executed with '
@@ -47,7 +52,7 @@ class Tripal_SeqSubmitForm extends FormBase{
       '#collapsed'    => FALSE,
       '#description'  => t($description),
     );
-
+echo "<hr> U <hr>";
     //////////////////////////////////////////////////////////////////////
     //                                                                  //
     //                          Query Section                           //
@@ -107,36 +112,57 @@ class Tripal_SeqSubmitForm extends FormBase{
       ],
     ];
 
-    /* Query Input Section */
-    $form['QueryLabel'] = [
-      '#type'           => 'item',
-      '#title'          => 'Query',
-      '#prefix'         => '<hr>',
-    ];
-
-    $form['Query'] = [
-      '#type'           => 'container',
-      '#prefix'         => 'Either paste in your FASTA sequence(s) or upload them as a file.',
-      '#attributes'     => [
-        'class' => [
-          'tseq_submit_form_major_section',
-        ],
+    $form['Query']['QueryUploadType'] = [
+      '#type' => 'radios',
+      '#title' => 'Query',
+      '#description'         => 'Either paste in your FASTA sequence(s) or upload them as a file.',
+      '#options' => [
+        'paste' => t('Paste'),
+        'file_upload' => t('File upload'),
+      ],
+      '#default_value' => 'paste',
+      '#title' => 'Query Upload method',
+      '#attributes' => [
+        'name' => 'QueryUploadType',
       ],
     ];
 
     $form['Query']['QueryPaste'] = [
       '#type'         => 'textarea',
       '#required'     => FALSE,
+      '#states' => [
+        'invisible' => [
+          ':input[name="QueryUploadType"]' => ['value' => 'file_upload'],
+        ],
+      ],
     ];
 
-    $form['Query']['QueryFile'] = [
+    // managed_files can't be hidden. Put it in a container.
+    $form['Query']['QueryFileContainer'] = [
+      '#type' => 'container',
+      '#states' => [
+        'invisible' => [
+          ':input[name="QueryUploadType"]' => ['value' => 'paste'],
+        ],
+      ],
+    ];
+
+    $form['Query']['QueryFileContainer']['QueryFile'] = [
       '#type'         => 'managed_file',
       '#upload_validators' => [
         'file_validate_extensions' => [
           'txt dmnd gz FA FAA FNN FASTA fa faa fnn fasta',
         ],
       ],
-      '#upload_location' => 'public://',
+      '#upload_location' => 'public://tripal_seq/',
+      '#attributes' => [
+        'name' => 'QueryFile',
+      ],
+    ];
+
+    $form['Otherfile'] = [
+      '#type' => 'managed_file',
+      '#title' => 'Otherfile',
     ];
 
     //////////////////////////////////////////////////////////////////////
@@ -263,7 +289,8 @@ class Tripal_SeqSubmitForm extends FormBase{
         // Title configure.
         $title .= '(' . $type . ", ";
         $title .= $category . ')';
-
+        dpm("type: " . $type . ", category: " . $category);
+        dpm($databaseSelect);
         // Assemble the form.
         $form['Target'][$type . '_' . $category] = [
           '#type' => 'select',
@@ -404,7 +431,7 @@ class Tripal_SeqSubmitForm extends FormBase{
    *   The form state.
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-
+    //dpm($form_state);
     // Basic validation: QueryType has been chosen.
     if ($form_state->getValue('QueryType') == NULL) {
       $form_state->setErrorByName('QueryType', $this->t('Please choose the type of query.'));
@@ -424,10 +451,21 @@ class Tripal_SeqSubmitForm extends FormBase{
       }
     }
 
-    // Basic validation: User has submitted a FASTA query (paste or upload)
-    if (!$form_state->getValue('QueryPaste') && !$form_state->getValue('QueryFile')) {
-      $form_state->setErrorByName('QueryPaste', $this->t('Please paste or upload a query sequence.'));
-      $form_state->setErrorByName('QueryFile', $this->t('Please paste or upload a query sequence.'));
+    // Basic validation: pasted or uploaded queries have contents.
+    if ($form_state->getValue('QueryUploadType') == 'paste' && !$form_state->getValue('QueryPaste')) {
+      $form_state->setErrorByName('QueryPaste', $this->t('Please paste your query text.'));
+    }
+    if ($form_state->getValue('QueryUploadType') == 'file_upload' && !$form_state->getValue('QueryFile')) {
+      $form_state->setErrorByName('QueryFile', $this->t('Please upload your query file.'));
+      dpm($form_state->getValues('QueryFile'));
+    }
+
+    // Basic validation: Target.
+    if ($form_state->getvalue('TargetDataType') == 'database') {
+      // QueryType = Protein, BlastEquivNuc = blastx.
+      if ($form_state->getValue('QueryType') == 'Protein' && $form_state->getValue('BlastEquivNuc' == 'blastx')) {
+        echo 'd'; // Pumpkin.
+      }
     }
   }
 
@@ -435,11 +473,43 @@ class Tripal_SeqSubmitForm extends FormBase{
    * Submit the Diamond/BLAST submission form.
    *
    * @param array $form
-   *   The form.
+   *   The form. From the form, input the following fields into
+   *   the tseq_job_information table.
+   *    - 
+   *    - user_id.
    * @param FormStateInterface $form_state
    *   The form state.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Submit the form and perform other functions related to submissions.
+    // Get the basic form values.
+    $advanced['eValue'] = $form_state->getValue('eValue');
+    $advanced['targetCoverage'] = $form_state->getValue('targetCoverage');
+    $advanced['queryCoverage'] = $form_state->getValue('queryCoverage');
+    $advanced['maxAlignments'] = $form_state->getValue('maxAlignments');
+
+    // Query handling: pasted.
+    if ($form_state->getValue('QueryUploadType') == 'paste') {
+      // Create a file with the user's pasted values.
+      $file = \Drupal::service('file.repository');
+      $pasted_file = $file->writeData($form_state->getValue('QueryPaste'), 'public://tripal_seq/' . date('YMd_His') . '.fasta');
+
+      // Get the file URI and convert it to an absolute path.
+      $query_file_path = \Drupal::service('file_system')->realpath($pasted_file->getFileUri());
+    }
+    // Query handling: file upload.
+    else {
+      $queryFile = $form_state->getValue('QueryFile');
+
+      // File uploads are not set permanent by default
+      // $file = File::load($queryFile[0]);.
+  
+      // $file = \Drupal\file\Entity\File::load($queryFile[0]);
+      // $file->setPermanent();
+      // $file->save();
+    }
+
+    // If searching a database, which one?
+
+    // dpm($form_state);
   }
 }
