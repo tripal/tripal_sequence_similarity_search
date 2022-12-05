@@ -1,3 +1,14 @@
+# TSeq Submissions
+tripal_seq.submit:
+  path: '/TSeq/submit'
+  defaults:
+    _form: '\Drupal\tripal_seq\Form\Tripal_SeqSubmitForm'
+    _title: 'Tripal Sequence Similarity Search: Submit'
+  options:
+    _admin_route: 'TRUE'
+  requirements:
+    _permission:  'access content'
+
 # TSeq Results Page
 tripal_seq.results:
   path: '/TSeq/results/{job_id}'
