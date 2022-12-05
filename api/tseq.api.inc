@@ -264,16 +264,3 @@ function tseq_validate_sequence($type, $sequence)
     }
 }
 
-/**
- * Check to see if the webserver directories are set up properly
- */
-function tseq_check_local_directories() {
-    // Check the sites/default/files/tripal/jobs directory. This is default.
-    // @todo make this a dynamic option in case we don't want to stuff
-    // the webserver with too many job files
-
-    // Get the path to the files/ directory
-    $real_path = drupal_realpath('public://');
-    $main_working_dir = $real_path.'/tripal/jobs';
-    return is_writable($main_working_dir);
-}
