@@ -11,7 +11,10 @@ require_once 'includes/admin/tseq.categories.inc';
 require_once 'includes/tseq_databases.inc';
 
 // API
-require_once 'api/tseq.api.inc';
+#require_once 'api/tseq.api.inc';
+require_once 'src/api/tripal_seq.files.api.php';        // D9
+require_once 'src/api/tripal_seq.settings.api.php';     // D9
+require_once 'src/api/tripal_seq.submit.api.php';       // D9
 
 // Forms (allow for more than just basic form)
 require_once 'includes/tseq_submit.form.inc';
