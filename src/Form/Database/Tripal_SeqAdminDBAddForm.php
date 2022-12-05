@@ -110,12 +110,16 @@ class Tripal_SeqAdminDBAddForm extends FormBase {
      * Validate!
      */
     public function validateForm(array &$form, FormStateInterface $form_state) {
-        // placeholder because required by FormInterface definition (not documented)
-        /**
-         * Validations
-         *  [Name, Version, Type] must be unique and not in the database
-         *  File location is accessible to whichever user (this is tricky)
-         */
+      // placeholder because required by FormInterface definition (not documented)
+      /**
+       * Validations
+       *  [Name, Version, Type] must be unique and not in the database
+       *  File location is accessible to whichever user (this is tricky)
+       */
+      // Count must be an integer.
+      if (!$form_state->getValue('Count')) {
+        $form_state->setValue('Count', -1);
+      }
     }
 
     /**
