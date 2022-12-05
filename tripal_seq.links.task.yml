@@ -42,7 +42,7 @@ tripal_seq.config.defaults:
 # Add database
 tripal_seq.config.db.add:
   route_name: 'tripal_seq.config.db.add'
-  title: 'Add TSeq Database'
+  title: 'Add Diamond or BLAST Database'
   appears_on:
     - tripal_seq.config
   parent_id: 'tripal_seq.config' 
