@@ -90,6 +90,7 @@ class Tripal_SeqConfig {
             array('data' => 'Actions'),
         );
 
+        // @todo use the API version of this instead
         $db = \Drupal::database();
 
         $table_name = 'tseq_categories';
