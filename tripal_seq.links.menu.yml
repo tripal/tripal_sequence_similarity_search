@@ -1,10 +1,3 @@
-# TSeq Submissions
-tripal_seq.submit:
-  path: '/TSeq/submit'
-  defaults:
-    _controller: '\Drupal\tripal_sequence_similarity_search\Form\Tripal_SeqSubmitForm::Tripal_SeqSubmissionForm'
-    _title: 'Tripal Sequence Similarity Search: Submit'
-  requirements:
-    _permission:  'access content'
+
 
 
