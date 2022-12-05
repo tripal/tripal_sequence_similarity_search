@@ -206,101 +206,23 @@ echo "<hr> U <hr>";
 
     foreach ($categories as $category) {
       foreach ($types as $type) {
-        $count = get_type_category_count($type,$category['category_title']);
+        $count = get_type_category_count($type, $category['category_title']);
         if ($count) {
           $sets[$type][$category['category_title']] = $count;
+
+          // Assemble the forms here.
+          $databases = get_databases($type, $category, TRUE);
+
+          // Assemble the #options array.
+          unset($databaseSelect);
+          $databaseSelect['default'] = '';
+          foreach ($databases as $database) {
+            $databaseSelect[$database->db_id] = $database->name;
+          }
+
+          // Assemble the #states=>'visible'/'invisible' array.
+          $fieldVisibility = generateFieldVisibility($type);
         }
-      }
-    }
-
-    unset($categories);
-    unset($type);
-
-    // The basis for generating the target lists.
-    foreach ($sets as $type => $categories) {
-      foreach ($categories as $category => $count) {
-
-        // Now get all databases in these type/category pairs. We want their db_id, name, count, and maybe version so let's grab that.
-        unset($databaseSelect);
-        $databaseSelect = [];
-        $databaseSelect['default'] = '--';
-        $databases = get_databases($type, $category, TRUE);
-
-        foreach ($databases as $database) {
-          $databaseSelect[$database->db_id] = $database->name;
-        }
-
-        unset($fieldVisiblity);
-        unset($fieldInvisiblity);
-
-        // Visibility rules, Protein.
-        if ($type == 'Protein') {
-          $title = 'Protein & blastp OR Genomic & blastx';
-          $fieldVisiblity = [
-            [
-              ':input[name="QueryType"]' => ['value' => 'Protein'],
-              ':input[name="BlastEquivPro"]' => ['value' => 'blastp'],
-            ],
-            [
-              ':input[name="QueryType"]' => ['value' => 'Genomic'],
-              ':input[name="BlastEquivNuc"]' => ['value' => 'blastx'],
-            ],
-          ];
-          $fieldInvisiblity = [
-            ':input[name="TargetDataType"]' => [
-              ['value' => 'paste'],
-              ['value' => 'upload'],
-            ],
-            [
-              ':input[name="BlastEquivPro"]' => ['value' => NULL],
-            ],
-            [
-              ':input[name="BlastEquivNuc"]' => ['value' => NULL],
-            ],
-          ];
-        }
-        // Visibility rules, Genome/Gene.
-        else {
-          $title = "Protein & tblastn OR Genomic & blastn";
-          $fieldVisiblity = [
-            [
-              ':input[name="QueryType"]' => ['value' => 'Protein'],
-              ':input[name="BlastEquivPro"]' => ['value' => 'tblastn'],
-            ],
-            [
-              ':input[name="QueryType"]' => ['value' => 'Genomic'],
-              ':input[name="BlastEquivNuc"]' => ['value' => 'blastn'],
-            ],
-          ];
-          $fieldInvisiblity = [
-            ':input[name="TargetDataType"]' => [
-              ['value' => 'paste'],
-              ['value' => 'upload'],
-            ],
-            [
-              ':input[name="BlastEquivPro"]' => ['value' => NULL],
-            ],
-            [
-              ':input[name="BlastEquivNuc"]' => ['value' => NULL],
-            ],
-          ];
-        }
-
-        // Title configure.
-        $title .= '(' . $type . ", ";
-        $title .= $category . ')';
-        dpm("type: " . $type . ", category: " . $category);
-        dpm($databaseSelect);
-        // Assemble the form.
-        $form['Target'][$type . '_' . $category] = [
-          '#type' => 'select',
-          '#title' => $title,
-          '#options' => $databaseSelect,
-          '#states' => [
-            'visible' => $fieldVisiblity,
-            'invisible' => $fieldInvisiblity,
-          ],
-        ];
       }
     }
 
