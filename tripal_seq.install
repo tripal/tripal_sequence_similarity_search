@@ -9,12 +9,8 @@ function tripal_seq_install()
      *  Populate the diamond_settings table with a default row.
      */
     $tseq_settings = array(
-        'settings_id'               => '0',
         'num_threads'               => '1',
         'file_expire_time'          => '30',
-        'blast_exe_location'        => '',
-        'diamond_exe_location'      => '',
-        'preferred_remote_resource' => '',
         'defaults_e_value'          => '0.003',
         'defaults_target_coverage'  => '50',
         'defaults_query_coverage'   => '50',
@@ -22,7 +18,13 @@ function tripal_seq_install()
         'defaults_max_alignments_selected'  => '10',
     );
     
-    drupal_write_record('tseq_settings', $tseq_settings);
+    // Deprecated
+    // drupal_write_record('tseq_settings', $tseq_settings);
+
+    \Drupal::database()->merge('tseq_settings')
+        ->key(array('settings_id' => 0))
+        ->fields($tseq_settings)
+        ->execute();
     
     /*
      *  Populate the diamond_categories table with default categories.
@@ -33,7 +35,18 @@ function tripal_seq_install()
         'category_title'            =>'Standard',
         'enabled'                   => '1'
     );
-    drupal_write_record('tseq_categories', $tseq_category_standard);
+    
+    \Drupal::database()->insert('tseq_categories')
+        ->fields($tseq_category_standard)
+        ->execute();
+    // Deprecated
+    //drupal_write_record('tseq_categories', $tseq_category_standard);
+
+    // Ensure that the local working directory for jobs exists
+    // @todo Make this configurable (for now leave as-is, legacy sites will have had his value hardcoded, too)
+    $tseq_working_dir = 'public://tripal/jobs';
+    \Drupal::service('file_system')->prepareDirectory($tseq_working_dir, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
+
 }
 
     /*
@@ -42,30 +55,30 @@ function tripal_seq_install()
      * Is it possible to remove the content type but keep nodes in place
      * in the event of a reinstall/accidental uninstall?
      */
-function tripal_seq_uninstall()
-{
-    $query = 'SELECT nid FROM {node} WHERE {node}.type = :type ';
+// function tripal_seq_uninstall()
+// {
+//     $query = 'SELECT nid FROM {node} WHERE {node}.type = :type ';
     
-    $result = db_query($query, array(':type'   => 'diamond_database'));
+//     $result = db_query($query, array(':type'   => 'diamond_database'));
     
-    $nids = array();
+//     $nids = array();
     
-    foreach( $result as $row )
-    {
-        $nids[] = $row->nid;
-    }
+//     foreach( $result as $row )
+//     {
+//         $nids[] = $row->nid;
+//     }
     
-    node_delete_multiple( $nids );
+//     node_delete_multiple( $nids );
     
-    foreach (field_info_instances('node', 'diamond_database') as $field_name => $instance )
-    {
-        field_delete_instance($instance);
-    }
+//     foreach (field_info_instances('node', 'diamond_database') as $field_name => $instance )
+//     {
+//         field_delete_instance($instance);
+//     }
     
-    node_type_delete('diamond_database');
+//     node_type_delete('diamond_database');
     
-    field_purge_batch(1000);
-}
+//     field_purge_batch(1000);
+// }
 
 function tripal_seq_schema()
 {
