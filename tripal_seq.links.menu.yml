@@ -1,3 +1,7 @@
-
-
-
+# Tripal Sequence Similarity Search - Tripal Extensions link
+tripal_seq.config:
+  route_name: tripal_seq.config
+  title: 'Tripal Sequence Similarity Search'
+  description: 'Configure Tripal Sequence Similarity Search'
+  parent: tripal.extension
+  weight: 30
